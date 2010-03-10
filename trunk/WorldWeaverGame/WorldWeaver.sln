@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorldWeaver", "WorldWeaverGame\WorldWeaver.csproj", "{B8C8A0C6-90CD-410A-AA1D-D7EA1CD1386B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8C8A0C6-90CD-410A-AA1D-D7EA1CD1386B}.Debug|x86.ActiveCfg = Debug|x86
+		{B8C8A0C6-90CD-410A-AA1D-D7EA1CD1386B}.Debug|x86.Build.0 = Debug|x86
+		{B8C8A0C6-90CD-410A-AA1D-D7EA1CD1386B}.Release|x86.ActiveCfg = Release|x86
+		{B8C8A0C6-90CD-410A-AA1D-D7EA1CD1386B}.Release|x86.Build.0 = Release|x86
+		{13217D69-51F3-4603-A1E3-41BBBFE01F32}.Debug|x86.ActiveCfg = Debug|x86
+		{13217D69-51F3-4603-A1E3-41BBBFE01F32}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
