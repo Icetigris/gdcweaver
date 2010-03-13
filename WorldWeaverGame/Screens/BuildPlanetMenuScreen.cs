@@ -50,7 +50,7 @@ namespace WorldWeaver
                     // Build star
                     if (p.mPool.Particles.Count != 0) //check if mPool is empty before trying to make stuff
                     {
-                        Star s = new Star("Sun", Vector3.One, p.Position, 1.0, p.mPool);
+                        Star s = new Star("Sun", Vector3.One, p.Position, 1.0, p.mPool, Globals.sceneGraphManager.GraphicsManager);
                         solarSystem.Add(s);
                         s.MySceneIndex = SceneGraphManager.SceneCount;
                         Console.WriteLine(s.Name + "'s index: " + s.MySceneIndex);

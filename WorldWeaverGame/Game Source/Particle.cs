@@ -507,11 +507,13 @@ namespace WorldWeaver
         {
             this.player = Globals.Player;//player;
             //this.camera = Globals.ChaseCamera;//camera;
-            
+
             //wallace brown 11/14/09
             visualEffects.Init_Phong();
             //end Code[]
 
+            if (!isCollected)
+            {
                 //Particle's world matrix
                 world = Matrix.CreateTranslation(Position);
 
@@ -523,57 +525,58 @@ namespace WorldWeaver
 
                 //wallace brown 11/12/09[]
                 visualEffects.Set_Phong_Diffuse(targetColour, visualEffects.color_white);
-                visualEffects.Set_Phong_Ambient(new Vector4(targetColour.X,targetColour.Y,targetColour.Z,1.0f), new Vector4(0.2f, 0.2f, 0.2f, 1.0f));
+                visualEffects.Set_Phong_Ambient(new Vector4(targetColour.X, targetColour.Y, targetColour.Z, 1.0f), new Vector4(0.2f, 0.2f, 0.2f, 1.0f));
                 visualEffects.Set_Phong_Specular(new Vector4(0.8f, 0.8f, 0.8f, 1.0f), visualEffects.color_white, 8.0f);
+                visualEffects.Set_IsGreymapped(false);
 
                 if (charge == -1)
                 {
-                    visualEffects.Set_Specials_Phong(false, true,true,true);
+                    visualEffects.Set_Specials_Phong(false, true, true, true);
                     visualEffects.Update_Time(gameTime);
                     visualEffects.Update_Glow(3.0f, 1.0f);
-                    visualEffects.Update_Rotate('z');
+                    visualEffects.Update_Rotate('z', 0.05f);
                     DrawModel_Phong(model, transforms, world, "Glow");
                 }
-                else if(charge != 0)
+                else if (charge != 0)
                 {
-                    visualEffects.Set_Specials_Phong(false,false,true,true);
+                    visualEffects.Set_Specials_Phong(false, false, true, true);
                     visualEffects.Update_Time(gameTime);
                     visualEffects.Update_Glow(3.2f, 2.3f);
                     if (targetColour == Color.Red.ToVector3() ||
                         targetColour == Color.Yellow.ToVector3())
                     {
-                        visualEffects.Update_Rotate('x');
+                        visualEffects.Update_Rotate('x', 0.2f);
                     }
                     else if (targetColour == Color.Blue.ToVector3() ||
                         targetColour == Color.Green.ToVector3())
                     {
-                        visualEffects.Update_Rotate('y');
+                        visualEffects.Update_Rotate('y', 0.1f);
                     }
                     DrawModel_Phong(model, transforms, world, "Glow");
                 }
                 else
                 {
-                    visualEffects.Set_Specials_Phong(false,false,false,false);
+                    visualEffects.Set_Specials_Phong(false, false, false, false);
                     DrawModel_Phong(model, transforms, world, "Main");
                 }
 
 
 
                 //code End[]
+            }
         }
 
         #region Draw Methods
 
         private void DrawModel_Phong(Model model, Matrix[] transform, Matrix world, string technique)
         {
-                this.chaseCamera = Globals.ChaseCamera;
-                this.hudCamera = Globals.hudCamera;
+            //this.camera = Globals.ChaseCamera;
 
             graphics.GraphicsDevice.VertexDeclaration = new VertexDeclaration(graphics.GraphicsDevice, VertexPositionNormalTextureTangentBinormal.VertexElements);
             visualEffects.Phong.CurrentTechnique = visualEffects.Phong.Techniques[technique];
 
             visualEffects.Phong.Begin();
-            
+
             foreach (EffectPass pass in visualEffects.Phong.CurrentTechnique.Passes)
             {
                 // Begin current pass
@@ -583,16 +586,9 @@ namespace WorldWeaver
                     foreach (ModelMeshPart part in mesh.MeshParts)
                     {
                         part.Effect = visualEffects.Phong;
-                        if (!isCollected)
-                        {
-                            visualEffects.Update_Phong(transform[mesh.ParentBone.Index] * world, chaseCamera.View, chaseCamera.Projection, chaseCamera.Position);
-                        }
-                        else
-                        {
-                            visualEffects.Update_Phong(transform[mesh.ParentBone.Index] * world, hudCamera.View, hudCamera.Projection, hudCamera.Position);
-                        }
+                        visualEffects.Update_Phong(transform[mesh.ParentBone.Index] * world, Globals.ChaseCamera.View, Globals.ChaseCamera.Projection, Globals.ChaseCamera.Position);
                         visualEffects.Phong.Parameters["gTex0"].SetValue(mTexture);
-                        
+
                         graphics.GraphicsDevice.Vertices[0].SetSource(mesh.VertexBuffer, part.StreamOffset, part.VertexStride);
                         graphics.GraphicsDevice.Indices = mesh.IndexBuffer;
                         graphics.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
@@ -601,11 +597,9 @@ namespace WorldWeaver
                     }
                 }
                 pass.End();
-
-                //mesh.Draw();
             }
             visualEffects.Phong.End();
-           
+
         }
  
         #endregion

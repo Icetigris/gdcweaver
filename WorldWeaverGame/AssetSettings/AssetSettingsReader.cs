@@ -34,16 +34,13 @@ namespace WorldWeaver
             settings.soundBankPath = input.ReadString();
 
             settings.titleThemeCueName = input.ReadString();
-            settings.gameMusicCueName = input.ReadString();
+            settings.gameWonMusicCueName = input.ReadString();
+            settings.gameStartMusicCueName = input.ReadString();
             settings.particleCollectSFXCueName = input.ReadString();
 
             // wallace Brown 11/01/09[]
             settings.PhongFXPath = input.ReadString();
             // end Code[]
-
-            // Joey Breeden Dec 4, 2009
-            //settings.gyroModelPath = input.ReadString();
-            // end code
 
             return settings;
         }

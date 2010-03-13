@@ -2,7 +2,7 @@
 <XnaContent>
   <Asset Type="AssetPipeline.AssetSettingsContent">
     <skyboxModelPath>Models\purplenebula</skyboxModelPath>
-    <playerModelPath>Models\athena</playerModelPath>    
+    <playerModelPath>Models\athena</playerModelPath>
     <particlePlus1ModelPath>Models\plus1</particlePlus1ModelPath>
     <particlePlus2ModelPath>Models\plus2</particlePlus2ModelPath>
     <particlePlus3ModelPath>Models\plus3</particlePlus3ModelPath>
@@ -16,7 +16,8 @@
     <waveBankPath>Content\Sound\myWaveBank.xwb</waveBankPath>
     <soundBankPath>Content\Sound\mySoundBank.xsb</soundBankPath>
     <titleThemeCueName>SoA-Title</titleThemeCueName>
-    <gameMusicCueName>SOA-SkiesInTheAlbatross</gameMusicCueName>
+    <gameWonMusicCueName>SOA-SkiesInTheAlbatross</gameWonMusicCueName>
+    <gameStartMusicCueName>LR_ArcaneMysteries</gameStartMusicCueName>
     <particleCollectSFXCueName>Sonic Ring</particleCollectSFXCueName>
     <PhongFXPath>Effects\Phong</PhongFXPath>
   </Asset>

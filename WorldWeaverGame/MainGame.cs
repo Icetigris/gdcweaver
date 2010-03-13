@@ -64,6 +64,7 @@ namespace WorldWeaver
             screenManager = new ScreenManager(this, graphics);
 
             Globals.hudManager = HudManager;
+            Globals.sceneGraphManager = sceneGraphManager;
                         
             Components.Add(sceneGraphManager);
             Components.Add(HudManager);

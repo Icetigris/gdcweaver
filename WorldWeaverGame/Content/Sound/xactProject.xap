@@ -16,8 +16,8 @@ Global Settings
     Header File = C:\Documents and Settings\CS 182\Desktop\WorldWeaverGame\WorldWeaverGame\Content\Sound\xactProject.h;
     Exclude Category Names = 0;
     Exclude Variable Names = 0;
-    Last Modified Low = 0;
-    Last Modified High = 0;
+    Last Modified Low = 3454448384;
+    Last Modified High = 30055171;
 
     Category
     {
@@ -242,8 +242,12 @@ Wave Bank
     Windows Bank Path Edited = 0;
     Seek Tables = 1;
     Compression Preset Name = <none>;
-    Bank Last Revised Low = 1107693370;
-    Bank Last Revised High = 30001530;
+    Xbox Bank Last Modified Low = 0;
+    Xbox Bank Last Modified High = 0;
+    PC Bank Last Modified Low = 3455378384;
+    PC Bank Last Modified High = 30055171;
+    Bank Last Revised Low = 3455138384;
+    Bank Last Revised High = 30055171;
 
     Wave
     {
@@ -263,8 +267,8 @@ Wave Bank
             Loop Region Offset = 0;
             Loop Region Length = 0;
             File Type = 1;
-            Last Modified Low = 584284928;
-            Last Modified High = 30001507;
+            Last Modified Low = 3183704784;
+            Last Modified High = 30038271;
         }
     }
 
@@ -286,8 +290,8 @@ Wave Bank
             Loop Region Offset = 0;
             Loop Region Length = 0;
             File Type = 1;
-            Last Modified Low = 1524415744;
-            Last Modified High = 30001511;
+            Last Modified Low = 3183224784;
+            Last Modified High = 30038271;
         }
     }
 
@@ -309,8 +313,8 @@ Wave Bank
             Loop Region Offset = 0;
             Loop Region Length = 0;
             File Type = 1;
-            Last Modified Low = 27802368;
-            Last Modified High = 29731617;
+            Last Modified Low = 3181814784;
+            Last Modified High = 30038271;
         }
     }
 
@@ -328,12 +332,12 @@ Wave Bank
             Sampling Rate = 48000;
             Bits Per Sample = 1;
             Play Region Offset = 44;
-            Play Region Length = 54108512;
+            Play Region Length = 18444048;
             Loop Region Offset = 0;
             Loop Region Length = 0;
             File Type = 1;
-            Last Modified Low = 3699775488;
-            Last Modified High = 30001522;
+            Last Modified Low = 3183704784;
+            Last Modified High = 30038271;
         }
     }
 
@@ -348,15 +352,15 @@ Wave Bank
         {
             Format Tag = 0;
             Channels = 2;
-            Sampling Rate = 44100;
+            Sampling Rate = 48000;
             Bits Per Sample = 1;
             Play Region Offset = 44;
-            Play Region Length = 47837184;
+            Play Region Length = 36029632;
             Loop Region Offset = 0;
             Loop Region Length = 0;
             File Type = 1;
-            Last Modified Low = 3844939008;
-            Last Modified High = 30001527;
+            Last Modified Low = 3183224784;
+            Last Modified High = 30038271;
         }
     }
 
@@ -378,8 +382,31 @@ Wave Bank
             Loop Region Offset = 0;
             Loop Region Length = 0;
             File Type = 1;
-            Last Modified Low = 27529216;
-            Last Modified High = 29978979;
+            Last Modified Low = 3182314784;
+            Last Modified High = 30038271;
+        }
+    }
+
+    Wave
+    {
+        Name = LR_ArcaneMysteries;
+        File = LR_ArcaneMysteries.wav;
+        Build Settings Last Modified Low = 3322588384;
+        Build Settings Last Modified High = 30055171;
+
+        Cache
+        {
+            Format Tag = 0;
+            Channels = 2;
+            Sampling Rate = 44100;
+            Bits Per Sample = 1;
+            Play Region Offset = 58;
+            Play Region Length = 42573824;
+            Loop Region Offset = 0;
+            Loop Region Length = 0;
+            File Type = 1;
+            Last Modified Low = 1967590272;
+            Last Modified High = 30055168;
         }
     }
 }
@@ -391,6 +418,10 @@ Sound Bank
     Windows File = Win\mySoundBank.xsb;
     Xbox Bank Path Edited = 0;
     Windows Bank Path Edited = 0;
+    Bank Last Modified Low = 3498338384;
+    Bank Last Modified High = 30055171;
+    Header Last Modified High = 0;
+    Header Last Modified Low = 0;
 
     Sound
     {
@@ -699,6 +730,52 @@ Sound Bank
         }
     }
 
+    Sound
+    {
+        Name = LR_ArcaneMysteries;
+        Volume = -1200;
+        Pitch = 0;
+        Priority = 0;
+
+        Category Entry
+        {
+            Name = Default;
+        }
+
+        Track
+        {
+            Volume = 0;
+
+            Play Wave Event
+            {
+                Break Loop = 0;
+                Use Speaker Position = 0;
+                Use Center Speaker = 1;
+                New Speaker Position On Loop = 1;
+                Speaker Position Angle = 0.000000;
+                Speaer Position Arc = 0.000000;
+
+                Event Header
+                {
+                    Timestamp = 0;
+                    Relative = 0;
+                    Random Recurrence = 0;
+                    Random Offset = 0;
+                }
+
+                Wave Entry
+                {
+                    Bank Name = myWaveBank;
+                    Bank Index = 0;
+                    Entry Name = LR_ArcaneMysteries;
+                    Entry Index = 6;
+                    Weight = 255;
+                    Weight Min = 0;
+                }
+            }
+        }
+    }
+
     Cue
     {
         Name = SoA-Title;
@@ -814,6 +891,26 @@ Sound Bank
         {
             Name = EFF!;
             Index = 5;
+            Weight Min = 0;
+            Weight Max = 255;
+        }
+    }
+
+    Cue
+    {
+        Name = LR_ArcaneMysteries;
+
+        Variation
+        {
+            Variation Type = 3;
+            Variation Table Type = 1;
+            New Variation on Loop = 0;
+        }
+
+        Sound Entry
+        {
+            Name = LR_ArcaneMysteries;
+            Index = 6;
             Weight Min = 0;
             Weight Max = 255;
         }

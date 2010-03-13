@@ -10,21 +10,18 @@ namespace WorldWeaver
 {
     public class CustomEffects
     {
-        #region Effect Fields
-        public  Effect Phong;
-        #endregion
+        #region Variables
 
-        #region Colors
-        public Vector4 color_white = new Vector4(1.0f,1.0f,1.0f,1.0f);
-        #endregion
-
-        #region Time
+        public Effect Phong;
+        public Vector4 color_white = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
         private float elapsedTime;
+
         #endregion
 
         #region Constructors
 
-        public CustomEffects() {
+        public CustomEffects()
+        {
             elapsedTime = 0.0f;
         }
 
@@ -45,6 +42,7 @@ namespace WorldWeaver
         {
             Phong.Parameters["gWorld"].SetValue(world);
             Phong.Parameters["gWIT"].SetValue(Matrix.Invert(Matrix.Transpose(world)));
+            Phong.Parameters["gWInv"].SetValue(Matrix.Invert(world));
             Phong.Parameters["gWVP"].SetValue(world * view * projection);
             Phong.Parameters["gEyePosW"].SetValue(eyePos);
             Phong.Parameters["gLightVecW"].SetValue(new Vector3(0.0f, 0.0f, -1.0f));
@@ -67,15 +65,16 @@ namespace WorldWeaver
             Phong.Parameters["gTime"].SetValue(elapsedTime);
             Phong.CommitChanges();
         }
-        public void Update_Glow(float glowSize,float glowIntensity)
+        public void Update_Glow(float glowSize, float glowIntensity)
         {
             Phong.Parameters["gInflation"].SetValue(glowSize);
             Phong.Parameters["gGlowExp"].SetValue(glowIntensity);
             Phong.CommitChanges();
         }
-        public void Update_Rotate(int axis)
+        public void Update_Rotate(int axis, float speed)
         {
             Phong.Parameters["gRotAxis"].SetValue(axis);
+            Phong.Parameters["gRotSpeed"].SetValue(speed);
             Phong.CommitChanges();
         }
         #endregion
@@ -83,7 +82,7 @@ namespace WorldWeaver
         #region Set Phong Lighting
         public void Set_Phong_Diffuse(Vector3 diffuseMtrl, Vector4 diffuseLight)
         {
-            Phong.Parameters["gDiffuseMtrl"].SetValue(new Vector4(diffuseMtrl,1.0f));
+            Phong.Parameters["gDiffuseMtrl"].SetValue(new Vector4(diffuseMtrl, 1.0f));
             Phong.Parameters["gDiffuseLight"].SetValue(diffuseLight);
         }
         public void Set_Phong_Ambient(Vector4 ambientMtrl, Vector4 ambientLight)
@@ -99,11 +98,40 @@ namespace WorldWeaver
         }
         #endregion
 
+        /*STILL NEED TO SAVE TEXTURES COLORED TO NEW TEXTURE!
+         * THIS WAY WE DONT LOOK UP PIXELS MORE THAN ONCE
+         * TO COLOR THE PLANETS!
+         */
+        #region Set Phong Greymap
+
+        public void Set_IsGreymapped(bool isGreyMapped)
+        {
+            Phong.Parameters["gGreyMap"].SetValue(isGreyMapped);
+            Phong.CommitChanges();
+        }
+        public void Set_GreyMapColors(Vector3 colorA, Vector3 colorB)
+        {
+            Phong.Parameters["gPlanetColorA"].SetValue(colorA);
+            Phong.Parameters["gPlanetColorB"].SetValue(colorB);
+            Phong.CommitChanges();
+        }
+
+        #endregion
+
+        #region Set Phong Normalmap
+
+        public void SetPhongNormalMap(Texture2D normal_map)
+        {
+            Phong.Parameters["gTexN"].SetValue(normal_map);
+
+        }
+
+        #endregion
+
         #endregion
 
         #endregion
     }
-
 
     #region Vertex Declarations
 
@@ -137,6 +165,6 @@ namespace WorldWeaver
 
         public static int SizeInBytes { get { return sizeof(float) * 14; } }
 
-        #endregion
+    #endregion
     }
 }
