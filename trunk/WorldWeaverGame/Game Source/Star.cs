@@ -18,7 +18,6 @@ namespace WorldWeaver
         private Matrix world;
         private ChaseCamera camera;
         //wb
-        private SpriteBatch spriteBatch;
         private Texture2D planetMap;
         private Texture2D planetMap_normal;
         private Texture2D planetMap_normal2;
@@ -58,9 +57,8 @@ namespace WorldWeaver
             this.graphics = graphics;
             //wb
             visualEffects = new CustomEffects();
-            //spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
             greyMapColorA = new Vector3(0.0f, 1.0f, 0.0f);
-            //greyMapColorB = new Vector3(0.0f, 0.0f, 1.0f);
+            greyMapColorB = new Vector3(0.0f, 0.0f, 1.0f);
             //
         }
 
