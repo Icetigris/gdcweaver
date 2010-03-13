@@ -30,7 +30,8 @@ namespace AssetPipeline
         public string soundBankPath = "Content\\Sound\\mySoundBank.xsb";
 
         public string titleThemeCueName = "SoA-Title";
-        public string gameMusicCueName = "SOA-SkiesInTheAlbatross";
+        public string gameWonMusicCueName = "SOA-SkiesInTheAlbatross";
+        public string gameStartMusicCueName = "LR_ArcaneMysteries";
         public string particleCollectSFXCueName = "Sonic Ring";
 
         //wallace brown 11/01/09[]
@@ -51,13 +52,14 @@ namespace AssetPipeline
             allTheCrapInThisGame += particleMinus1ModelPath + "\n";
             allTheCrapInThisGame += particleMinus2ModelPath + "\n";
             allTheCrapInThisGame += particleMinus3ModelPath + "\n";
-            allTheCrapInThisGame += particleMinus4ModelPath + "\n"; 
+            allTheCrapInThisGame += particleMinus4ModelPath + "\n";
             allTheCrapInThisGame += backgroundScreenTexturePath + "\n";
             allTheCrapInThisGame += audioEnginePath + "\n";
             allTheCrapInThisGame += waveBankPath + "\n";
             allTheCrapInThisGame += soundBankPath + "\n";
             allTheCrapInThisGame += titleThemeCueName + "\n";
-            allTheCrapInThisGame += gameMusicCueName + "\n";
+            allTheCrapInThisGame += gameWonMusicCueName + "\n";
+            allTheCrapInThisGame += gameStartMusicCueName + "\n";
             allTheCrapInThisGame += particleCollectSFXCueName + "\n";
 
             //wallace brown 11/01/09[]

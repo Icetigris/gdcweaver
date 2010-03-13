@@ -26,17 +26,13 @@ namespace WorldWeaver
         public string soundBankPath;
 
         public string titleThemeCueName;
-        public string gameMusicCueName;
+        public string gameWonMusicCueName;
+        public string gameStartMusicCueName;
         public string particleCollectSFXCueName;
 
         //wallace brown 11/01/09
         public string PhongFXPath;
         //end Code[]
-
-        // Joey Breeden Dec 4, 2009
-        //public string gyroModelPath;
-        // end code
-
 
         //Prints everything that is in this class
         public override string ToString()
@@ -58,16 +54,13 @@ namespace WorldWeaver
             allTheCrapInThisGame += waveBankPath + "\n";
             allTheCrapInThisGame += soundBankPath + "\n";
             allTheCrapInThisGame += titleThemeCueName + "\n";
-            allTheCrapInThisGame += gameMusicCueName + "\n";
+            allTheCrapInThisGame += gameWonMusicCueName + "\n";
+            allTheCrapInThisGame += gameStartMusicCueName + "\n";
             allTheCrapInThisGame += particleCollectSFXCueName + "\n";
 
             //wallace brown 11/01/09
             allTheCrapInThisGame += PhongFXPath + "\n";
             //end Code[]
-
-            // Joey Breeden Dec 4, 2009
-            //allTheCrapInThisGame += gyroModelPath + "\n";
-            // end code
 
             return allTheCrapInThisGame;
         }

@@ -26,7 +26,8 @@ namespace AssetPipeline
             output.Write(value.waveBankPath);
             output.Write(value.soundBankPath);
             output.Write(value.titleThemeCueName);
-            output.Write(value.gameMusicCueName);
+            output.Write(value.gameWonMusicCueName);
+            output.Write(value.gameStartMusicCueName);
             output.Write(value.particleCollectSFXCueName);
             //wallace brown 11/01/09[]
             output.Write(value.PhongFXPath);

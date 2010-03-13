@@ -17,7 +17,19 @@ namespace WorldWeaver
         private Model model;
         private Matrix world;
         private ChaseCamera camera;
-
+        //wb
+        private SpriteBatch spriteBatch;
+        private Texture2D planetMap;
+        private Texture2D planetMap_normal;
+        private Texture2D planetMap_normal2;
+        private Texture2D planetMap_normal3;
+        private Texture2D clouds;
+        private String curTechnique;
+        private CustomEffects visualEffects = new CustomEffects();
+        GraphicsDeviceManager graphics;
+        Vector3 greyMapColorA;
+        Vector3 greyMapColorB;
+        //
         #endregion
 
         #region Properties
@@ -32,7 +44,7 @@ namespace WorldWeaver
 
         #region Constructor
 
-        public Star(string name, Vector3 radius, Vector3 position, double r, MoleculePool pool)
+        public Star(string name, Vector3 radius, Vector3 position, double r, MoleculePool pool, GraphicsDeviceManager graphics)
         {
             this.Name = name;
             this.Radius = radius;
@@ -43,6 +55,13 @@ namespace WorldWeaver
             this.camera = Globals.ChaseCamera;
             calculateEffectiveTemp();
             calculateMass();
+            this.graphics = graphics;
+            //wb
+            visualEffects = new CustomEffects();
+            //spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
+            greyMapColorA = new Vector3(0.0f, 1.0f, 0.0f);
+            //greyMapColorB = new Vector3(0.0f, 0.0f, 1.0f);
+            //
         }
 
         #endregion
@@ -143,19 +162,52 @@ namespace WorldWeaver
         {
         }
 
+        //wb
+        /* Switches between 2 colors depending on player.mPool.
+		 * Once this system is plugged into planets and not stars
+		 * this will only be called once upon planet creation, so
+		 * it won't be an update method.
+         */
+        public void UpdateGreyMapColors(MoleculePool mPool)
+        {
+            if (mPool.Particles.Count >= 0 &&
+                mPool.Particles.Count < 3)
+            {
+                greyMapColorA = new Vector3(0, 1, 0);
+                greyMapColorB = new Vector3(0, 0, 1);
+            }
+            else if (mPool.Particles.Count > 3)
+            {
+                greyMapColorA = new Vector3(1, 0, 0);
+                greyMapColorB = new Vector3(1.0f, 0.0f, 1.0f);
+            }
+        }
+        //end wb
+
         //When the scene graph calls each loadable object's LoadContent(), 
         //they each Content.Load their own models
         public void LoadContent()
         {
-            model = content.Load<Model>("Models\\teapot");
+            //wb
+            model = content.Load<Model>("..\\Content\\Models\\plus1");
+            //model = content.Load<Model>("Models\\teapot");
+            visualEffects.Phong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
+            planetMap = content.Load<Texture2D>("..\\Content\\Textures\\planetMap");
+            planetMap_normal = content.Load<Texture2D>("..\\Content\\Textures\\planetMap_normal");
+            planetMap_normal2 = content.Load<Texture2D>("..\\Content\\Textures\\planetMap_normal2");
+            planetMap_normal3 = content.Load<Texture2D>("..\\Content\\Textures\\planetMap_normal3");
+            clouds = content.Load<Texture2D>("..\\Content\\Textures\\clouds2");
+            //end wb
+            //model = content.Load<Model>("Models\\teapot");
             ReadyToRender = true;
+
         }
 
         public void UnloadContent()
         {
             //crap
         }
-        bool doOnce = true;
+        //bool doOnce = true;
         public new void Draw(GameTime gameTime)
         {
             if (!Globals.gameplayScreenDestroyed)
@@ -168,21 +220,79 @@ namespace WorldWeaver
 
                 foreach (ModelMesh mesh in model.Meshes)
                 {
-                    foreach (BasicEffect effect in mesh.Effects)
-                    {
-                        effect.EnableDefaultLighting();
-                        effect.PreferPerPixelLighting = true;
+                    //wallace brown 11/14/09
+                    visualEffects.Set_Phong_Diffuse(new Vector3(1.0f, 1.0f, 1.0f), visualEffects.color_white);
+                    visualEffects.Set_Phong_Ambient(visualEffects.color_white, new Vector4(0.1f, 0.1f, 0.1f, 1.0f));
+                    visualEffects.Set_Phong_Specular(new Vector4(0.8f, 0.8f, 0.8f, 1.0f), visualEffects.color_white, 20.0f);
 
-                        effect.World = transforms[mesh.ParentBone.Index] * world;
+                    visualEffects.Set_IsGreymapped(true);
+                    visualEffects.Set_GreyMapColors(greyMapColorA, greyMapColorB);
 
-                        // Use the matrices provided by the chase camera
-                        effect.View = camera.View;
-                        effect.Projection = camera.Projection;
-                    }
+                    visualEffects.Set_Specials_Phong(false, false, false, true);
+                    visualEffects.Update_Time(gameTime);
+                    visualEffects.Update_Rotate('z', 0.1f);
+                    curTechnique = "Planet";
+                    DrawModel_Phong(model, transforms, world, curTechnique);
+                    curTechnique = "Stratosphere";
+                    DrawModel_Phong(model, transforms, world, curTechnique);
+                    //code End[]
 
                     mesh.Draw();
                 }
+                //spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred,
+                //SaveStateMode.SaveState);
+                //starTail.Draw(spriteBatch, gameTime);
+                //spriteBatch.End();
             }
+        }
+
+        private void DrawModel_Phong(Model model, Matrix[] transform, Matrix world, string technique)
+        {
+            this.camera = Globals.ChaseCamera;
+
+            graphics.GraphicsDevice.VertexDeclaration = new VertexDeclaration(graphics.GraphicsDevice, VertexPositionNormalTextureTangentBinormal.VertexElements);
+            visualEffects.Phong.CurrentTechnique = visualEffects.Phong.Techniques[technique];
+
+            visualEffects.Phong.Begin();
+
+            foreach (EffectPass pass in visualEffects.Phong.CurrentTechnique.Passes)
+            {
+                // Begin current pass
+                pass.Begin();
+                foreach (ModelMesh mesh in model.Meshes)
+                {
+                    foreach (ModelMeshPart part in mesh.MeshParts)
+                    {
+                        part.Effect = visualEffects.Phong;
+                        visualEffects.Update_Phong(transform[mesh.ParentBone.Index] * world, camera.View, camera.Projection, camera.Position);
+
+                        if (curTechnique.Equals("Planet"))
+                        {
+                            visualEffects.Set_IsGreymapped(true);
+                            visualEffects.Set_GreyMapColors(greyMapColorA, greyMapColorB);
+                            visualEffects.Phong.Parameters["gTex0"].SetValue(planetMap);
+                            visualEffects.Phong.Parameters["gTexN"].SetValue(planetMap_normal3);
+                            visualEffects.Phong.Parameters["gStratosphere"].SetValue(false);
+                            visualEffects.Update_Rotate('z', 0.1f);
+                        }
+                        if (curTechnique.Equals("Stratosphere"))
+                        {
+                            visualEffects.Set_IsGreymapped(false);
+                            visualEffects.Phong.Parameters["gTexAnimated"].SetValue(clouds);
+                            visualEffects.Phong.Parameters["gStratosphere"].SetValue(true);
+                            visualEffects.Update_Rotate('z', 0.2f);
+                        }
+
+                        graphics.GraphicsDevice.Vertices[0].SetSource(mesh.VertexBuffer, part.StreamOffset, part.VertexStride);
+                        graphics.GraphicsDevice.Indices = mesh.IndexBuffer;
+                        graphics.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
+                                                                      part.BaseVertex, 0, part.NumVertices,
+                                                                      part.StartIndex, part.PrimitiveCount);
+                    }
+                }
+                pass.End();
+            }
+            visualEffects.Phong.End();
         }
 
         #endregion
