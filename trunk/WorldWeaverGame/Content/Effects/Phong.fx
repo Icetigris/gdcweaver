@@ -49,6 +49,7 @@ uniform extern bool   gGlow;
 uniform extern float  gInflation;
 uniform extern float  gGlowExp;
 uniform extern float4x4 gViewInv;
+uniform extern float3 gGlowColor;
 
 //rotate values
 uniform extern bool	  gRotate;
@@ -63,9 +64,6 @@ uniform extern float3 gPlanetColorB;
 
 //alpha testing values
 uniform extern bool	  gStratosphere;
-
-//texture creating values
-float3 gFinalTexColor;
 
 //==================
 //	Texture Samples
@@ -125,13 +123,20 @@ struct vertOut{
     float3 lightDir   : TEXCOORD5;
 };
 
+/* data passed from vertex shader to pixel shader */
+struct stratVertOut{
+    float4 posH    : POSITION0;
+    float2 tex0    : TEXCOORD0;
+    float3 normalW : TEXCOORD1;
+};
+
 /* data passed from vertex shader to pixel shader for */
 /* normal mapping. */
 struct vertNormOut{
     float4 posH    : POSITION0;
     float2 tex0    : TEXCOORD0;
-    float3 toEye   : TEXCOORD4;
-    float3 lightDir   : TEXCOORD5;
+    float3 toEye   : TEXCOORD1;
+    float3 lightDir   : TEXCOORD2;
 };
 
 //============
@@ -184,38 +189,38 @@ float3 Blob(float3 position, float3 normal, float stretch){
 	return position;
 }
 
-float4 Rotate(float4 inPos,float time,int axis){
+float4 Rotate(float4 inPos,float time){
 	float4 outPos = inPos;
 	time *= gRotSpeed;
 	
-	if(axis == 'x'){
+	if(gRotAxis == 'x'){
 		float3x3 xRot;
 		xRot[0] = float3(1.0f,0.0f,0.0f);
 		xRot[1] = float3(0.0f,cos(time),sin(time));
 		xRot[2] = float3(0.0f,-sin(time),cos(time));
 		outPos.x = (xRot[0][0]*inPos.x)+(xRot[1][0]*inPos.y)+(xRot[2][0]*inPos.z);
 		outPos.y = (xRot[0][1]*inPos.x)+(xRot[1][1]*inPos.y)+(xRot[2][1]*inPos.z);
-		outPos.z = (xRot[0][2]*inPos.x)+(xRot[1][2]*inPos.y)+(xRot[2][2]*inPos.z);
+		outPos.z = (xRot[0][2]*inPos.x)+(xRot[1][2]*inPos.y)+(xRot[2][2]*inPos.z);	
 		return outPos;
 	}
-	else if(axis == 'y'){
+	else if(gRotAxis == 'y'){
 		float3x3 yRot;
 		yRot[0] = float3(cos(time),0.0f,-sin(time));
 		yRot[1] = float3(0.0f,1.0f,0.0f);
 		yRot[2] = float3(sin(time),0.0f,cos(time));
 		outPos.x = (yRot[0][0]*inPos.x)+(yRot[1][0]*inPos.y)+(yRot[2][0]*inPos.z);
 		outPos.y = (yRot[0][1]*inPos.x)+(yRot[1][1]*inPos.y)+(yRot[2][1]*inPos.z);
-		outPos.z = (yRot[0][2]*inPos.x)+(yRot[1][2]*inPos.y)+(yRot[2][2]*inPos.z);
+		outPos.z = (yRot[0][2]*inPos.x)+(yRot[1][2]*inPos.y)+(yRot[2][2]*inPos.z);	
 		return outPos;
 	}
-	else if(axis == 'z'){
+	else if(gRotAxis == 'z'){
 		float3x3 zRot;
 		zRot[0] = float3(cos(time),sin(time),0.0f);
 		zRot[1] = float3(-sin(time),cos(time),0.0f);
 		zRot[2] = float3(0.0f,0.0f,1.0f);
 		outPos.x = (zRot[0][0]*inPos.x)+(zRot[1][0]*inPos.y)+(zRot[2][0]*inPos.z);
 		outPos.y = (zRot[0][1]*inPos.x)+(zRot[1][1]*inPos.y)+(zRot[2][1]*inPos.z);
-		outPos.z = (zRot[0][2]*inPos.x)+(zRot[1][2]*inPos.y)+(zRot[2][2]*inPos.z);
+		outPos.z = (zRot[0][2]*inPos.x)+(zRot[1][2]*inPos.y)+(zRot[2][2]*inPos.z);	
 		return outPos;
 	}
 	else{
@@ -239,8 +244,8 @@ vertOut PhongVS(appdata IN)
 		vOut.posH.xyz = Blob(vOut.posH,vOut.normalW,20.0f);
 	}
 	if(gRotate){
-		vOut.posH = mul(Rotate(float4(IN.posL,1.0f),gTime,gRotAxis), gWVP);
-		vOut.normalW = mul(Rotate(float4(IN.normalL,1.0f),gTime,gRotAxis), gWIT).xyz;
+		vOut.posH = mul(Rotate(float4(IN.posL,1.0f),gTime), gWVP);
+		vOut.normalW = mul(Rotate(float4(IN.normalL,1.0f),gTime), gWIT).xyz;
 	}
 	
     return vOut;
@@ -255,19 +260,19 @@ vertOut GlowVS(appdata IN){
 	
 	//---------------------
 	float4 Po = float4(IN.posL.xyz,1.0f);
+    Po += (ClampedSin(4.0f,2.0f,0.0f,gInflation)*normalize(float4(IN.normalL.xyz,0.0f)));
+    
 	if(gRotate){
-		Po = Rotate(float4(IN.posL,1.0f),gTime,gRotAxis);
+		Po = Rotate(Po,gTime);
 	}
-    Po += (ClampedSin(9.0f,0.5f,0.0f,gInflation)*normalize(float4(IN.normalL.xyz,0.0f)));
     float4 Pw = mul(Po,gWorld);
     vOut.viewW = normalize(gViewInv[3].xyz - Pw.xyz);
     vOut.posH = mul(Po,gWVP);
 	vOut.tex0 = IN.tex0 * 0.1f;
 	//---------------------
    
-	
 	if(gBlob){
-		vOut.posH.xyz = Blob(vOut.posH,vOut.normalW,20.0f);
+		vOut.posH.xyz = Blob(vOut.posH.xyz,vOut.normalW,20.0f);
 	}
 
 	return vOut;	
@@ -300,10 +305,10 @@ vertNormOut normalMapVS(float3 pos	: POSITION0,
 		
 	if(gRotate){
 		if(gStratosphere){
-			vOut.posH = mul(Rotate(float4(pos*(size + 0.4f),1.0f),gTime,gRotAxis), gWVP);
+			vOut.posH = mul(Rotate(float4(pos*(size + 0.4f),1.0f),gTime), gWVP);
 		}
 		else{
-			vOut.posH = mul(Rotate(float4(pos*size, 1.0f),gTime,gRotAxis), gWVP);
+			vOut.posH = mul(Rotate(float4(pos*size, 1.0f),gTime), gWVP);
 		}
 	}
 	else{
@@ -316,12 +321,11 @@ vertNormOut normalMapVS(float3 pos	: POSITION0,
 	return vOut;
 }
 
-vertOut StratosphereVS(appdata IN)
+stratVertOut StratosphereVS(appdata IN)
 {
-	vertOut vOut = (vertOut)0;
+	stratVertOut vOut = (stratVertOut)0;
 	vOut.normalW = mul(float4(IN.normalL, 0.0f), gWIT).xyz;
 	vOut.normalW = normalize(vOut.normalW);
-	vOut.posW  = mul(float4(IN.posL, 1.0f), gWorld).xyz;
 	vOut.posH = mul(float4(IN.posL, 1.0f), gWVP);
 	vOut.tex0 = IN.tex0;
 	
@@ -335,10 +339,10 @@ vertOut StratosphereVS(appdata IN)
 		
 	if(gRotate){
 		if(gStratosphere){
-			vOut.posH = mul(Rotate(float4(IN.posL*(size + 0.4f),1.0f),gTime,gRotAxis), gWVP);
+			vOut.posH = mul(Rotate(float4(IN.posL*(size + 0.4f),1.0f),gTime), gWVP);
 		}
 		else{
-			vOut.posH = mul(Rotate(float4(IN.posL*size, 1.0f),gTime,gRotAxis), gWVP);
+			vOut.posH = mul(Rotate(float4(IN.posL*size, 1.0f),gTime), gWVP);
 		}
 	}
 	else{
@@ -407,7 +411,7 @@ float4 GlowPS(vertOut IN) : COLOR
     float3 view = normalize(IN.viewW);
     float edge = 1.0 - dot(normal,view);
     edge = pow(edge,gGlowExp);
-    float3 result = edge * gDiffuseMtrl.rgb;
+    float3 result = edge * gGlowColor.rgb;
     return float4(result,edge);
 }
 
@@ -458,19 +462,17 @@ float4 NormalMapPS(	vertNormOut IN) : COLOR
 			texCol.b = 0.0f;
 			texCol.a = 1.0f;
 		}
-		gFinalTexColor.rgb = texCol.rgb;
 		float3 color = (ambient + diffuse)*texCol.rgb;
 		return float4(color,texCol.a);
 	}
 	else{
-		gFinalTexColor.rgb = texCol.rgb;
 		float3 color = (ambient + diffuse)*texCol.rgb;
 		return float4(color,texCol.a);
 	}
 }
 
 /* shades a texture w/ no lighting */
-float4 StratospherePS(vertOut IN) : COLOR
+float4 StratospherePS(stratVertOut IN) : COLOR
 {
 	IN.normalW = normalize(IN.normalW);
 	//=======================================================

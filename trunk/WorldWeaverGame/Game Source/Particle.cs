@@ -41,6 +41,7 @@ namespace WorldWeaver
         private CustomEffects visualEffects = new CustomEffects();
         private Texture2D mTexture;
         GraphicsDeviceManager graphics;
+        private Vector3 glowColor;
         // end code[]
 
         Matrix orientation,
@@ -76,7 +77,6 @@ namespace WorldWeaver
         public float maxVelocity = 0.01f;
 
         #endregion
-
 
         #region Properties
 
@@ -141,7 +141,6 @@ namespace WorldWeaver
         }
 
         #endregion
-
 
         #region Constructors
 
@@ -531,27 +530,47 @@ namespace WorldWeaver
 
                 if (charge == -1)
                 {
-                    visualEffects.Set_Specials_Phong(false, true, true, true);
+                    visualEffects.Set_Specials_Phong(false, false, true, true);
                     visualEffects.Update_Time(gameTime);
                     visualEffects.Update_Glow(3.0f, 1.0f);
-                    visualEffects.Update_Rotate('z', 0.05f);
+                    visualEffects.Update_Rotate('x',0.5f);
+                    glowColor = new Vector3(0.1f, 0.0f, 0.1f);
                     DrawModel_Phong(model, transforms, world, "Glow");
                 }
-                else if (charge != 0)
+                else if(charge < 0 && charge != -1)
                 {
                     visualEffects.Set_Specials_Phong(false, false, true, true);
                     visualEffects.Update_Time(gameTime);
-                    visualEffects.Update_Glow(3.2f, 2.3f);
+                    visualEffects.Update_Glow(3.2f, 0.1f);
                     if (targetColour == Color.Red.ToVector3() ||
                         targetColour == Color.Yellow.ToVector3())
                     {
-                        visualEffects.Update_Rotate('x', 0.2f);
+                        visualEffects.Update_Rotate('x',0.2f);
                     }
                     else if (targetColour == Color.Blue.ToVector3() ||
                         targetColour == Color.Green.ToVector3())
                     {
-                        visualEffects.Update_Rotate('y', 0.1f);
+                        visualEffects.Update_Rotate('y',0.1f);
                     }
+                    glowColor = new Vector3(0.1f, 0.0f, 0.1f);
+                    DrawModel_Phong(model, transforms, world, "Glow");
+                }
+                else if (charge > 0)
+                {
+                    visualEffects.Set_Specials_Phong(false, false, true, true);
+                    visualEffects.Update_Time(gameTime);
+                    visualEffects.Update_Glow(3.2f, 0.1f);
+                    if (targetColour == Color.Red.ToVector3() ||
+                        targetColour == Color.Yellow.ToVector3())
+                    {
+                        visualEffects.Update_Rotate('x',0.2f);
+                    }
+                    else if (targetColour == Color.Blue.ToVector3() ||
+                        targetColour == Color.Green.ToVector3())
+                    {
+                        visualEffects.Update_Rotate('y',0.1f);
+                    }
+                    glowColor = new Vector3(1.0f, 1.0f, 1.0f);
                     DrawModel_Phong(model, transforms, world, "Glow");
                 }
                 else
@@ -588,6 +607,7 @@ namespace WorldWeaver
                         part.Effect = visualEffects.Phong;
                         visualEffects.Update_Phong(transform[mesh.ParentBone.Index] * world, Globals.ChaseCamera.View, Globals.ChaseCamera.Projection, Globals.ChaseCamera.Position);
                         visualEffects.Phong.Parameters["gTex0"].SetValue(mTexture);
+                        visualEffects.Phong.Parameters["gGlowColor"].SetValue(glowColor);
 
                         graphics.GraphicsDevice.Vertices[0].SetSource(mesh.VertexBuffer, part.StreamOffset, part.VertexStride);
                         graphics.GraphicsDevice.Indices = mesh.IndexBuffer;

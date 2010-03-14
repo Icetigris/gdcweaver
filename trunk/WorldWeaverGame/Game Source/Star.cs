@@ -25,7 +25,6 @@ namespace WorldWeaver
         private Texture2D clouds;
         private String curTechnique;
         private CustomEffects visualEffects = new CustomEffects();
-        GraphicsDeviceManager graphics;
         private Vector3 greyMapColorA;
         private Vector3 greyMapColorB;
         //
@@ -54,7 +53,6 @@ namespace WorldWeaver
             this.camera = Globals.ChaseCamera;
             calculateEffectiveTemp();
             calculateMass();
-            this.graphics = graphics;
             //wb
             visualEffects = new CustomEffects();
             CreateGreyMapColors(pool);
@@ -233,7 +231,7 @@ namespace WorldWeaver
 
                     visualEffects.Set_Specials_Phong(false, false, false, true);
                     visualEffects.Update_Time(gameTime);
-                    visualEffects.Update_Rotate('z', 0.1f);
+                    visualEffects.Update_Rotate('z',0.1f);
                     curTechnique = "Planet";
                     DrawModel_Phong(model, transforms, world, curTechnique);
                     curTechnique = "Stratosphere";
@@ -253,7 +251,8 @@ namespace WorldWeaver
         {
             this.camera = Globals.ChaseCamera;
 
-            graphics.GraphicsDevice.VertexDeclaration = new VertexDeclaration(graphics.GraphicsDevice, VertexPositionNormalTextureTangentBinormal.VertexElements);
+
+            Globals.sceneGraphManager.GraphicsDevice.VertexDeclaration = new VertexDeclaration(Globals.sceneGraphManager.GraphicsDevice, VertexPositionNormalTextureTangentBinormal.VertexElements);
             visualEffects.Phong.CurrentTechnique = visualEffects.Phong.Techniques[technique];
 
             visualEffects.Phong.Begin();
@@ -276,19 +275,19 @@ namespace WorldWeaver
                             visualEffects.Phong.Parameters["gTex0"].SetValue(planetMap);
                             visualEffects.Phong.Parameters["gTexN"].SetValue(planetMap_normal3);
                             visualEffects.Phong.Parameters["gStratosphere"].SetValue(false);
-                            visualEffects.Update_Rotate('z', 0.1f);
+                            visualEffects.Update_Rotate('z',0.1f);
                         }
                         if (curTechnique.Equals("Stratosphere"))
                         {
                             visualEffects.Set_IsGreymapped(false);
                             visualEffects.Phong.Parameters["gTexAnimated"].SetValue(clouds);
                             visualEffects.Phong.Parameters["gStratosphere"].SetValue(true);
-                            visualEffects.Update_Rotate('z', 0.2f);
+                            visualEffects.Update_Rotate('z',0.2f);
                         }
 
-                        graphics.GraphicsDevice.Vertices[0].SetSource(mesh.VertexBuffer, part.StreamOffset, part.VertexStride);
-                        graphics.GraphicsDevice.Indices = mesh.IndexBuffer;
-                        graphics.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
+                        Globals.sceneGraphManager.GraphicsDevice.Vertices[0].SetSource(mesh.VertexBuffer, part.StreamOffset, part.VertexStride);
+                        Globals.sceneGraphManager.GraphicsDevice.Indices = mesh.IndexBuffer;
+                        Globals.sceneGraphManager.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
                                                                       part.BaseVertex, 0, part.NumVertices,
                                                                       part.StartIndex, part.PrimitiveCount);
                     }
