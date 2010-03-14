@@ -64,6 +64,8 @@ uniform extern float3 gPlanetColorB;
 //alpha testing values
 uniform extern bool	  gStratosphere;
 
+//texture creating values
+float3 gFinalTexColor;
 
 //==================
 //	Texture Samples
@@ -456,10 +458,12 @@ float4 NormalMapPS(	vertNormOut IN) : COLOR
 			texCol.b = 0.0f;
 			texCol.a = 1.0f;
 		}
+		gFinalTexColor.rgb = texCol.rgb;
 		float3 color = (ambient + diffuse)*texCol.rgb;
 		return float4(color,texCol.a);
 	}
 	else{
+		gFinalTexColor.rgb = texCol.rgb;
 		float3 color = (ambient + diffuse)*texCol.rgb;
 		return float4(color,texCol.a);
 	}

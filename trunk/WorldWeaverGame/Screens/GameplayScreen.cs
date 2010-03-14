@@ -268,8 +268,6 @@ namespace WorldWeaver
 
                 //wb
                 UpdateStageCleansed();
-                //UpdateShootMan();
-                shootMan.UpdateGreyMapColors(player.mPool);
                 //
 
                 // Update the camera to chase the new target
@@ -324,7 +322,6 @@ namespace WorldWeaver
         //end wb
 
         #endregion
-
 
         #region Draw
 
