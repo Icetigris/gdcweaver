@@ -76,6 +76,7 @@ namespace WorldWeaver
             //wb
             Globals.cleansedGalaxy = false;
             havePlayedCleansedSong = false;
+            Globals.numStars = 0;
             //
         }
 
@@ -292,7 +293,7 @@ namespace WorldWeaver
         //wb
         private void UpdateStageCleansed()
         {
-            if (player.Charge >= 4 || player.Charge <= -4)
+            if (Globals.numStars > 0)
             {
                 Globals.cleansedGalaxy = true;
             }

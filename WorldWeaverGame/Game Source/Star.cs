@@ -166,28 +166,28 @@ namespace WorldWeaver
         public void CreateGreyMapColors(MoleculePool mPool)
         {
             if (mPool.Particles.Count > 0 &&
-                mPool.Particles.Count < 3)
+                mPool.Particles.Count <= 4)
             {
                 greyMapColorA = new Vector3(0, 1, 0);
                 greyMapColorB = new Vector3(0, 0, 1);
             }
-            else if (mPool.Particles.Count > 3 &&
-                mPool.Particles.Count < 7)
+            else if (mPool.Particles.Count > 4 &&
+                mPool.Particles.Count <= 8)
             {
                 greyMapColorA = new Vector3(1, 0, 0);
                 greyMapColorB = new Vector3(1.0f, 0.0f, 1.0f);
             }
-            else if (mPool.Particles.Count > 7 &&
-                mPool.Particles.Count < 11)
+            else if (mPool.Particles.Count > 8 &&
+                mPool.Particles.Count <= 12)
             {
                 greyMapColorA = new Vector3(1, 1, 0);
                 greyMapColorB = new Vector3(0.0f, 1.0f, 1.0f);
             }
-            else if (mPool.Particles.Count > 11 &&
-                mPool.Particles.Count < 16)
+            else if (mPool.Particles.Count > 12 &&
+                mPool.Particles.Count <= 16)
             {
-                greyMapColorA = new Vector3(1, 0, 0);
-                greyMapColorB = new Vector3(1.0f, 0.0f, 1.0f);
+                greyMapColorA = new Vector3(0.3f, 1, 0.3f);
+                greyMapColorB = new Vector3(1.0f, 1.0f, 1.0f);
             }
             else
             {

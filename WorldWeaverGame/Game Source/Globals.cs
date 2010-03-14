@@ -12,6 +12,7 @@ namespace WorldWeaver
         public static bool gameplayScreenDestroyed;
         public static bool gameplayScreenHasFocus;
         public static bool cleansedGalaxy;
+        public static int numStars;
         public static HUDManager hudManager;
         public static Player Player;
         public static ChaseCamera ChaseCamera;
