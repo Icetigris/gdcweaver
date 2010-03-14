@@ -165,26 +165,36 @@ namespace WorldWeaver
          */
         public void CreateGreyMapColors(MoleculePool mPool)
         {
-            if (mPool.Particles.Count >= 0 &&
+            if (mPool.Particles.Count > 0 &&
                 mPool.Particles.Count < 3)
             {
                 greyMapColorA = new Vector3(0, 1, 0);
                 greyMapColorB = new Vector3(0, 0, 1);
             }
-            else if (mPool.Particles.Count > 3)
+            else if (mPool.Particles.Count > 3 &&
+                mPool.Particles.Count < 7)
             {
                 greyMapColorA = new Vector3(1, 0, 0);
                 greyMapColorB = new Vector3(1.0f, 0.0f, 1.0f);
             }
+            else if (mPool.Particles.Count > 7 &&
+                mPool.Particles.Count < 11)
+            {
+                greyMapColorA = new Vector3(1, 1, 0);
+                greyMapColorB = new Vector3(0.0f, 1.0f, 1.0f);
+            }
+            else if (mPool.Particles.Count > 11 &&
+                mPool.Particles.Count < 16)
+            {
+                greyMapColorA = new Vector3(1, 0, 0);
+                greyMapColorB = new Vector3(1.0f, 0.0f, 1.0f);
+            }
+            else
+            {
+                greyMapColorA = new Vector3(0, 0, 1.0f);
+                greyMapColorB = new Vector3(0, 1.0f, 0);
+            }
         }
-
-        //Creates finalTexture based on the Shader's analysis of
-        //of the planet map.
-        private void CreateFinalTexture()
-        {
-
-        }
-        //end wb
 
         //When the scene graph calls each loadable object's LoadContent(), 
         //they each Content.Load their own models
