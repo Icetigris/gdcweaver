@@ -71,7 +71,7 @@ namespace WorldWeaver
             Phong.Parameters["gGlowExp"].SetValue(glowIntensity);
             Phong.CommitChanges();
         }
-        public void Update_Rotate(int axis, float speed)
+        public void Update_Rotate(int axis,float speed)
         {
             Phong.Parameters["gRotAxis"].SetValue(axis);
             Phong.Parameters["gRotSpeed"].SetValue(speed);
