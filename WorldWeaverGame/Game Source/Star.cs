@@ -26,8 +26,8 @@ namespace WorldWeaver
         private String curTechnique;
         private CustomEffects visualEffects = new CustomEffects();
         GraphicsDeviceManager graphics;
-        Vector3 greyMapColorA;
-        Vector3 greyMapColorB;
+        private Vector3 greyMapColorA;
+        private Vector3 greyMapColorB;
         //
         #endregion
 
@@ -57,8 +57,7 @@ namespace WorldWeaver
             this.graphics = graphics;
             //wb
             visualEffects = new CustomEffects();
-            greyMapColorA = new Vector3(0.0f, 1.0f, 0.0f);
-            greyMapColorB = new Vector3(0.0f, 0.0f, 1.0f);
+            CreateGreyMapColors(pool);
             //
         }
 
@@ -166,7 +165,7 @@ namespace WorldWeaver
 		 * this will only be called once upon planet creation, so
 		 * it won't be an update method.
          */
-        public void UpdateGreyMapColors(MoleculePool mPool)
+        public void CreateGreyMapColors(MoleculePool mPool)
         {
             if (mPool.Particles.Count >= 0 &&
                 mPool.Particles.Count < 3)
@@ -179,6 +178,13 @@ namespace WorldWeaver
                 greyMapColorA = new Vector3(1, 0, 0);
                 greyMapColorB = new Vector3(1.0f, 0.0f, 1.0f);
             }
+        }
+
+        //Creates finalTexture based on the Shader's analysis of
+        //of the planet map.
+        private void CreateFinalTexture()
+        {
+
         }
         //end wb
 
@@ -196,7 +202,6 @@ namespace WorldWeaver
             planetMap_normal3 = content.Load<Texture2D>("..\\Content\\Textures\\planetMap_normal3");
             clouds = content.Load<Texture2D>("..\\Content\\Textures\\clouds2");
             //end wb
-            //model = content.Load<Model>("Models\\teapot");
             ReadyToRender = true;
 
         }
