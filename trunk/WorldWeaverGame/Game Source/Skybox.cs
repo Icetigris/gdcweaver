@@ -19,9 +19,10 @@ namespace WorldWeaver
         private ChaseCamera camera;
         private int mySceneIndex;
 
-        //Wallace brown 11/18/09
-        //private CustomEffects visualEffects = new CustomEffects();
-        //private Texture2D mTexture;
+        //Wallace brown
+        private Texture2D blackTexture;
+        private Texture2D origTexture;
+        private bool haveGrabOrigTexture;
         GraphicsDeviceManager graphics;
         //end Code[]
 
@@ -50,6 +51,9 @@ namespace WorldWeaver
             this.content = Globals.contentManager;
             this.camera = camera;
             this.graphics = graphics;
+            //wb
+            haveGrabOrigTexture = false;
+            //
         }
 
         #endregion
@@ -60,6 +64,7 @@ namespace WorldWeaver
         {
             modelPath = Globals.AssetList.skyboxModelPath;
             model = content.Load<Model>(modelPath);
+            blackTexture = content.Load<Texture2D>("Textures/blackTex");
             ReadyToRender = true;
         }
 
@@ -91,6 +96,22 @@ namespace WorldWeaver
                         // Use the matrices provided by the chase camera
                         effect.View = camera.View;
                         effect.Projection = camera.Projection;
+                        //wb
+                        if (!haveGrabOrigTexture)
+                        {
+                            origTexture = effect.Texture;
+                            haveGrabOrigTexture = true;
+                        }
+                        if (!Globals.cleansedGalaxy)
+                        {
+                            effect.Texture = blackTexture;
+                        }
+                        else
+                        {
+                            effect.Texture = origTexture;
+                        }
+                        //
+
                         graphics.GraphicsDevice.RenderState.CullMode = CullMode.CullCounterClockwiseFace;
                     }
                     mesh.Draw();

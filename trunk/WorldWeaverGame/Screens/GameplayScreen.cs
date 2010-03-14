@@ -22,11 +22,8 @@ namespace WorldWeaver
         //wb
         Cue gameWonMusic = Globals.musicSoundBank.GetCue(Globals.AssetList.gameWonMusicCueName);
         Cue gameStartMusic = Globals.musicSoundBank.GetCue(Globals.AssetList.gameStartMusicCueName);
-        Star shootMan;
-        Vector3 shootManCenter = Vector3.Zero;
-        float theta = 0.0f;
         bool havePlayedCleansedSong;
-        //Cue gameMusic = Globals.musicSoundBank.GetCue(Globals.AssetList.gameMusicCueName);
+        //end wb
 
         KeyboardState lastKeyboardState = new KeyboardState();
         GamePadState lastGamePadState = new GamePadState();
@@ -75,7 +72,7 @@ namespace WorldWeaver
         {
             TransitionOnTime = TimeSpan.FromSeconds(1.0);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
-            //gameMusic.Play();
+            gameStartMusic.Play();
             //wb
             Globals.cleansedGalaxy = false;
             havePlayedCleansedSong = false;
@@ -120,11 +117,6 @@ namespace WorldWeaver
             player.MySceneIndex = SceneGraphManager.SceneCount;
             SceneGraphManager.AddObject(player);
             
-            //wb
-            shootMan = new Star("shootMan", Vector3.One, new Vector3(0.0f, 1000.0f, 0.0f), 1.0, Globals.Player.mPool, graphics);
-            SceneGraphManager.AddObject(shootMan);
-            //
-
             Console.WriteLine("Skybox's index: " + skybox.MySceneIndex);
             Console.WriteLine("Player's index: " + player.MySceneIndex);
 
@@ -225,7 +217,8 @@ namespace WorldWeaver
 
         public override void UnloadContent()
         {
-            //gameMusic.Stop(AudioStopOptions.AsAuthored);
+            gameWonMusic.Stop(AudioStopOptions.AsAuthored);
+            gameStartMusic.Stop(AudioStopOptions.AsAuthored);
             Globals.gameplayScreenDestroyed = true;
             SceneGraphManager.Root.UnloadContent();
             SceneGraphManager.EmptyGraph();
@@ -309,15 +302,6 @@ namespace WorldWeaver
                 gameStartMusic.Stop(AudioStopOptions.AsAuthored);
                 gameWonMusic.Play();
             }
-        }
-
-        private void UpdateShootMan()
-        {
-            theta = 0.005f;
-
-            Vector3 newPos = new Vector3((float)((Math.Cos(theta) * shootMan.Position.X) + ((-1 * Math.Sin(theta)) * shootMan.Position.Z)), shootMan.Position.Y,
-                (float)((Math.Sin(theta) * shootMan.Position.X) + (Math.Cos(theta) * shootMan.Position.Z)));
-            shootMan.Position = newPos;
         }
         //end wb
 
