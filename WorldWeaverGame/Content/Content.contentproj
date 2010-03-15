@@ -218,6 +218,11 @@
       <Processor>ModelProcessor</Processor>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="Models\sphere.FBX">
+      <Name>sphere</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
     <None Include="Models\UVW plus1.png">
       <Name>UVW plus1</Name>
       <Importer>TextureImporter</Importer>
