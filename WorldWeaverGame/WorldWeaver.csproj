@@ -85,6 +85,7 @@
     <Compile Include="Cameras\HudCamera.cs" />
     <Compile Include="Cameras\CameraManager.cs" />
     <Compile Include="Game Source\Atmosphere.cs" />
+    <Compile Include="Game Source\BoundingSphereRenderer.cs" />
     <Compile Include="Game Source\CelestialBody.cs" />
     <Compile Include="Cameras\ChaseCamera.cs" />
     <Compile Include="Game Source\CustomEffects.cs" />

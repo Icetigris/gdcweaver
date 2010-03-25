@@ -140,11 +140,6 @@ namespace WorldWeaver
                     }
                 }
 
-
-
-
-
-
             }
 
             else if ((keyboardState.IsKeyDown(Keys.P) || gamePadState.IsButtonDown(Buttons.RightShoulder))
