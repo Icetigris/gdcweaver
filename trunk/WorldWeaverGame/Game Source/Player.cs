@@ -554,6 +554,7 @@ namespace WorldWeaver
 
                     DrawModel_Phong(model, transforms, world, "Main");
                     //code End[]
+                    BoundingSphereRenderer.Render(collisionSphere, Globals.sceneGraphManager.GraphicsDevice, Globals.ChaseCamera.View, Globals.ChaseCamera.Projection, Globals.DEBUG);
                 }
             }
         }

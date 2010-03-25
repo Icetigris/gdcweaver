@@ -579,8 +579,7 @@ namespace WorldWeaver
                     DrawModel_Phong(model, transforms, world, "Main");
                 }
 
-
-
+                BoundingSphereRenderer.Render(collectionSphere, Globals.sceneGraphManager.GraphicsDevice, Globals.ChaseCamera.View, Globals.ChaseCamera.Projection, Globals.DEBUG, 200);
                 //code End[]
             }
         }
