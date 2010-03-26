@@ -52,39 +52,15 @@ namespace WorldWeaver
         #region Methods
 
         //if mass of the planet is at least 30% due to silver particles, you get a magnetic field
-        // If you execute this method incorrectly, you'll get a divide by zero error.  Faulty code commented out for
-        // the time being.
-        public bool hasMagneticField()
+        public void hasMagneticField()
         {
-            // Get total quantity of particles so we can do the math
-            int numParticles = 0;
-            int numSilvers = 0;
+            /// Get total quantity of particles so we can do the math
+            //int numParticles = mPool.Particles;
 
-            numParticles = (int)mPool.Particles.Count;
-
-            if (numParticles <= 0)
-            {
-                numParticles = 1;
-            }
-
-            // Now count the number of silver particles
             foreach (Particle p in mPool.Particles)
             {
-                if (p.Colour == Particle.Colours.Silver)
-                    numSilvers++;
 
             }
-
-            // Basic division -- if ratio > 30%, we have magnetic field!
-            if ((numSilvers / (float)numParticles) > .30f)
-            {
-                return true;
-            }
-
-            // Not 30%, return false
-            return false;
-
-
         }
 
         //calculate mass of planet from sum of particle masses
@@ -99,11 +75,7 @@ namespace WorldWeaver
         //calculate gravity points for the planet (for moons and stuff)
         public override void calculateGravityPoints()
         {
-            // This is temporary gravity code.  Until something more elaborate is worked out, this will
-            // generate resonable gravity.
-            GravityPoints = (int)mPool.Particles.Count;
-            GravityPoints += (int)R * 2;
-
+            GravityPoints = (int)R * 2;
         }
 
         #endregion
