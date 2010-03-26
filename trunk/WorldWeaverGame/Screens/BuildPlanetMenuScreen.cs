@@ -50,24 +50,51 @@ namespace WorldWeaver
                     // Build star
                     if (p.mPool.Particles.Count != 0) //check if mPool is empty before trying to make stuff
                     {
-                        Star s = new Star("Sun", Vector3.One, p.Position, 1.0, p.mPool, Globals.sceneGraphManager.GraphicsManager);
-                        Globals.numStars++;
+                        Star s = new Star("Sun", Vector3.One, p.Position, 1.0, p.mPool);
                         solarSystem.Add(s);
                         s.MySceneIndex = SceneGraphManager.SceneCount;
                         Console.WriteLine(s.Name + "'s index: " + s.MySceneIndex);
                         s.LoadContent();
                         SceneGraphManager.AddObject(s);
                         p.mPool.Particles.Clear();
-                        Console.WriteLine("Black hole?: " + s.IsBlackHole() + "\n");
-                        Console.WriteLine("Mass: " + s.Mass + "\n");
-                        Console.WriteLine("Effective Temp: " + s.EffectiveTemp + "\n");
+
+                        // Calculate star data
+                        s.calculateGravityPoints();
+                        s.calculateMass();
+                        //s.calculateEffectiveTemp();  <---- Why does this result in a temperature of NaN?
+
+                        // What kind of star do we have?
+                        Console.WriteLine("Black hole?: " + s.IsBlackHole());
+                        Console.WriteLine("Mass: " + s.Mass);
+                        Console.WriteLine("Effective Temp: " + s.EffectiveTemp);
                     }
                     break;
 
                 case 1:
                     //Build planet
-                    if (solarSystem.SystemEmpty())
+                    if (solarSystem.SystemEmpty() != true)
                     {
+                        // Spawn planet
+                        Planet planet = new Planet("Planet", Vector3.One, p.Position, 1.0, p.mPool);
+                        solarSystem.Add(planet);
+                        planet.MySceneIndex = SceneGraphManager.SceneCount;
+                        Console.WriteLine(planet.Name + "'s index: " + planet.MySceneIndex);
+                        planet.LoadContent();
+                        SceneGraphManager.AddObject(planet);
+                        Console.WriteLine("Magnetic field: " + planet.hasMagneticField() + "\n");
+
+                        // Calculate planet data
+                        planet.calculateGravityPoints();
+                        planet.calculateMass();
+
+                        // Checks to see what kind of planet we have.
+                        Console.WriteLine("Mass: " + planet.Mass);
+                        Console.WriteLine("Gravity: " + planet.GravityPoints);
+                        Console.WriteLine("Radius: " + planet.R);
+
+                        // Clear molecule pool LAST
+                        p.mPool.Particles.Clear();
+
                     }
                     break;
 
