@@ -44,6 +44,18 @@ namespace WorldWeaver
             get { return hudAreaHeight; }
         }
 
+        public int hudAreaX
+        {
+            get { return hudArea.X; }
+        }
+
+        public int hudAreaY
+        {
+            get { return hudArea.Y; }
+
+        }        
+
+
         public static List<HUDElement> HudElements
         {
             get { return hudElements; }

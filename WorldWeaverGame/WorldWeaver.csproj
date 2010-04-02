@@ -107,6 +107,7 @@
     <Compile Include="HUDs\ChargeBarSliderHUD.cs" />
     <Compile Include="HUDs\Last10ParticlesHUD.cs" />
     <Compile Include="HUDs\ParticleIconHUD.cs" />
+    <Compile Include="HUDs\PopUpChargeData.cs" />
     <Compile Include="HUDs\PopUpCreationMenu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MainGame.cs" />
