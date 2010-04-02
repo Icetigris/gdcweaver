@@ -54,12 +54,12 @@ namespace WorldWeaver
         //if mass of the planet is at least 30% due to silver particles, you get a magnetic field
         public void hasMagneticField()
         {
-            /// Get total quantity of particles so we can do the math
+            // Get total quantity of particles so we can do the math
             //int numParticles = mPool.Particles;
 
             foreach (Particle p in mPool.Particles)
             {
-
+                
             }
         }
 
