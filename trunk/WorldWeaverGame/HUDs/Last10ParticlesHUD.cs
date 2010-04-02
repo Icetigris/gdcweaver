@@ -11,8 +11,9 @@ namespace WorldWeaver
     public class Last10ParticlesHUD : HUDElement
     {
         public const int TOTAL_PARTICLES_TO_DISPLAY = 10;
-        public const int CURVE_SCALE = 15;
+        public const int SIN_CURVE_SCALE = 15;
         public const float TOTAL_SECONDS_TO_ANIMATE = 0.3f;
+        private const float FLYING_ANIMATE_SPEED = 100;
         private Texture2D last10InChain;
         private Queue<Particle> lastTen;
         private List<Particle> particlesToAnimate;
@@ -49,6 +50,13 @@ namespace WorldWeaver
                                      (int)((Globals.hudManager.HudAreaHeight - Globals.hudManager.HudAreaHeight * 0.6f) - last10InChain.Height / 2),
                                      last10InChain.Width,
                                      last10InChain.Height);
+
+
+            for (int i = 0; i < TOTAL_PARTICLES_TO_DISPLAY; i++)
+            {
+                targetLocation[i] = this.calculateEndLocation(i);
+                Console.WriteLine(i + " " + targetLocation[i]);
+            }
         }
 
         public override void UnloadContent()
@@ -82,18 +90,18 @@ namespace WorldWeaver
 
                     lastTen.Enqueue(Globals.Player.CurrentChain.Chain[TotalParticlesCollected + arrayOffset]);
 
-                    if (TotalParticlesCollected <= TotalParticlesCollected - numNewParticles)
-                    {
-                        lastTen.ElementAt(TotalParticlesCollected).Position = new Vector3(this.calculateEndLocation(0), 0);
-                    }
+                    //if (TotalParticlesCollected <= TotalParticlesCollected - numNewParticles)
+                    //{
+                    //    lastTen.ElementAt(TotalParticlesCollected).Position = new Vector3(this.calculateEndLocation(0), 0);
+                    //}
 
                     TotalParticlesCollected++;
                 }
 
-                for (int i = 0; i < lastTen.Count; i++)
-                {
-                    targetLocation[i] = calculateEndLocation(lastTen.Count - (i + 1));
-                }
+                //for (int i = 0; i < lastTen.Count; i++)
+                //{
+                //    targetLocation[i] = calculateEndLocation(lastTen.Count - (i + 1));
+                //}
 
                 TotalParticlesCollected = Globals.Player.CurrentChain.Chain.Count;
 
@@ -111,7 +119,7 @@ namespace WorldWeaver
         {
             int i = (int)index;
             int haxyMultiplier = (i > 8) ? -5 : 1;
-            return new Vector2(this.Position.X + 50 + (haxyMultiplier * (calculatedCurve[i] * CURVE_SCALE)), this.Position.Y + 120 + (i * twoDparticle.Height));
+            return new Vector2(this.Position.X + 50 + (haxyMultiplier * (calculatedCurve[i] * SIN_CURVE_SCALE)), this.Position.Y + 120 + (i * twoDparticle.Height));
         }
 
         public override void Draw(GameTime gameTime)
@@ -127,15 +135,35 @@ namespace WorldWeaver
             //Update code here because of easy access to gameTime
             for (int i = 0; i < lastTen.Count; i++)
             {
-                lastTen.ElementAt(i).Position += new Vector3((float)((targetLocation[i].X - lastTen.ElementAt(i).Position.X) * gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE), (float)((targetLocation[i].Y - lastTen.ElementAt(i).Position.Y) * gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE), 0);
+                lastTen.ElementAt(i).Position += new Vector3((float)((targetLocation[lastTen.Count - (i + 1)].X - lastTen.ElementAt(i).Position.X) * 
+                    gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE),
+                    (float)((targetLocation[lastTen.Count - (i + 1)].Y - lastTen.ElementAt(i).Position.Y) * 
+                    gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE), 0);
                 //lastTen.ElementAt(i).Position = new Vector3(targetLocation[i], 0);
             }
 
-            //TODO: find out how to grab the screen width
+            //TODO; find out how to grab the screen width
             int screenWidth = 1024;
             for (int i = 0; i < particlesToAnimate.Count; i++)
             {
-                particlesToAnimate[i].Position += new Vector3((float)(screenWidth * (gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE)), 0, 0);
+                bool didMove = false;
+                for (int j = 0; j < TOTAL_PARTICLES_TO_DISPLAY - 2; j++)
+                {
+                    if (particlesToAnimate[i].Position.Y > targetLocation[j].Y && particlesToAnimate[i].Position.Y < targetLocation[j + 1].Y)
+                    {
+                        j = j + 2;
+                        particlesToAnimate[i].Position +=
+                            new Vector3((float)(((targetLocation[j].X - particlesToAnimate[i].Position.X))
+                                * gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE),
+                                (float)((targetLocation[j].Y - particlesToAnimate[i].Position.Y) *
+                                gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE), 0);
+                        didMove = true;
+                        break;
+                    }
+                }
+                    
+                if(!didMove)
+                    particlesToAnimate[i].Position += new Vector3((float)(FLYING_ANIMATE_SPEED * (gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE)), 0, 0);
 
                 if (particlesToAnimate[i].Position.X > screenWidth)
                 {
@@ -155,6 +183,7 @@ namespace WorldWeaver
             }
         }
 
+        //need to update here if additional colors are added
         public Color convertParticleColorTo(Particle p)
         {
             Color aColour = Color.White;
