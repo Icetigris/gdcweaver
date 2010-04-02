@@ -540,11 +540,9 @@ namespace WorldWeaver
             {
                 if (playerVisible)
                 {
-
                     Matrix[] transforms = new Matrix[model.Bones.Count];
                     model.CopyAbsoluteBoneTransformsTo(transforms);
 
-                    foreach (ModelMesh mesh in model.Meshes)
                     //wallace brown 11/14/09
                     visualEffects.Set_Phong_Diffuse(new Vector3(1.0f,1.0f,1.0f), visualEffects.color_white);
                     visualEffects.Set_Phong_Ambient(visualEffects.color_white, new Vector4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -555,6 +553,11 @@ namespace WorldWeaver
                     DrawModel_Phong(model, transforms, world, "Main");
                     //code End[]
                     BoundingSphereRenderer.Render(collisionSphere, Globals.sceneGraphManager.GraphicsDevice, Globals.ChaseCamera.View, Globals.ChaseCamera.Projection, Globals.DEBUG);
+
+                    //Ben Harris 4/2/10
+                    //TODO Draw crosshair code here
+                    //Plan:
+                    //Use the ChaseCamera's angle compared to the player's angle to determine the angle from straight horizontal to have the crosshair at
                 }
             }
         }
