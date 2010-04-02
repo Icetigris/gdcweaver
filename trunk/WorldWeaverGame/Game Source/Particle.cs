@@ -453,6 +453,12 @@ namespace WorldWeaver
                 collectSound.Play();
                 SceneGraphManager.RemoveObject(mySceneIndex);
                 //Console.WriteLine("Cool collect bro");
+
+                // Create new PopUpChargeData object
+                //PopUpChargeData particleData = new PopUpChargeData();
+                //Globals.hudManager.AddElement(new PopUpChargeData(this.Charge));
+                PopUpChargeData.setMessage(this.Charge);
+                
             }
         }
 

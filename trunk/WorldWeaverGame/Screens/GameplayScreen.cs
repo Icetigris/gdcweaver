@@ -110,6 +110,7 @@ namespace WorldWeaver
             Globals.hudManager.AddElement(new PopUpCreationMenuHUD());
             Globals.hudManager.AddElement(new ChargeBarSliderHUD(chargeBar));
             Globals.hudManager.AddElement(new Last10ParticlesHUD());
+            Globals.hudManager.AddElement(new PopUpChargeData());
             
                     
             player = new Player(-1, camera, Content, graphics);
