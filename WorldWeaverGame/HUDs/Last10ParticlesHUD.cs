@@ -142,8 +142,7 @@ namespace WorldWeaver
                 //lastTen.ElementAt(i).Position = new Vector3(targetLocation[i], 0);
             }
 
-            //TODO; find out how to grab the screen width
-            int screenWidth = 1024;
+            int screenWidth = Globals.hudManager.HudAreaWidth + (Globals.hudManager.hudAreaX * 2);
             for (int i = 0; i < particlesToAnimate.Count; i++)
             {
                 bool didMove = false;
@@ -155,7 +154,7 @@ namespace WorldWeaver
                         particlesToAnimate[i].Position +=
                             new Vector3((float)(((targetLocation[j].X - particlesToAnimate[i].Position.X))
                                 * gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE),
-                                (float)((targetLocation[j].Y - particlesToAnimate[i].Position.Y) *
+                                (float)((targetLocation[j].Y - particlesToAnimate[i].Position.Y + twoDparticle.Height) *
                                 gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE), 0);
                         didMove = true;
                         break;
