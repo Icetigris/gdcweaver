@@ -63,12 +63,12 @@ namespace WorldWeaver
 
             opacity.A = transparent;
             pmenu = Globals.hudManager.Game.Content.Load<Texture2D>(TexturePath);
-            //aIcon = Globals.hudManager.Game.Content.Load<Texture2D>(aIconPath);
-            //pIcon = Globals.hudManager.Game.Content.Load<Texture2D>(pIconPath);
-            //sIcon = Globals.hudManager.Game.Content.Load<Texture2D>(sIconPath);
+            aIcon = Globals.hudManager.Game.Content.Load<Texture2D>(aIconPath);
+            pIcon = Globals.hudManager.Game.Content.Load<Texture2D>(pIconPath);
+            sIcon = Globals.hudManager.Game.Content.Load<Texture2D>(sIconPath);
 
             //trying to load other icons
-            // aIcon = Globals.hudManager.Game.Content.Load<Texture2D>(IconA);
+            //aIcon = Globals.hudManager.Game.Content.Load<Texture2D>(IconA);
             //pIcon = Globals.hudManager.Game.Content.Load<Texture2D>(IconP);
             //sIcon = Globals.hudManager.Game.Content.Load<Texture2D>(IconS);
             //end
@@ -79,9 +79,9 @@ namespace WorldWeaver
                                           pmenu.Width,
                                           pmenu.Height);
 
-            //top = new Rectangle((Position.X + pmenu.Width / 2) - sIcon.Width / 2, Position.Y - sIcon.Height / 2, sIcon.Width, sIcon.Height);
-            //left = new Rectangle((Position.X) - pIcon.Width / 2, Position.Y - pIcon.Height / 2 + pmenu.Height / 2, pIcon.Width, pIcon.Height);
-            //right = new Rectangle((Position.X) - aIcon.Width / 2 + pmenu.Width, Position.Y - aIcon.Height / 2 + pmenu.Height / 2, aIcon.Width, aIcon.Height);
+            top = new Rectangle((Position.X + pmenu.Width / 2) - sIcon.Width / 2, Position.Y - sIcon.Height / 2, sIcon.Width, sIcon.Height);
+            left = new Rectangle((Position.X) - pIcon.Width / 2, Position.Y - pIcon.Height / 2 + pmenu.Height / 2, pIcon.Width, pIcon.Height);
+            right = new Rectangle((Position.X) - aIcon.Width / 2 + pmenu.Width, Position.Y - aIcon.Height / 2 + pmenu.Height / 2, aIcon.Width, aIcon.Height);
         }
 
         public override void UnloadContent()
@@ -168,9 +168,9 @@ namespace WorldWeaver
             //{
 
             Globals.hudManager.SpriteBatch.Draw(pmenu, Position, opacity);
-            //Globals.hudManager.SpriteBatch.Draw(sIcon, top, opacity);
-            //Globals.hudManager.SpriteBatch.Draw(pIcon, left, opacity);
-            //Globals.hudManager.SpriteBatch.Draw(aIcon, right, opacity);
+            Globals.hudManager.SpriteBatch.Draw(sIcon, top, opacity);
+            Globals.hudManager.SpriteBatch.Draw(pIcon, left, opacity);
+            Globals.hudManager.SpriteBatch.Draw(aIcon, right, opacity);
 
             //}
         }

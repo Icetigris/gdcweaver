@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Audio;
 
 namespace WorldWeaver
 {
+    //These are the atom things that you pick up
     public class Particle : SceneObject, IDrawableObject, ILoadableObject, IUpdatableObject
     {
         public enum Colours
@@ -183,6 +184,39 @@ namespace WorldWeaver
         #region Public Methods
 
         public Vector3 AssignColor(int particleEnum)
+        {
+            Color outC = Color.White;
+            switch (particleEnum)
+            {
+                case 0:
+                    outC = Color.Red;
+                    break;
+                case 1:
+                    outC = Color.Orange;
+                    break;
+                case 2:
+                    outC = Color.Yellow;
+                    break;
+                case 3:
+                    outC = Color.Green;
+                    break;
+                case 4:
+                    outC = Color.Blue;
+                    break;
+                case 5:
+                    outC = Color.MediumPurple;
+                    break;
+                case 6:
+                    outC = Color.Gray;
+                    break;
+                case 7:
+                    outC = Color.White;
+                    break;
+            }
+            return outC.ToVector3();
+        }
+
+        public static Vector3 convertColor(int particleEnum)
         {
             Color outC = Color.White;
             switch (particleEnum)

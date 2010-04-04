@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -22,6 +21,6 @@ namespace WorldWeaver
         public static SceneGraphManager sceneGraphManager;
         public static GyroPersp gyro;
         public static HudCamera hudCamera;
-        public static bool DEBUG = true;
+        public static bool DEBUG = false;
     }
 }
