@@ -165,35 +165,41 @@ namespace WorldWeaver
          */
         public void CreateGreyMapColors(MoleculePool mPool)
         {
-            if (mPool.Particles.Count > 0 &&
-                mPool.Particles.Count <= 4)
-            {
-                greyMapColorA = new Vector3(0, 1, 0);
-                greyMapColorB = new Vector3(0, 0, 1);
-            }
-            else if (mPool.Particles.Count > 4 &&
-                mPool.Particles.Count <= 8)
-            {
-                greyMapColorA = new Vector3(1, 0, 0);
-                greyMapColorB = new Vector3(1.0f, 0.0f, 1.0f);
-            }
-            else if (mPool.Particles.Count > 8 &&
-                mPool.Particles.Count <= 12)
-            {
-                greyMapColorA = new Vector3(1, 1, 0);
-                greyMapColorB = new Vector3(0.0f, 1.0f, 1.0f);
-            }
-            else if (mPool.Particles.Count > 12 &&
-                mPool.Particles.Count <= 16)
-            {
-                greyMapColorA = new Vector3(0.3f, 1, 0.3f);
-                greyMapColorB = new Vector3(1.0f, 1.0f, 1.0f);
-            }
-            else
-            {
-                greyMapColorA = new Vector3(0, 0, 1.0f);
-                greyMapColorB = new Vector3(0, 1.0f, 0);
-            }
+            //if (mPool.Particles.Count > 0 &&
+            //    mPool.Particles.Count <= 4)
+            //{
+            //    greyMapColorA = new Vector3(0, 1, 0);
+            //    greyMapColorB = new Vector3(0, 0, 1);
+            //}
+            //else if (mPool.Particles.Count > 4 &&
+            //    mPool.Particles.Count <= 8)
+            //{
+            //    greyMapColorA = new Vector3(1, 0, 0);
+            //    greyMapColorB = new Vector3(1.0f, 0.0f, 1.0f);
+            //}
+            //else if (mPool.Particles.Count > 8 &&
+            //    mPool.Particles.Count <= 12)
+            //{
+            //    greyMapColorA = new Vector3(1, 1, 0);
+            //    greyMapColorB = new Vector3(0.0f, 1.0f, 1.0f);
+            //}
+            //else if (mPool.Particles.Count > 12 &&
+            //    mPool.Particles.Count <= 16)
+            //{
+            //    greyMapColorA = new Vector3(0.3f, 1, 0.3f);
+            //    greyMapColorB = new Vector3(1.0f, 1.0f, 1.0f);
+            //}
+            //else
+            //{
+            //    greyMapColorA = new Vector3(0, 0, 1.0f);
+            //    greyMapColorB = new Vector3(0, 1.0f, 0);
+            //}
+
+            //ELIZABETH TIEM:
+            //make the greyMap A and B colours dependent on the 2 most predominant colours in the mPool
+            greyMapColorA = Particle.convertColor((int)mPool.getColourFrequencies()[0]);
+            greyMapColorB = Particle.convertColor((int)
+                mPool.getColourFrequencies()[1]);
         }
 
         //When the scene graph calls each loadable object's LoadContent(), 
