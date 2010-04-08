@@ -382,23 +382,26 @@ namespace WorldWeaver
         /// 
         private void DrawOverlayText()
         {
-            spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred,
-                SaveStateMode.SaveState);
+            if (Globals.DEBUG)
+            {
+                spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred,
+                    SaveStateMode.SaveState);
 
-            string text = "Right Trigger or Spacebar = thrust\n" +
-                          "Left Thumb Stick or Arrow keys = steer\n" +
-                          "A key or L button = toggle camera spring (" + (cameraSpringEnabled ?
-                              "on" : "off") + ")" + player.CurrentChain + "\nPlayer's total charge: " + player.Charge;
-            
+                string text = "Right Trigger or Spacebar = thrust\n" +
+                              "Left Thumb Stick or Arrow keys = steer\n" +
+                              "A key or L button = toggle camera spring (" + (cameraSpringEnabled ?
+                                  "on" : "off") + ")" + player.CurrentChain + "\nPlayer's total charge: " + player.Charge;
 
-            //string text = "Position: (" + (int)player.Position.X + ", " + (int)player.Position.Y + ", " + (int)player.Position.Z + ")";
-            // Draw the string twice to create a drop shadow, first colored black
-            // and offset one pixel to the bottom right, then again in white at the
-            // intended position. This makes text easier to read over the background.
-            spriteBatch.DrawString(spriteFont, text, new Vector2(65, 65), Color.Black);
-            spriteBatch.DrawString(spriteFont, text, new Vector2(64, 64), Color.White);
 
-            spriteBatch.End();
+                //string text = "Position: (" + (int)player.Position.X + ", " + (int)player.Position.Y + ", " + (int)player.Position.Z + ")";
+                // Draw the string twice to create a drop shadow, first colored black
+                // and offset one pixel to the bottom right, then again in white at the
+                // intended position. This makes text easier to read over the background.
+                spriteBatch.DrawString(spriteFont, text, new Vector2(65, 65), Color.Black);
+                spriteBatch.DrawString(spriteFont, text, new Vector2(64, 64), Color.White);
+
+                spriteBatch.End();
+            }
         }
 
         #endregion
