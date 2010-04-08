@@ -198,8 +198,7 @@ namespace WorldWeaver
             //ELIZABETH TIEM:
             //make the greyMap A and B colours dependent on the 2 most predominant colours in the mPool
             greyMapColorA = Particle.convertColor((int)mPool.getColourFrequencies()[0]);
-            greyMapColorB = Particle.convertColor((int)
-                mPool.getColourFrequencies()[1]);
+            greyMapColorB = Particle.convertColor((int)mPool.getColourFrequencies()[1]);
         }
 
         //When the scene graph calls each loadable object's LoadContent(), 
