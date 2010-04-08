@@ -103,8 +103,7 @@ namespace WorldWeaver
 
                 if ((canCreate == true && gamePadState.IsButtonDown(Buttons.DPadUp)))
                 {
-                    //hopefully this will work...
-                    // IT WORKS!!!
+                    //Make Star
 
                     if (Globals.Player.mPool.Particles.Count != 0) //check if mPool is empty before trying to make stuff
                     {
@@ -124,10 +123,10 @@ namespace WorldWeaver
                 }
                 else if ((canCreate == true && gamePadState.IsButtonDown(Buttons.DPadLeft)))
                 {
-                    if (solarSystem.SystemEmpty() != true)
+                    if (!solarSystem.SystemEmpty())
                     {
                         // Spawn planet
-                        Planet planet = new Planet("Planet", Vector3.One, Globals.Player.Position, 1.0, Globals.Player.mPool);
+                        Planet planet = new Planet("Planet", Vector3.One, Globals.Player.Position, 1.0, Globals.Player.mPool, Globals.sceneGraphManager.GraphicsManager);
                         solarSystem.Add(planet);
                         planet.MySceneIndex = SceneGraphManager.SceneCount;
                         Console.WriteLine(planet.Name + "'s index: " + planet.MySceneIndex);

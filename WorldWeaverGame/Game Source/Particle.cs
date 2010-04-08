@@ -192,7 +192,7 @@ namespace WorldWeaver
                     outC = Color.Red;
                     break;
                 case 1:
-                    outC = Color.Orange;
+                    outC = Color.DarkOrange;
                     break;
                 case 2:
                     outC = Color.Yellow;
@@ -225,7 +225,7 @@ namespace WorldWeaver
                     outC = Color.Red;
                     break;
                 case 1:
-                    outC = Color.Orange;
+                    outC = Color.DarkOrange;
                     break;
                 case 2:
                     outC = Color.Yellow;
