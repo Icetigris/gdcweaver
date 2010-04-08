@@ -193,7 +193,7 @@ namespace WorldWeaver
                     aColour = Color.Red;
                     break;
                 case Particle.Colours.Orange:
-                    aColour = Color.Orange;
+                    aColour = Color.DarkOrange;
                     break;
                 case Particle.Colours.Yellow:
                     aColour = Color.Yellow;

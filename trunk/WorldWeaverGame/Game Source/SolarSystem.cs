@@ -59,13 +59,13 @@ namespace WorldWeaver
         //otherwise, they can make whatever they want
         public bool SystemEmpty()
         {
-            if (bodyList.Count < 1)
+            if (bodyList.Count <= 0)
             {
-                centralStarExists = false;
+                centralStarExists = true;
             }
             else
             {
-                centralStarExists = true;
+                centralStarExists = false;
             }
 
             return centralStarExists;
