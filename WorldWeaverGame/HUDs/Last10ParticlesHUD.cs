@@ -13,10 +13,10 @@ namespace WorldWeaver
         public const int TOTAL_PARTICLES_TO_DISPLAY = 10;
         public const int SIN_CURVE_SCALE = 15;
         public const float TOTAL_SECONDS_TO_ANIMATE = 0.3f;
-        private const float FLYING_ANIMATE_SPEED = 100;
+        private const float FLYING_ANIMATE_SPEED = 1;
         private Texture2D last10InChain;
-        private Queue<Particle> lastTen;
-        private List<Particle> particlesToAnimate;
+        private Queue<HUDParticle> lastTen;
+        private List<HUDParticle> particlesToAnimate;
         private int TotalParticlesCollected;
         private Texture2D twoDparticle;
         private string twoDparticleString;
@@ -27,8 +27,8 @@ namespace WorldWeaver
         {
             TexturePath = "Textures\\last10particlesinchain";
             twoDparticleString = "Textures\\largeparticle";
-            lastTen = new Queue<Particle>();
-            particlesToAnimate = new List<Particle>();
+            lastTen = new Queue<HUDParticle>();
+            particlesToAnimate = new List<HUDParticle>();
             TotalParticlesCollected = 0;
             calculatedCurve = new float[TOTAL_PARTICLES_TO_DISPLAY];
             this.CalculateCurve();
@@ -70,13 +70,10 @@ namespace WorldWeaver
 
         public void updateChain()
         {
+            Console.WriteLine(Globals.Player.CurrentChain.Chain.Count);
             if (TotalParticlesCollected != Globals.Player.CurrentChain.Chain.Count)
             {
-                List<Particle> tempParticleList = lastTen.ToList();
-                foreach (Particle p in tempParticleList)
-                {
-                    particlesToAnimate.Add(p);
-                }
+                List<HUDParticle> tempParticleList = lastTen.ToList();
 
                 int numNewParticles = Math.Max(0, Globals.Player.CurrentChain.Chain.Count - TotalParticlesCollected);
 
@@ -87,28 +84,64 @@ namespace WorldWeaver
 
                 while (TotalParticlesCollected < Globals.Player.CurrentChain.Chain.Count && TotalParticlesCollected < TOTAL_PARTICLES_TO_DISPLAY)
                 {
+                    Particle p = Globals.Player.CurrentChain.Chain[TotalParticlesCollected + arrayOffset];
 
-                    lastTen.Enqueue(Globals.Player.CurrentChain.Chain[TotalParticlesCollected + arrayOffset]);
+                    bool particleExists = false;
+                    foreach (HUDParticle hudP in tempParticleList)
+                    {
+                        if (hudP.particle == p)
+                        {
+                            lastTen.Enqueue(hudP);
+                            particleExists = true;
+                            break;
+                        }
+                    }
 
-                    //if (TotalParticlesCollected <= TotalParticlesCollected - numNewParticles)
-                    //{
-                    //    lastTen.ElementAt(TotalParticlesCollected).Position = new Vector3(this.calculateEndLocation(0), 0);
-                    //}
+                    if (!particleExists)
+                    {
+                        HUDParticle hudP = new HUDParticle(new Vector2(p.Position.X, p.Position.Y),
+                            this.convertParticleColorTo(p), twoDparticle, p);
+                        lastTen.Enqueue(hudP);
+                    }
 
                     TotalParticlesCollected++;
                 }
 
-                //for (int i = 0; i < lastTen.Count; i++)
-                //{
-                //    targetLocation[i] = calculateEndLocation(lastTen.Count - (i + 1));
-                //}
-
                 TotalParticlesCollected = Globals.Player.CurrentChain.Chain.Count;
 
                 //do a compare to see what particles are no longer in there
-                foreach (Particle p in lastTen)
+                foreach (HUDParticle p in lastTen)
                 {
-                    particlesToAnimate.Remove(p);
+                    foreach (HUDParticle aP in tempParticleList)
+                    {
+                        if (p.particle == aP.particle)
+                        {
+                            tempParticleList.Remove(aP);
+                            break;
+                        }
+                    }
+                }
+
+                //yes, I know it will add a position multiple times. I don't care. -Matt Song
+                for (int i = 0; i < lastTen.Count; i++)
+                {
+                    lastTen.ElementAt(i).AddToPositionQueue(targetLocation[lastTen.Count - (i + 1)]);
+                }
+
+                foreach (HUDParticle p in tempParticleList)
+                {
+                    particlesToAnimate.Add(p);
+
+                    for (int j = 0; j < TOTAL_PARTICLES_TO_DISPLAY; j++)
+                    {
+                        if (p.Position.Y < targetLocation[j].Y ||
+                            p.NumPositionsReached <= 0)
+                        {
+                            p.AddToPositionQueue(targetLocation[j]);
+                        }
+                    }
+
+                    p.AddToPositionQueue(targetLocation[TOTAL_PARTICLES_TO_DISPLAY - 1] + new Vector2(1048 - this.Position.X, 0));
                 }
             }
 
@@ -135,50 +168,31 @@ namespace WorldWeaver
             //Update code here because of easy access to gameTime
             for (int i = 0; i < lastTen.Count; i++)
             {
-                lastTen.ElementAt(i).Position += new Vector3((float)((targetLocation[lastTen.Count - (i + 1)].X - lastTen.ElementAt(i).Position.X) * 
-                    gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE),
-                    (float)((targetLocation[lastTen.Count - (i + 1)].Y - lastTen.ElementAt(i).Position.Y) * 
-                    gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE), 0);
-                //lastTen.ElementAt(i).Position = new Vector3(targetLocation[i], 0);
+                lastTen.ElementAt(i).Update(gameTime);
             }
 
             int screenWidth = Globals.hudManager.HudAreaWidth + (Globals.hudManager.hudAreaX * 2);
+
             for (int i = 0; i < particlesToAnimate.Count; i++)
             {
-                bool didMove = false;
-                for (int j = 0; j < TOTAL_PARTICLES_TO_DISPLAY - 2; j++)
-                {
-                    if (particlesToAnimate[i].Position.Y > targetLocation[j].Y && particlesToAnimate[i].Position.Y < targetLocation[j + 1].Y)
-                    {
-                        j = j + 2;
-                        particlesToAnimate[i].Position +=
-                            new Vector3((float)(((targetLocation[j].X - particlesToAnimate[i].Position.X))
-                                * gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE),
-                                (float)((targetLocation[j].Y - particlesToAnimate[i].Position.Y + twoDparticle.Height) *
-                                gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE), 0);
-                        didMove = true;
-                        break;
-                    }
-                }
-                    
-                if(!didMove)
-                    particlesToAnimate[i].Position += new Vector3((float)(FLYING_ANIMATE_SPEED * (gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE)), 0, 0);
+                particlesToAnimate.ElementAt(i).Update(gameTime);
 
-                if (particlesToAnimate[i].Position.X > screenWidth)
+                if (particlesToAnimate.ElementAt(i).Position.X > screenWidth
+                    && particlesToAnimate.ElementAt(i).QueueCount() <= 0)
                 {
                     particlesToAnimate.RemoveAt(i);
                     i--;
                 }
             }
 
-            foreach (Particle p in particlesToAnimate)
+            foreach (HUDParticle p in particlesToAnimate)
             {
-                Globals.hudManager.SpriteBatch.Draw(twoDparticle, new Vector2(p.Position.X, p.Position.Y), this.convertParticleColorTo(p));
+                p.Draw(gameTime);
             }
 
-            foreach (Particle p in lastTen)
+            foreach (HUDParticle p in lastTen)
             {
-                Globals.hudManager.SpriteBatch.Draw(twoDparticle, new Vector2(p.Position.X, p.Position.Y), this.convertParticleColorTo(p));
+                p.Draw(gameTime);
             }
         }
 
@@ -224,6 +238,88 @@ namespace WorldWeaver
             {
                 this.calculatedCurve[i] = (float)Math.Sin(increments);
                 increments += increment;
+            }
+        }
+
+        protected class HUDParticle
+        {
+            private const int MAX_SPEED_MODIFIER = 5;
+            Color color;
+            Vector2 position;
+            Texture2D twoDparticle;
+            Queue<Vector2> listOfPositions;
+            public Particle particle;
+            int numPositionsReached;
+            private int currSpeedModifier;
+
+            public HUDParticle(Vector2 newPosition, Color newColor, Texture2D texture, Particle newP)
+            {
+                this.color = newColor;
+                this.position = newPosition;
+                twoDparticle = texture;
+                listOfPositions = new Queue<Vector2>();
+                this.particle = newP;
+                numPositionsReached = 0;
+                currentSpeedModifier = 0;
+            }
+
+            public void Update(GameTime gameTime)
+            {
+                if (listOfPositions.Count > 0)
+                {
+                    this.Position += new Vector2((float)((listOfPositions.ElementAt(0).X - this.Position.X) *
+                        gameTime.ElapsedGameTime.TotalSeconds / (TOTAL_SECONDS_TO_ANIMATE / currentSpeedModifier)),
+                        (float)((listOfPositions.ElementAt(0).Y - this.Position.Y) *
+                        gameTime.ElapsedGameTime.TotalSeconds / (TOTAL_SECONDS_TO_ANIMATE / currentSpeedModifier)));
+
+                    //if (this.Position.X == listOfPositions.ElementAt(0).X && this.Position.Y == listOfPositions.ElementAt(0).Y)
+                    if (Math.Abs(this.Position.X - listOfPositions.ElementAt(0).X) < 0.5 && Math.Abs(this.Position.Y - listOfPositions.ElementAt(0).Y) < 0.5)
+                    {
+                        listOfPositions.Dequeue();
+                        numPositionsReached++;
+                    }
+                }
+                else
+                {
+                    currentSpeedModifier = 0;
+                }
+            }
+
+            public void Draw(GameTime gameTime)
+            {
+                Globals.hudManager.SpriteBatch.Draw(twoDparticle, position, color);
+            }
+
+            public void AddToPositionQueue(Vector2 newLocation)
+            {
+                listOfPositions.Enqueue(newLocation);
+                currentSpeedModifier++;
+            }
+
+            public Vector2 Position
+            {
+                get { return position; }
+                set { position = value; }
+            }
+
+            public int QueueCount()
+            {
+                return this.listOfPositions.Count;
+            }
+
+            public int NumPositionsReached
+            {
+                get { return numPositionsReached; }
+                protected set { numPositionsReached = value; }
+            }
+
+            protected int currentSpeedModifier
+            {
+                get { return currSpeedModifier; }
+                set { currSpeedModifier = value;
+                    if(currSpeedModifier > MAX_SPEED_MODIFIER)
+                        currSpeedModifier = MAX_SPEED_MODIFIER;
+                }
             }
         }
     }

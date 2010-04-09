@@ -96,6 +96,14 @@ namespace WorldWeaver
 
             Globals.hudCamera = new HudCamera(new Vector3(0, 0, 0), Matrix.CreateLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, -1), new Vector3(0, 1, 0))/*camera.View*/, Globals.ChaseCamera.Projection);
 
+            //move played here to try to fix update order problem
+            //Matt Song
+            player = new Player(-1, camera, Content, graphics);
+            Globals.Player = player;
+
+            player.MySceneIndex = SceneGraphManager.SceneCount;
+            SceneGraphManager.AddObject(player);
+
             //Load models, fonts
             InitializeGraphics();
 
@@ -105,20 +113,13 @@ namespace WorldWeaver
             SceneGraphManager.AddObject(skybox);
 
             // Pre-calculate the HUD element positions.
-            CrosshairHUD chargeBar = new CrosshairHUD();
+            ChargeBarHUD chargeBar = new ChargeBarHUD();
             Globals.hudManager.AddElement(chargeBar);
             Globals.hudManager.AddElement(new PopUpCreationMenuHUD());
             Globals.hudManager.AddElement(new ChargeBarSliderHUD(chargeBar));
             Globals.hudManager.AddElement(new Last10ParticlesHUD());
             Globals.hudManager.AddElement(new PopUpChargeData());
-            
-                    
-            player = new Player(-1, camera, Content, graphics);
-            Globals.Player = player;
 
-            player.MySceneIndex = SceneGraphManager.SceneCount;
-            SceneGraphManager.AddObject(player);
-            
             Console.WriteLine("Skybox's index: " + skybox.MySceneIndex);
             Console.WriteLine("Player's index: " + player.MySceneIndex);
 
@@ -140,7 +141,7 @@ namespace WorldWeaver
         {
             spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
             spriteFont = Content.Load<SpriteFont>("Fonts\\Arial");
-           
+
             for (int i = 0; i <= 100; i++)
             {
                 //wallace brown 11/06/09

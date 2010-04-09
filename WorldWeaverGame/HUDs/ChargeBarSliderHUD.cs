@@ -11,13 +11,13 @@ namespace WorldWeaver
     {
         #region Variables
         private Texture2D chargeSlider;
-        private CrosshairHUD chargeBar;
+        private ChargeBarHUD chargeBar;
         private Rectangle originalPosition;
         #endregion
 
         #region Properties
 
-        public CrosshairHUD ChargeBar
+        public ChargeBarHUD ChargeBar
         {
             get { return chargeBar; }
             set { chargeBar = value; }
@@ -27,7 +27,7 @@ namespace WorldWeaver
 
         #region Constructor
 
-        public ChargeBarSliderHUD(CrosshairHUD chargeBar)
+        public ChargeBarSliderHUD(ChargeBarHUD chargeBar)
         {
             TexturePath = "Textures\\chargebarmarker";
             this.chargeBar = chargeBar;
