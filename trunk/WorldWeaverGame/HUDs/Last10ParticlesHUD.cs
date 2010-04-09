@@ -68,9 +68,15 @@ namespace WorldWeaver
             updateChain();
         }
 
+        public void Clear()
+        {
+            lastTen.Clear();
+            particlesToAnimate.Clear();
+            TotalParticlesCollected = 0;
+        }
+
         public void updateChain()
         {
-            Console.WriteLine(Globals.Player.CurrentChain.Chain.Count);
             if (TotalParticlesCollected != Globals.Player.CurrentChain.Chain.Count)
             {
                 List<HUDParticle> tempParticleList = lastTen.ToList();
@@ -165,23 +171,26 @@ namespace WorldWeaver
         //yay crappy solution
         public void DrawParticles(GameTime gameTime)
         {
-            //Update code here because of easy access to gameTime
-            for (int i = 0; i < lastTen.Count; i++)
+            if (Globals.gameplayScreenHasFocus)
             {
-                lastTen.ElementAt(i).Update(gameTime);
-            }
-
-            int screenWidth = Globals.hudManager.HudAreaWidth + (Globals.hudManager.hudAreaX * 2);
-
-            for (int i = 0; i < particlesToAnimate.Count; i++)
-            {
-                particlesToAnimate.ElementAt(i).Update(gameTime);
-
-                if (particlesToAnimate.ElementAt(i).Position.X > screenWidth
-                    && particlesToAnimate.ElementAt(i).QueueCount() <= 0)
+                //Update code here because of easy access to gameTime
+                for (int i = 0; i < lastTen.Count; i++)
                 {
-                    particlesToAnimate.RemoveAt(i);
-                    i--;
+                    lastTen.ElementAt(i).Update(gameTime);
+                }
+
+                int screenWidth = Globals.hudManager.HudAreaWidth + (Globals.hudManager.hudAreaX * 2);
+
+                for (int i = 0; i < particlesToAnimate.Count; i++)
+                {
+                    particlesToAnimate.ElementAt(i).Update(gameTime);
+
+                    if (particlesToAnimate.ElementAt(i).Position.X > screenWidth
+                        && particlesToAnimate.ElementAt(i).QueueCount() <= 0)
+                    {
+                        particlesToAnimate.RemoveAt(i);
+                        i--;
+                    }
                 }
             }
 
@@ -243,7 +252,7 @@ namespace WorldWeaver
 
         protected class HUDParticle
         {
-            private const int MAX_SPEED_MODIFIER = 5;
+            private const int MAX_SPEED_MODIFIER = 2;
             Color color;
             Vector2 position;
             Texture2D twoDparticle;
@@ -267,10 +276,16 @@ namespace WorldWeaver
             {
                 if (listOfPositions.Count > 0)
                 {
-                    this.Position += new Vector2((float)((listOfPositions.ElementAt(0).X - this.Position.X) *
+                    Vector2 movement = new Vector2((float)((listOfPositions.ElementAt(0).X - this.Position.X) *
                         gameTime.ElapsedGameTime.TotalSeconds / (TOTAL_SECONDS_TO_ANIMATE / currentSpeedModifier)),
                         (float)((listOfPositions.ElementAt(0).Y - this.Position.Y) *
                         gameTime.ElapsedGameTime.TotalSeconds / (TOTAL_SECONDS_TO_ANIMATE / currentSpeedModifier)));
+
+                    //nts: calculate distance at the beginning and store that to use 
+                    //movement.X = ((movement.X < 0) ? -1:1) * Math.Max( Math.Abs(movement.X), (float)(MIN_SPEED * gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE));
+                    //movement.Y = ((movement.Y < 0) ? -1:1) * Math.Max(Math.Abs(movement.Y), (float)(MIN_SPEED * gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE));
+
+                    this.Position += movement;
 
                     //if (this.Position.X == listOfPositions.ElementAt(0).X && this.Position.Y == listOfPositions.ElementAt(0).Y)
                     if (Math.Abs(this.Position.X - listOfPositions.ElementAt(0).X) < 0.5 && Math.Abs(this.Position.Y - listOfPositions.ElementAt(0).Y) < 0.5)

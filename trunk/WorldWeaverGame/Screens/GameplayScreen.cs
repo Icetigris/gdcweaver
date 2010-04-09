@@ -120,6 +120,16 @@ namespace WorldWeaver
             Globals.hudManager.AddElement(new Last10ParticlesHUD());
             Globals.hudManager.AddElement(new PopUpChargeData());
 
+            List<HUDElement> hudElement = HUDManager.HudElements;
+
+            foreach (HUDElement hudE in hudElement)
+            {
+                if (hudE.GetType() == typeof(Last10ParticlesHUD) )
+                {
+                    ((Last10ParticlesHUD)(hudE)).Clear();
+                }
+            }
+
             Console.WriteLine("Skybox's index: " + skybox.MySceneIndex);
             Console.WriteLine("Player's index: " + player.MySceneIndex);
 
