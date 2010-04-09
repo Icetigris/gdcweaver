@@ -12,7 +12,9 @@ namespace WorldWeaver
     class PauseMenuScreen : MenuScreen
     {
 
+        
         Player p;
+        SolarSystem s;
 
         #region Initialization
 
@@ -76,7 +78,14 @@ namespace WorldWeaver
 
                     messageBox.Accepted += QuitMessageBoxAccepted;
 
+
+                    
+
                     ScreenManager.AddScreen(messageBox);
+
+                    
+                    
+
                     break;
             }
         }
@@ -98,8 +107,17 @@ namespace WorldWeaver
         /// </summary>
         void QuitMessageBoxAccepted(object sender, EventArgs e)
         {
+            //I'm gonna try to eliminate everything in the previous solar system to fix the "creation after quit bug"--Kevin
+            Globals.Player.mPool.Particles.Clear();
+            Globals.numStars = 0;
+           // s.SystemEmpty();
+            //not going the way I thought....
+           
+
             LoadingScreen.Load(ScreenManager, true, new BackgroundScreen(),
                                new MainMenuScreen());
+
+           
         }
 
 

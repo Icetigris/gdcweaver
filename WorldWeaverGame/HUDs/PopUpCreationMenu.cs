@@ -27,7 +27,7 @@ namespace WorldWeaver
         private byte opaque = 0xff; //Color alpha parameter is in bytes -Elizabeth
         private byte greyedOut = 0x77;
         private byte transparent = 0x0;
-        private bool canCreate = false;
+        private bool canCreate = false; 
 
         private string aIconPath;
         private string pIconPath;
