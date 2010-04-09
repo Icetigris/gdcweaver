@@ -7,11 +7,11 @@ using Microsoft.Xna.Framework.Content;
 
 namespace WorldWeaver
 {
-    public class ChargeBarHUD : HUDElement
+    public class CrosshairHUD : HUDElement
     {
         private Texture2D chargeBar;
 
-        public ChargeBarHUD()
+        public CrosshairHUD()
         {
             TexturePath = "Textures\\chargebar";
         }

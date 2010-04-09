@@ -105,7 +105,7 @@ namespace WorldWeaver
             SceneGraphManager.AddObject(skybox);
 
             // Pre-calculate the HUD element positions.
-            ChargeBarHUD chargeBar = new ChargeBarHUD();
+            CrosshairHUD chargeBar = new CrosshairHUD();
             Globals.hudManager.AddElement(chargeBar);
             Globals.hudManager.AddElement(new PopUpCreationMenuHUD());
             Globals.hudManager.AddElement(new ChargeBarSliderHUD(chargeBar));
