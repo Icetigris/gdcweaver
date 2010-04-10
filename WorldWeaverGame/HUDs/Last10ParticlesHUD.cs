@@ -12,8 +12,6 @@ namespace WorldWeaver
     {
         public const int TOTAL_PARTICLES_TO_DISPLAY = 10;
         public const int SIN_CURVE_SCALE = 15;
-        public const float TOTAL_SECONDS_TO_ANIMATE = 0.3f;
-        private const float FLYING_ANIMATE_SPEED = 1;
         private Texture2D last10InChain;
         private Queue<HUDParticle> lastTen;
         private List<HUDParticle> particlesToAnimate;
@@ -252,14 +250,18 @@ namespace WorldWeaver
 
         protected class HUDParticle
         {
-            private const int MAX_SPEED_MODIFIER = 2;
+            private const int MAX_SPEED_MODIFIER = 1;
+            public const float TOTAL_SECONDS_TO_ANIMATE = .4f;
             Color color;
             Vector2 position;
             Texture2D twoDparticle;
             Queue<Vector2> listOfPositions;
+            Vector2 currentTargetPosition;
             public Particle particle;
             int numPositionsReached;
             private int currSpeedModifier;
+            private double timeToAnimate;
+            private Vector2 velocity;
 
             public HUDParticle(Vector2 newPosition, Color newColor, Texture2D texture, Particle newP)
             {
@@ -267,36 +269,66 @@ namespace WorldWeaver
                 this.position = newPosition;
                 twoDparticle = texture;
                 listOfPositions = new Queue<Vector2>();
+                currentTargetPosition = new Vector2();
                 this.particle = newP;
-                numPositionsReached = 0;
+                numPositionsReached = -1;
                 currentSpeedModifier = 0;
+                timeToAnimate = 0;
+                velocity = new Vector2();
             }
 
             public void Update(GameTime gameTime)
             {
+                if ( (currentTargetPosition.X == 0 && currentTargetPosition.Y == 0) 
+                    || (Math.Abs(this.Position.X - currentTargetPosition.X) < 0.5 && Math.Abs(this.Position.Y - currentTargetPosition.Y) < 0.5))
+                {
+                    SetNextLocation();
+                }
+
+
+                velocity = new Vector2((float)((currentTargetPosition.X - this.Position.X) *
+                            (gameTime.ElapsedGameTime.TotalSeconds / timeToAnimate) * currentSpeedModifier),
+                            (float)((currentTargetPosition.Y - this.Position.Y) *
+                            (gameTime.ElapsedGameTime.TotalSeconds / timeToAnimate) * currentSpeedModifier));
+
+                this.Position += velocity;
+
+                //if (((this.Position.X < currentTargetPosition.X && currentTargetPosition.X < this.Position.X - this.velocity.X)
+                //    || (this.Position.X > currentTargetPosition.X && currentTargetPosition.X > this.Position.X - this.velocity.X))
+                //    && ((this.Position.Y < currentTargetPosition.Y && currentTargetPosition.Y < this.Position.Y - this.velocity.Y)
+                //    || (this.Position.Y > currentTargetPosition.Y && currentTargetPosition.Y > this.Position.Y - this.velocity.Y)))
+                //if (listOfPositions.Count > 0)
+                //{
+                //    if (Vector2.Distance(listOfPositions.ElementAt(0), position) < Vector2.Distance(position, currentTargetPosition)
+                //        && ((this.Position.X < currentTargetPosition.X && currentTargetPosition.X < this.Position.X + this.velocity.X)
+                //        || (this.Position.X > currentTargetPosition.X && currentTargetPosition.X > this.Position.X + this.velocity.X))
+                //        && ((this.Position.Y < currentTargetPosition.Y && currentTargetPosition.Y < this.Position.Y + this.velocity.Y)
+                //        || (this.Position.Y > currentTargetPosition.Y && currentTargetPosition.Y > this.Position.Y + this.velocity.Y)))
+                //    {
+                //        SetNextLocation();
+                //    }
+                //}
+
+                timeToAnimate = Math.Max(0.0000000000000001, timeToAnimate - gameTime.ElapsedGameTime.TotalSeconds);
+            }
+
+            protected void SetNextLocation()
+            {
                 if (listOfPositions.Count > 0)
                 {
-                    Vector2 movement = new Vector2((float)((listOfPositions.ElementAt(0).X - this.Position.X) *
-                        gameTime.ElapsedGameTime.TotalSeconds / (TOTAL_SECONDS_TO_ANIMATE / currentSpeedModifier)),
-                        (float)((listOfPositions.ElementAt(0).Y - this.Position.Y) *
-                        gameTime.ElapsedGameTime.TotalSeconds / (TOTAL_SECONDS_TO_ANIMATE / currentSpeedModifier)));
+                    currentTargetPosition = listOfPositions.Dequeue();
+                    numPositionsReached++;
+                    timeToAnimate = TOTAL_SECONDS_TO_ANIMATE;
 
-                    //nts: calculate distance at the beginning and store that to use 
-                    //movement.X = ((movement.X < 0) ? -1:1) * Math.Max( Math.Abs(movement.X), (float)(MIN_SPEED * gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE));
-                    //movement.Y = ((movement.Y < 0) ? -1:1) * Math.Max(Math.Abs(movement.Y), (float)(MIN_SPEED * gameTime.ElapsedGameTime.TotalSeconds / TOTAL_SECONDS_TO_ANIMATE));
-
-                    this.Position += movement;
-
-                    //if (this.Position.X == listOfPositions.ElementAt(0).X && this.Position.Y == listOfPositions.ElementAt(0).Y)
-                    if (Math.Abs(this.Position.X - listOfPositions.ElementAt(0).X) < 0.5 && Math.Abs(this.Position.Y - listOfPositions.ElementAt(0).Y) < 0.5)
+                    if (Vector2.Distance(currentTargetPosition, position) > 200)
                     {
-                        listOfPositions.Dequeue();
-                        numPositionsReached++;
+                        timeToAnimate *= 3;
                     }
                 }
                 else
                 {
                     currentSpeedModifier = 0;
+                    currentTargetPosition = new Vector2();
                 }
             }
 
