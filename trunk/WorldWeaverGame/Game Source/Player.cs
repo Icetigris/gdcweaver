@@ -542,16 +542,14 @@ namespace WorldWeaver
             {
                 if (playerVisible)
                 {
-
                     Matrix[] transforms = new Matrix[model.Bones.Count];
                     model.CopyAbsoluteBoneTransformsTo(transforms);
 
                     foreach (ModelMesh mesh in model.Meshes)
-                    //wallace brown 11/14/09
+                    //wallace brown
                     visualEffects.Set_Phong_Diffuse(new Vector3(1.0f,1.0f,1.0f), visualEffects.color_white);
                     visualEffects.Set_Phong_Ambient(visualEffects.color_white, new Vector4(0.1f, 0.1f, 0.1f, 1.0f));
                     visualEffects.Set_Phong_Specular(new Vector4(0.8f, 0.8f, 0.8f, 1.0f), visualEffects.color_white, 20.0f);
-                    visualEffects.Set_Specials_Phong(false, false, false, false);
                     visualEffects.Set_Specials_Phong(false, false, false, false);
 
                     DrawModel_Phong(model, transforms, world, "Main");

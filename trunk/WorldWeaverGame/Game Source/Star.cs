@@ -157,6 +157,10 @@ namespace WorldWeaver
         {
         }
 
+        public void Update(GameTime gameTime)
+        {
+        }
+
         //wb
         /* Switches between 2 colors depending on player.mPool.
 		 * Once this system is plugged into planets and not stars
@@ -206,7 +210,7 @@ namespace WorldWeaver
         public void LoadContent()
         {
             //wb
-            model = content.Load<Model>("..\\Content\\Models\\plus1");
+            model = content.Load<Model>("..\\Content\\Models\\sphere");
             //model = content.Load<Model>("Models\\teapot");
             visualEffects.Phong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
             planetMap = content.Load<Texture2D>("..\\Content\\Textures\\planetMap");
@@ -228,7 +232,6 @@ namespace WorldWeaver
         {
             if (!Globals.gameplayScreenDestroyed)
             {
-                //Particle's world matrix
                 world = Matrix.CreateTranslation(Position);
 
                 Matrix[] transforms = new Matrix[model.Bones.Count];
@@ -255,10 +258,6 @@ namespace WorldWeaver
 
                     mesh.Draw();
                 }
-                //spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred,
-                //SaveStateMode.SaveState);
-                //starTail.Draw(spriteBatch, gameTime);
-                //spriteBatch.End();
             }
         }
 

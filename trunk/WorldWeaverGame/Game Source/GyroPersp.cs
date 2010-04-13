@@ -105,6 +105,7 @@ namespace WorldWeaver
             //(int)((Globals.hudManager.HudAreaHeight - Globals.hudManager.HudAreaHeight * 0.1f) / 2));
 
             model = content.Load<Model>(Globals.AssetList.playerModelPath);
+            mTexture = content.Load<Texture2D>("Models\\testTex2");
             visualEffects.Phong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
             ReadyToRender = true;
         }
@@ -156,15 +157,14 @@ namespace WorldWeaver
                 model.CopyAbsoluteBoneTransformsTo(transforms);
 
                 foreach (ModelMesh mesh in model.Meshes)
-                    //wallace brown 11/14/09
-                    visualEffects.Set_Specials_Phong(false, false, false, false);
+                //wallace brown 11/14/09
+                visualEffects.Set_Specials_Phong(false, false, false, false);
                 visualEffects.Set_Phong_Diffuse(new Vector3(1.0f, 1.0f, 1.0f), visualEffects.color_white);
                 visualEffects.Set_Phong_Ambient(visualEffects.color_white, new Vector4(0.1f, 0.1f, 0.1f, 1.0f));
                 visualEffects.Set_Phong_Specular(new Vector4(0.8f, 0.8f, 0.8f, 1.0f), visualEffects.color_white, 20.0f);
 
                 DrawModel_Phong(model, transforms, world, "Main");
                 //code End[]
-
             }
         }
 

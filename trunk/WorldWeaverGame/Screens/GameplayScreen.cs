@@ -23,6 +23,7 @@ namespace WorldWeaver
         Cue gameWonMusic = Globals.musicSoundBank.GetCue(Globals.AssetList.gameWonMusicCueName);
         Cue gameStartMusic = Globals.musicSoundBank.GetCue(Globals.AssetList.gameStartMusicCueName);
         bool havePlayedCleansedSong;
+        ParticleEffect_Emmiter orbit_x, orbit_y, orbit_z;
         //end wb
 
         KeyboardState lastKeyboardState = new KeyboardState();
@@ -145,6 +146,15 @@ namespace WorldWeaver
             //SceneGraphManager.AddObject(s);
             SceneGraphManager.Root.LoadContent();
             ScreenManager.Game.ResetElapsedTime();
+
+            //wb
+            orbit_x = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
+                    new Vector3(0.0f, 500.0f, 0.0f), 60, 'x');
+            orbit_y = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
+                    new Vector3(0.0f, 500.0f, 0.0f), 60, 'y');
+            orbit_z = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
+                    new Vector3(0.0f, 500.0f, 0.0f), 60, 'z');
+            //end
         }
 
         public void InitializeGraphics()
@@ -154,7 +164,7 @@ namespace WorldWeaver
 
             for (int i = 0; i <= 100; i++)
             {
-                //wallace brown 11/06/09
+                //wb
                 Particle p = new Particle(randomNumberGenerator, SceneGraphManager.SceneCount, Content, graphics);
                 //end Code[]
                 p.MySceneIndex = SceneGraphManager.SceneCount;
@@ -251,7 +261,6 @@ namespace WorldWeaver
             //if pause screen is up, don't have scene graph draw shit
             Globals.gameplayScreenHasFocus = IsActive;
 
-
             if (IsActive)
             {
                 lastKeyboardState = currentKeyboardState;
@@ -274,6 +283,9 @@ namespace WorldWeaver
 
                 //wb
                 UpdateStageCleansed();
+                orbit_x.UpdatePos(gameTime, player.Position);
+                orbit_y.UpdatePos(gameTime, player.Position);
+                orbit_z.UpdatePos(gameTime, player.Position);
                 //
 
                 // Update the camera to chase the new target
@@ -338,8 +350,14 @@ namespace WorldWeaver
             ScreenManager.GraphicsDevice.SamplerStates[0].MipFilter = TextureFilter.Linear;            
 
             player.GetPlayerRequirements(gameTime);
-            
+
             DrawOverlayText();
+
+            //wb
+            orbit_x.Draw(gameTime);
+            orbit_y.Draw(gameTime);
+            orbit_z.Draw(gameTime);
+            //end
         }
         /*
         private void DrawHUD()

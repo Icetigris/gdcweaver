@@ -49,7 +49,6 @@ namespace WorldWeaver
         }
 
         #region Phong Special Effects
-
         public void Set_Specials_Phong(bool useColorShift, bool useBlob, bool useGlow, bool useRotate)
         {
             Phong.Parameters["gColorShift"].SetValue(useColorShift);
@@ -75,6 +74,14 @@ namespace WorldWeaver
             Phong.Parameters["gRotAxis"].SetValue(axis);
             Phong.Parameters["gRotSpeed"].SetValue(speed);
             Phong.CommitChanges();
+        }
+        public void Set_Viewport_Height(int height)
+        {
+            Phong.Parameters["gViewportHeight"].SetValue(height);
+        }
+        public void Set_ParticleAccelaration(Vector3 acceleration)
+        {
+            Phong.Parameters["gAccel"].SetValue(acceleration);
         }
         #endregion
 
@@ -134,6 +141,7 @@ namespace WorldWeaver
 
     #region Vertex Declarations
 
+    #region VPNTTB
     public struct VertexPositionNormalTextureTangentBinormal
     {
         public Vector3 Position;
@@ -163,7 +171,8 @@ namespace WorldWeaver
         }
 
         public static int SizeInBytes { get { return sizeof(float) * 14; } }
+    }
+    #endregion
 
     #endregion
-    }
 }

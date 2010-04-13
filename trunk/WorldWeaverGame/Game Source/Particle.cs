@@ -38,12 +38,13 @@ namespace WorldWeaver
 
         private Random randomNumberGenerator;
 
-        // wallace brown 11/01/09[]
+        // wallace brown
         private CustomEffects visualEffects = new CustomEffects();
         private Texture2D mTexture;
         GraphicsDeviceManager graphics;
         private Vector3 glowColor;
-        // end code[]
+        private ParticleEffect_Emmiter orbital;
+        // end code
 
         Matrix orientation,
              translation,
@@ -161,6 +162,10 @@ namespace WorldWeaver
             collectionSphere = new BoundingSphere(Position, collectionRadius);
             attractionSphere = new BoundingSphere(Position, attractionRadius);
             this.content = content;
+            //wb
+            orbital = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
+                this.Position, 10);
+            //end
         }
 
         public Particle(Random rng, int sceneIndex, ContentManager content, GraphicsDeviceManager graphics)
@@ -544,13 +549,10 @@ namespace WorldWeaver
         //world matrix is calculated from Position
         public new void Draw(GameTime gameTime)//Model model, Matrix world, Vector3 targetColour, ChaseCamera camera)
         {
-            this.player = Globals.Player;//player;
-            //this.camera = Globals.ChaseCamera;//camera;
+            this.player = Globals.Player;
 
-            //wallace brown 11/14/09
             visualEffects.Init_Phong();
-            //end Code[]
-
+            #region draw
             if (!isCollected)
             {
                 //Particle's world matrix
@@ -603,12 +605,12 @@ namespace WorldWeaver
                     if (targetColour == Color.Red.ToVector3() ||
                         targetColour == Color.Yellow.ToVector3())
                     {
-                        visualEffects.Update_Rotate('x',0.2f);
+                        visualEffects.Update_Rotate('x', 0.2f);
                     }
                     else if (targetColour == Color.Blue.ToVector3() ||
                         targetColour == Color.Green.ToVector3())
                     {
-                        visualEffects.Update_Rotate('y',0.1f);
+                        visualEffects.Update_Rotate('y', 0.1f);
                     }
                     glowColor = new Vector3(1.0f, 1.0f, 1.0f);
                     DrawModel_Phong(model, transforms, world, "Glow");
@@ -619,17 +621,21 @@ namespace WorldWeaver
                     DrawModel_Phong(model, transforms, world, "Main");
                 }
 
-                BoundingSphereRenderer.Render(collectionSphere, Globals.sceneGraphManager.GraphicsDevice, Globals.ChaseCamera.View, Globals.ChaseCamera.Projection, Globals.DEBUG, 200);
-                //code End[]
+                BoundingSphereRenderer.Render(collectionSphere, 
+                    Globals.sceneGraphManager.GraphicsDevice, 
+                    Globals.ChaseCamera.View, 
+                    Globals.ChaseCamera.Projection, 
+                    Globals.DEBUG, 200);
             }
+            #endregion
+
         }
 
         #region Draw Methods
 
-        private void DrawModel_Phong(Model model, Matrix[] transform, Matrix world, string technique)
+        private void DrawModel_Phong(Model model, Matrix[] transform, 
+            Matrix world, string technique)
         {
-            //this.camera = Globals.ChaseCamera;
-
             graphics.GraphicsDevice.VertexDeclaration = new VertexDeclaration(graphics.GraphicsDevice, VertexPositionNormalTextureTangentBinormal.VertexElements);
             visualEffects.Phong.CurrentTechnique = visualEffects.Phong.Techniques[technique];
 
@@ -658,7 +664,6 @@ namespace WorldWeaver
                 pass.End();
             }
             visualEffects.Phong.End();
-
         }
  
         #endregion
