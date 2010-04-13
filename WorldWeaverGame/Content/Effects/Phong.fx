@@ -1,5 +1,5 @@
 //=============================================================================
-// Phong.fx by Wallace Brown (C) 2009 All Rights Reserved.
+// Phong.fx by Wallace Brown (C) 2010 All Rights Reserved.
 //
 // Impliments PerPixel Lighting w/ Texturing.
 //	Notes:
@@ -65,6 +65,19 @@ uniform extern float3 gPlanetColorB;
 //alpha testing values
 uniform extern bool	  gStratosphere;
 
+//sprite particle values
+uniform extern int	  gViewportHeight;
+uniform extern float4 gSpriteAlpha;
+uniform extern float3 gAccel;
+uniform extern float  gAngle;
+uniform extern float3 gVelocity;
+uniform extern float  gGrav;
+uniform extern float  gOrbitSpeed;
+uniform extern float3 gCenter;
+
+//globals
+uniform float PI = 3.1415926535f;
+
 //==================
 //	Texture Samples
 //==================
@@ -100,6 +113,17 @@ sampler TexStratosphere = sampler_state
 	AddressU  = WRAP;
     AddressV  = WRAP;
 };
+
+sampler ParticleTex = sampler_state
+{
+    Texture = <gTex0>;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
+	MipFilter = LINEAR;
+	MaxAnisotropy = 8;
+	AddressU  = WRAP;
+    AddressV  = WRAP;
+}; 
 
 //========================
 // VS/PS structures
@@ -137,6 +161,13 @@ struct vertNormOut{
     float2 tex0    : TEXCOORD0;
     float3 toEye   : TEXCOORD1;
     float3 lightDir   : TEXCOORD2;
+};
+
+struct particleVertInOut{
+		float4 pos		: POSITION0;
+        float2 texCoord : TEXCOORD0;
+		float4 color : COLOR0;
+		float size   : PSIZE; // In pixels.
 };
 
 //============
@@ -192,12 +223,15 @@ float3 Blob(float3 position, float3 normal, float stretch){
 float4 Rotate(float4 inPos,float time){
 	float4 outPos = inPos;
 	time *= gRotSpeed;
+	float sin,cos;
+	
+	sincos(time,sin,cos);
 	
 	if(gRotAxis == 'x'){
 		float3x3 xRot;
 		xRot[0] = float3(1.0f,0.0f,0.0f);
-		xRot[1] = float3(0.0f,cos(time),sin(time));
-		xRot[2] = float3(0.0f,-sin(time),cos(time));
+		xRot[1] = float3(0.0f,cos,sin);
+		xRot[2] = float3(0.0f,-sin,cos);
 		outPos.x = (xRot[0][0]*inPos.x)+(xRot[1][0]*inPos.y)+(xRot[2][0]*inPos.z);
 		outPos.y = (xRot[0][1]*inPos.x)+(xRot[1][1]*inPos.y)+(xRot[2][1]*inPos.z);
 		outPos.z = (xRot[0][2]*inPos.x)+(xRot[1][2]*inPos.y)+(xRot[2][2]*inPos.z);	
@@ -205,9 +239,9 @@ float4 Rotate(float4 inPos,float time){
 	}
 	else if(gRotAxis == 'y'){
 		float3x3 yRot;
-		yRot[0] = float3(cos(time),0.0f,-sin(time));
+		yRot[0] = float3(cos,0.0f,-sin);
 		yRot[1] = float3(0.0f,1.0f,0.0f);
-		yRot[2] = float3(sin(time),0.0f,cos(time));
+		yRot[2] = float3(sin,0.0f,cos);
 		outPos.x = (yRot[0][0]*inPos.x)+(yRot[1][0]*inPos.y)+(yRot[2][0]*inPos.z);
 		outPos.y = (yRot[0][1]*inPos.x)+(yRot[1][1]*inPos.y)+(yRot[2][1]*inPos.z);
 		outPos.z = (yRot[0][2]*inPos.x)+(yRot[1][2]*inPos.y)+(yRot[2][2]*inPos.z);	
@@ -215,8 +249,8 @@ float4 Rotate(float4 inPos,float time){
 	}
 	else if(gRotAxis == 'z'){
 		float3x3 zRot;
-		zRot[0] = float3(cos(time),sin(time),0.0f);
-		zRot[1] = float3(-sin(time),cos(time),0.0f);
+		zRot[0] = float3(cos,sin,0.0f);
+		zRot[1] = float3(-sin,cos,0.0f);
 		zRot[2] = float3(0.0f,0.0f,1.0f);
 		outPos.x = (zRot[0][0]*inPos.x)+(zRot[1][0]*inPos.y)+(zRot[2][0]*inPos.z);
 		outPos.y = (zRot[0][1]*inPos.x)+(zRot[1][1]*inPos.y)+(zRot[2][1]*inPos.z);
@@ -299,7 +333,7 @@ vertNormOut normalMapVS(float3 pos	: POSITION0,
 	float3 lightDir = mul(gWInv,float4(gLightVecW,0.0f)).xyz;
 	vOut.lightDir = mul(lightDir, TBN);
 	
-	float size = 3.0f;
+	float size = 12.0f;
 	
 	vOut.tex0 = tex0 * 5.0f;
 		
@@ -333,7 +367,7 @@ stratVertOut StratosphereVS(appdata IN)
 		vOut.posH.xyz = Blob(vOut.posH,vOut.normalW,20.0f);
 	}
 	
-	float size = 3.0f;
+	float size = 12.0f;
 	
 	vOut.tex0 = IN.tex0 * 5.0f;
 		
@@ -354,6 +388,136 @@ stratVertOut StratosphereVS(appdata IN)
 	
     return vOut;
 }
+
+particleVertInOut SpriteParticle_Orbit_VS(float3 pos    : POSITION0, 
+									float2 texIn  : TEXCOORD0)
+{
+	particleVertInOut outgoing = (particleVertInOut)0;
+	
+	float t = gTime/gOrbitSpeed;
+	t *= gVelocity.x;
+	float r = 200.0f;
+	
+	// Rotate the particles about local space.
+	float sine, cosine;
+	sincos(t, sine, cosine);
+	float x = 1.0f;
+	float y = 1.0f;
+	float z = 1.0f;
+	if(gRotAxis == 'x')
+	{
+		x = r*cosine + r*-sine;
+		y = r*sine + r*cosine;
+	}
+	else if(gRotAxis == 'y')
+	{
+		x = r*cosine + r*sine;
+		z = r*-sine + r*cosine;
+	}
+	else
+	{
+		y = r*cosine + r*-sine;
+		z = r*sine + r*cosine;
+	}
+	
+	
+	pos.x += gCenter.x + x;
+	pos.y += gCenter.y + y;
+	pos.z += gCenter.z + z;
+	
+	// Transform to homogeneous clip space.
+	outgoing.pos = mul(float4(pos, 1.0f), gWVP);
+	
+	// Also compute size as a function of the distance from the camera,
+	// and the viewport heights.  The constants were found by 
+	// experimenting.
+	float d = distance(pos, gEyePosW);
+	outgoing.size = gViewportHeight/(1.0f + 3.0f*d);
+	
+	// Fade color from white to black over time to fade particles out.
+	outgoing.color = float4(0,0,0,1);
+	
+	// Done--return the output.
+    return outgoing;
+}
+
+particleVertInOut SpriteParticle_Sprinkler_VS(float3 pos    : POSITION0, 
+									float2 texIn  : TEXCOORD0)
+{
+	particleVertInOut outgoing = (particleVertInOut)0;
+	
+	float t = gTime/30;
+	t *= gVelocity.x;
+	float r = 200.0f;
+	
+	// Sprinkler--------------
+	float sine, cosine;
+	sincos(gAngle, sine, cosine);
+	float x = t*cosine;
+	float y = t*sine;
+	
+	pos.x += x;
+	pos.y += y + gGrav;
+	//---------------------
+	
+	
+	// Transform to homogeneous clip space.
+	outgoing.pos = mul(float4(pos, 1.0f), gWVP);
+	
+	// Also compute size as a function of the distance from the camera,
+	// and the viewport heights.  The constants were found by 
+	// experimenting.
+	float d = distance(pos, gEyePosW);
+	outgoing.size = gViewportHeight/(1.0f + 3.0f*d);
+	
+	// Fade color from white to black over time to fade particles out.
+	outgoing.color = float4(0,0,0,1);
+	
+	// Done--return the output.
+    return outgoing;
+}
+
+particleVertInOut ParticleSprinkler_VS(float3 pos    : POSITION0, 
+                    float3 velocity     : POSITION1,
+                    float size			: TEXCOORD0,
+                    float age			: TEXCOORD1,
+                    float lifeTime		: TEXCOORD2,
+                    float mass			: TEXCOORD3,
+                    float4 color		: COLOR0)
+{
+	particleVertInOut outgoing = (particleVertInOut)0;
+	
+	// Get age of particle from creation time.
+	float t = age;
+	
+	// Sprinkler--------------
+	float sine, cosine;
+	sincos(gAngle, sine, cosine);
+	//float x = velocity.x*cosine;
+	//float y = velocity.y*sine;
+	float x = t*cosine;
+	float y = t*sine;
+	
+	pos.x += x;
+	pos.y += y;
+	//---------------------
+	
+	// Transform to homogeneous clip space.
+	outgoing.pos = mul(float4(pos, 1.0f), gWVP);
+	
+	// Also compute size as a function of the distance from the camera,
+	// and the viewport heights.  The constants were found by 
+	// experimenting.
+	float d = distance(pos, gEyePosW);
+	//outgoing.size = gViewportHeight*size/(1.0f + 3.0f*d);
+	
+	// Fade color from white to black over time to fade particles out.
+	//outgoing.color = (1.0f - (t / lifeTime));
+	
+	// Done--return the output.
+    return outgoing;
+}
+
 //========================
 // PixelShaders
 //========================
@@ -495,6 +659,13 @@ float4 StratospherePS(stratVertOut IN) : COLOR
 	}
 }
 
+float4 SpriteParticle_PS(float4 color : COLOR0, 
+						 float2 tex0 : TEXCOORD0) : COLOR
+{
+	float4 col = tex2D(ParticleTex,tex0);
+	return col;
+}
+
 technique Main
 {
     pass P0
@@ -557,5 +728,23 @@ technique Stratosphere
 		DestBlend = InvSrcAlpha;
 		
 		CullMode = CCW;
+	}
+}
+
+technique Particle_Orbit
+{
+	pass P0
+	{
+		vertexShader = compile vs_2_0 SpriteParticle_Orbit_VS();
+        pixelShader  = compile ps_2_0 SpriteParticle_PS();
+	}
+}
+
+technique Particle_Sprinkler
+{
+	pass P0
+	{
+		vertexShader = compile vs_2_0 SpriteParticle_Sprinkler_VS();
+        pixelShader  = compile ps_2_0 SpriteParticle_PS();
 	}
 }
