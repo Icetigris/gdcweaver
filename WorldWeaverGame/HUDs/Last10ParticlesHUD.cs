@@ -12,7 +12,7 @@ namespace WorldWeaver
     {
         public const int TOTAL_PARTICLES_TO_DISPLAY = 10;
         public const int SIN_CURVE_SCALE = 15;
-        public const float TOTAL_SECONDS_TO_ANIMATE = 0.3f;
+        public const float TOTAL_SECONDS_TO_ANIMATE = 0.5f;
         private const float FLYING_ANIMATE_SPEED = 1;
         private Texture2D last10InChain;
         private Queue<HUDParticle> lastTen;
@@ -106,7 +106,7 @@ namespace WorldWeaver
                     if (!particleExists)
                     {
                         HUDParticle hudP = new HUDParticle(new Vector2(p.Position.X, p.Position.Y),
-                            this.convertParticleColorTo(p), twoDparticle, p);
+                            new Color(p.AssignColor((int)p.Colour)), twoDparticle, p);
                         lastTen.Enqueue(hudP);
                     }
 
@@ -205,39 +205,6 @@ namespace WorldWeaver
             }
         }
 
-        //need to update here if additional colors are added
-        public Color convertParticleColorTo(Particle p)
-        {
-            Color aColour = Color.White;
-
-            switch (p.Colour)
-            {
-                case Particle.Colours.Red:
-                    aColour = Color.Red;
-                    break;
-                case Particle.Colours.Orange:
-                    aColour = Color.DarkOrange;
-                    break;
-                case Particle.Colours.Yellow:
-                    aColour = Color.Yellow;
-                    break;
-                case Particle.Colours.Green:
-                    aColour = Color.Green;
-                    break;
-                case Particle.Colours.Blue:
-                    aColour = Color.Blue;
-                    break;
-                case Particle.Colours.Purple:
-                    aColour = Color.Purple;
-                    break;
-                case Particle.Colours.Silver:
-                    aColour = Color.Silver;
-                    break;
-            }
-
-            return aColour;
-        }
-
         private void CalculateCurve()
         {
             float increment = (float)(3.5 * Math.PI) / TOTAL_PARTICLES_TO_DISPLAY;
@@ -252,54 +219,61 @@ namespace WorldWeaver
 
         protected class HUDParticle
         {
-            private const int MAX_SPEED_MODIFIER = 1;
             Color color;
-            Vector2 position;
+            Vector2 position, startingPosition;
             Texture2D twoDparticle;
             Queue<Vector2> listOfPositions;
             public Particle particle;
             int numPositionsReached;
-            private int currSpeedModifier;
+            float timeAnimated, totalTimeToAnimate;
 
             public HUDParticle(Vector2 newPosition, Color newColor, Texture2D texture, Particle newP)
             {
                 this.color = newColor;
                 this.position = newPosition;
+                this.startingPosition = new Vector2(this.Position.X, this.Position.Y);
                 twoDparticle = texture;
                 listOfPositions = new Queue<Vector2>();
                 this.particle = newP;
                 numPositionsReached = 0;
-                currentSpeedModifier = 0;
+                timeAnimated = 0;
+                totalTimeToAnimate = TOTAL_SECONDS_TO_ANIMATE;
             }
 
             public void Update(GameTime gameTime)
             {
                 if (listOfPositions.Count > 0)
                 {
-                    Vector2 movement = new Vector2((float)((listOfPositions.ElementAt(0).X - this.Position.X) *
-                        gameTime.ElapsedGameTime.TotalSeconds / (TOTAL_SECONDS_TO_ANIMATE / currentSpeedModifier)),
-                        (float)((listOfPositions.ElementAt(0).Y - this.Position.Y) *
-                        gameTime.ElapsedGameTime.TotalSeconds / (TOTAL_SECONDS_TO_ANIMATE / currentSpeedModifier)));
+                    timeAnimated += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    timeAnimated = Math.Min(totalTimeToAnimate, timeAnimated);
 
-                    if (this.listOfPositions.Count > 1)
-                    {
-                        movement.Y *= 2;
-                    }
-     
-                    this.Position += movement;
+                    this.Position = Vector2.Lerp(this.startingPosition, this.listOfPositions.ElementAt(0), timeAnimated / totalTimeToAnimate);
 
-                    //if (this.Position.X == listOfPositions.ElementAt(0).X && this.Position.Y == listOfPositions.ElementAt(0).Y)
-                    if ( (Math.Abs(this.Position.X - listOfPositions.ElementAt(0).X) < 0.5 && Math.Abs(this.Position.Y - listOfPositions.ElementAt(0).Y) < 0.5)
-                        || (NumPositionsReached > 0 && this.Position.Y + 10 > this.listOfPositions.ElementAt(0).Y && this.listOfPositions.Count > 1))
+                    if (timeAnimated >= totalTimeToAnimate)
                     {
                         listOfPositions.Dequeue();
                         numPositionsReached++;
+                        timeAnimated = 0;
+                        startingPosition.X = this.Position.X;
+                        startingPosition.Y = this.Position.Y;
+
+                        if (listOfPositions.Count > 0)
+                        {
+                            totalTimeToAnimate = CalculateAnimationTime(position, listOfPositions.ElementAt(0));
+                        }
+ 
                     }
                 }
+            }
+
+            protected float CalculateAnimationTime(Vector2 p1, Vector2 p2)
+            {
+                float distance = Vector2.Distance(p1, p2);
+
+                if (distance < 200)
+                    return TOTAL_SECONDS_TO_ANIMATE / (Math.Min(listOfPositions.Count, 3));
                 else
-                {
-                    currentSpeedModifier = 0;
-                }
+                    return TOTAL_SECONDS_TO_ANIMATE * 2.5f;
             }
 
             public void Draw(GameTime gameTime)
@@ -310,7 +284,11 @@ namespace WorldWeaver
             public void AddToPositionQueue(Vector2 newLocation)
             {
                 listOfPositions.Enqueue(newLocation);
-                currentSpeedModifier++;
+
+                if (listOfPositions.Count == 1)
+                {
+                    totalTimeToAnimate = CalculateAnimationTime(position, listOfPositions.ElementAt(0));
+                }
             }
 
             public Vector2 Position
@@ -328,15 +306,6 @@ namespace WorldWeaver
             {
                 get { return numPositionsReached; }
                 protected set { numPositionsReached = value; }
-            }
-
-            protected int currentSpeedModifier
-            {
-                get { return currSpeedModifier; }
-                set { currSpeedModifier = value;
-                    if(currSpeedModifier > MAX_SPEED_MODIFIER)
-                        currSpeedModifier = MAX_SPEED_MODIFIER;
-                }
             }
         }
     }
