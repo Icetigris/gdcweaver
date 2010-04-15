@@ -359,7 +359,6 @@ namespace WorldWeaver
             temp.Z = Math.Min(Position.Z, MaximumZ);
             Position = new Vector3(temp.X, temp.Y, temp.Z);
 
-
             // Reconstruct the ship's world matrix
             world = Matrix.Identity;
             world.Forward = Direction;
@@ -546,15 +545,17 @@ namespace WorldWeaver
                     model.CopyAbsoluteBoneTransformsTo(transforms);
 
                     foreach (ModelMesh mesh in model.Meshes)
-                    //wallace brown
-                    visualEffects.Set_Phong_Diffuse(new Vector3(1.0f,1.0f,1.0f), visualEffects.color_white);
-                    visualEffects.Set_Phong_Ambient(visualEffects.color_white, new Vector4(0.1f, 0.1f, 0.1f, 1.0f));
-                    visualEffects.Set_Phong_Specular(new Vector4(0.8f, 0.8f, 0.8f, 1.0f), visualEffects.color_white, 20.0f);
-                    visualEffects.Set_Specials_Phong(false, false, false, false);
+                    {
+                        //wallace brown
+                        visualEffects.Set_Phong_Diffuse(new Vector3(1.0f, 1.0f, 1.0f), visualEffects.color_white);
+                        visualEffects.Set_Phong_Ambient(visualEffects.color_white, new Vector4(0.1f, 0.1f, 0.1f, 1.0f));
+                        visualEffects.Set_Phong_Specular(new Vector4(0.8f, 0.8f, 0.8f, 1.0f), visualEffects.color_white, 20.0f);
+                        visualEffects.Set_Specials_Phong(false, false, false, false);
 
-                    DrawModel_Phong(model, transforms, world, "Main");
-                    //code End[]
-                    BoundingSphereRenderer.Render(collisionSphere, Globals.sceneGraphManager.GraphicsDevice, Globals.ChaseCamera.View, Globals.ChaseCamera.Projection, Globals.DEBUG);
+                        DrawModel_Phong(model, transforms, world, "Main");
+                        //code End[]
+                        BoundingSphereRenderer.Render(collisionSphere, Globals.sceneGraphManager.GraphicsDevice, Globals.ChaseCamera.View, Globals.ChaseCamera.Projection, Globals.DEBUG);
+                    }
                 }
             }
         }
@@ -587,11 +588,10 @@ namespace WorldWeaver
                                                                       part.BaseVertex, 0, part.NumVertices,
                                                                       part.StartIndex, part.PrimitiveCount);
                     }
-                    pass.End();
-                    //mesh.Draw();
                 }
-                visualEffects.Phong.End();
+                pass.End();
             }
+            visualEffects.Phong.End();
         }
 
         private void DrawModel_Phong_Special(Model model, Matrix[] transform, Matrix world, string technique, GameTime time)

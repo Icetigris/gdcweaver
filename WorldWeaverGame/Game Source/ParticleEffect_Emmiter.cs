@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace WorldWeaver
 {
-    class ParticleEffect_Emmiter
+    public class ParticleEffect_Emmiter : SceneObject, IDrawableObject, ILoadableObject, IUpdatableObject
     {
         #region Fields
 
@@ -16,7 +16,6 @@ namespace WorldWeaver
         Vector3 previousPosition;
 
         #endregion
-
 
         /// <summary>
         /// Constructs a new particle emitter object.
@@ -53,12 +52,26 @@ namespace WorldWeaver
                 0.0f);
         }
 
-        public void UpdatePos(GameTime gameTime, Vector3 pos)
+        public void LoadContent() 
         {
-            particleGroup.UpdatePos(gameTime,pos);
+            ReadyToRender = true;
+        }
+        public void UnloadContent()
+        {
+            //crap
         }
 
-        public void Draw(GameTime gameTime)
+        public void Update()
+        {
+            particleGroup.Update();
+        }
+        public void UpdatePosition(Vector3 pos)
+        {
+            particleGroup.UpdatePos(pos);
+        }
+
+
+        public new void Draw(GameTime gameTime)
         {
             particleGroup.Draw(gameTime);
         }

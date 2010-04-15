@@ -28,6 +28,7 @@ uniform extern float  gSpecularPower;
 
 //texture
 uniform extern texture gTex0;
+uniform extern texture gTex1;
 uniform extern texture gTexN;
 uniform extern texture gTexAnimated;
 
@@ -77,6 +78,7 @@ uniform extern float3 gCenter;
 
 //globals
 uniform float PI = 3.1415926535f;
+uniform float HALF = 0.5f;
 
 //==================
 //	Texture Samples
@@ -84,12 +86,12 @@ uniform float PI = 3.1415926535f;
 sampler TexS = sampler_state
 {
 	Texture = <gTex0>;
-	MinFilter = LINEAR;
-	MagFilter = LINEAR;
-	MipFilter = LINEAR;
+	MinFilter = anisotropic;
+	MagFilter = linear;
 	MaxAnisotropy = 8;
-	AddressU  = WRAP;
-    AddressV  = WRAP;
+	MipFilter = Linear;
+	AddressU  = mirror;
+    AddressV  = clamp;
 };
 
 sampler TexNmap = sampler_state
@@ -98,7 +100,6 @@ sampler TexNmap = sampler_state
 	MinFilter = LINEAR;
 	MagFilter = LINEAR;
 	MipFilter = LINEAR;
-	MaxAnisotropy = 8;
 	AddressU  = WRAP;
     AddressV  = WRAP;
 };
@@ -106,23 +107,21 @@ sampler TexNmap = sampler_state
 sampler TexStratosphere = sampler_state
 {
 	Texture = <gTexAnimated>;
-	MinFilter = LINEAR;
-	MagFilter = LINEAR;
-	MipFilter = LINEAR;
-	MaxAnisotropy = 8;
-	AddressU  = WRAP;
-    AddressV  = WRAP;
+	MinFilter = linear;
+	MagFilter = linear;
+	MipFilter = linear;
+	AddressU  = wrap;
+    AddressV  = wrap;
 };
 
 sampler ParticleTex = sampler_state
 {
-    Texture = <gTex0>;
-	MinFilter = LINEAR;
-	MagFilter = LINEAR;
-	MipFilter = LINEAR;
-	MaxAnisotropy = 8;
-	AddressU  = WRAP;
-    AddressV  = WRAP;
+    Texture = <gTex1>;
+	MinFilter = point;
+	MagFilter = point;
+	MipFilter = none;
+	AddressU  = clamp;
+    AddressV  = clamp;
 }; 
 
 //========================
@@ -165,9 +164,8 @@ struct vertNormOut{
 
 struct particleVertInOut{
 		float4 pos		: POSITION0;
-        float2 texCoord : TEXCOORD0;
 		float4 color : COLOR0;
-		float size   : PSIZE; // In pixels.
+		float size   : PSIZE0;
 };
 
 //============
@@ -316,7 +314,7 @@ vertNormOut normalMapVS(float3 pos	: POSITION0,
 					float3 tangent	: TANGENT0,
 					float3 binormal	: BINORMAL0,
 					float3 normal	: NORMAL0,
-					float2 tex0	: TEXCOORD0){
+					float3 tex0	: TEXCOORD0){
 	vertNormOut vOut = (vertNormOut)0;
 	
 	/* Make Tangent-Binormal-Normal Matrix */
@@ -381,7 +379,7 @@ stratVertOut StratosphereVS(appdata IN)
 	}
 	else{
 		if(gStratosphere){
-			vOut.posH = mul(float4(IN.posL*(size + 0.4f), 1.0f), gWVP);
+			vOut.posH = mul(float4(IN.posL*(size + 0.7f), 1.0f), gWVP);
 		}
 		vOut.posH = mul(float4(IN.posL*size, 1.0f), gWVP);
 	}
@@ -390,7 +388,10 @@ stratVertOut StratosphereVS(appdata IN)
 }
 
 particleVertInOut SpriteParticle_Orbit_VS(float3 pos    : POSITION0, 
-									float2 texIn  : TEXCOORD0)
+									float3 velocityInitial	: TEXCOORD0,
+									float4 color			: COLOR0,
+									float size				: PSIZE0,
+									float angle				: TEXCOORD1)
 {
 	particleVertInOut outgoing = (particleVertInOut)0;
 	
@@ -401,9 +402,11 @@ particleVertInOut SpriteParticle_Orbit_VS(float3 pos    : POSITION0,
 	// Rotate the particles about local space.
 	float sine, cosine;
 	sincos(t, sine, cosine);
-	float x = 1.0f;
-	float y = 1.0f;
-	float z = 1.0f;
+	
+	float x = 0.0f;
+	float y = 0.0f;
+	float z = 0.0f;
+	
 	if(gRotAxis == 'x')
 	{
 		x = r*cosine + r*-sine;
@@ -432,7 +435,7 @@ particleVertInOut SpriteParticle_Orbit_VS(float3 pos    : POSITION0,
 	// and the viewport heights.  The constants were found by 
 	// experimenting.
 	float d = distance(pos, gEyePosW);
-	outgoing.size = gViewportHeight/(1.0f + 3.0f*d);
+	outgoing.size = gViewportHeight*size/(1.0f + 3.0f*d);
 	
 	// Fade color from white to black over time to fade particles out.
 	outgoing.color = float4(0,0,0,1);
@@ -441,25 +444,17 @@ particleVertInOut SpriteParticle_Orbit_VS(float3 pos    : POSITION0,
     return outgoing;
 }
 
-particleVertInOut SpriteParticle_Sprinkler_VS(float3 pos    : POSITION0, 
+particleVertInOut SpriteParticle_Spray_VS(float3 pos    : POSITION0, 
 									float2 texIn  : TEXCOORD0)
 {
 	particleVertInOut outgoing = (particleVertInOut)0;
 	
-	float t = gTime/30;
-	t *= gVelocity.x;
-	float r = 200.0f;
-	
 	// Sprinkler--------------
-	float sine, cosine;
-	sincos(gAngle, sine, cosine);
-	float x = t*cosine;
-	float y = t*sine;
-	
-	pos.x += x;
-	pos.y += y + gGrav;
+	float sine,cosine;
+	sincos(gAngle,sine,cosine);
+	pos.x += gVelocity.x;
+	pos.y += gVelocity.y;
 	//---------------------
-	
 	
 	// Transform to homogeneous clip space.
 	outgoing.pos = mul(float4(pos, 1.0f), gWVP);
@@ -472,47 +467,6 @@ particleVertInOut SpriteParticle_Sprinkler_VS(float3 pos    : POSITION0,
 	
 	// Fade color from white to black over time to fade particles out.
 	outgoing.color = float4(0,0,0,1);
-	
-	// Done--return the output.
-    return outgoing;
-}
-
-particleVertInOut ParticleSprinkler_VS(float3 pos    : POSITION0, 
-                    float3 velocity     : POSITION1,
-                    float size			: TEXCOORD0,
-                    float age			: TEXCOORD1,
-                    float lifeTime		: TEXCOORD2,
-                    float mass			: TEXCOORD3,
-                    float4 color		: COLOR0)
-{
-	particleVertInOut outgoing = (particleVertInOut)0;
-	
-	// Get age of particle from creation time.
-	float t = age;
-	
-	// Sprinkler--------------
-	float sine, cosine;
-	sincos(gAngle, sine, cosine);
-	//float x = velocity.x*cosine;
-	//float y = velocity.y*sine;
-	float x = t*cosine;
-	float y = t*sine;
-	
-	pos.x += x;
-	pos.y += y;
-	//---------------------
-	
-	// Transform to homogeneous clip space.
-	outgoing.pos = mul(float4(pos, 1.0f), gWVP);
-	
-	// Also compute size as a function of the distance from the camera,
-	// and the viewport heights.  The constants were found by 
-	// experimenting.
-	float d = distance(pos, gEyePosW);
-	//outgoing.size = gViewportHeight*size/(1.0f + 3.0f*d);
-	
-	// Fade color from white to black over time to fade particles out.
-	//outgoing.color = (1.0f - (t / lifeTime));
 	
 	// Done--return the output.
     return outgoing;
@@ -537,7 +491,6 @@ float4 PhongPS(vertOut IN) : COLOR
 	float3 ambient = gAmbientMtrl*gAmbientLight;
 
 	//=======================================================
-
 	float3 texColor = tex2D(TexS,IN.tex0).rgb;
 	
 	float clamp = 0.35f;
@@ -660,9 +613,9 @@ float4 StratospherePS(stratVertOut IN) : COLOR
 }
 
 float4 SpriteParticle_PS(float4 color : COLOR0, 
-						 float2 tex0 : TEXCOORD0) : COLOR
+						 float2 tex1 : TEXCOORD0) : COLOR
 {
-	float4 col = tex2D(ParticleTex,tex0);
+	float4 col = tex2D(ParticleTex,tex1);
 	return col;
 }
 
@@ -740,11 +693,11 @@ technique Particle_Orbit
 	}
 }
 
-technique Particle_Sprinkler
+technique Particle_Spray
 {
 	pass P0
 	{
-		vertexShader = compile vs_2_0 SpriteParticle_Sprinkler_VS();
+		vertexShader = compile vs_2_0 SpriteParticle_Spray_VS();
         pixelShader  = compile ps_2_0 SpriteParticle_PS();
 	}
 }

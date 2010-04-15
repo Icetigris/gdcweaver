@@ -80,7 +80,7 @@
     <Compile Include="Game Source\MoleculePool.cs" />
     <Compile Include="Game Source\Particle.cs" />
     <Compile Include="Game Source\ParticleChain.cs" />
-    <Compile Include="Game Source\ParticleEffect.cs" />
+    <Compile Include="Game Source\ParticleVertex.cs" />
     <Compile Include="Game Source\ParticleEffect_Behaviors.cs" />
     <Compile Include="Game Source\ParticleEffect_Emmiter.cs" />
     <Compile Include="Game Source\ParticleEffect_Group.cs" />

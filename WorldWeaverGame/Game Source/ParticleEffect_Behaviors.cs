@@ -15,7 +15,7 @@ namespace WorldWeaver
     /// travel course, life span, etc... 
     /// Wallace Brown
     /// </summary>
-    struct Behavior
+    public struct Behavior
     {
         public String texture_filename;
 
@@ -29,11 +29,7 @@ namespace WorldWeaver
 
         public int numParticles;
 
-        public SpriteBlendMode spriteBlendMode;
-
-        public int drawOrder;
-
-        public float addRate;
+        public String technique;
 
         public Behavior(String texture_filename,
             Vector3 initialVelocity,
@@ -41,8 +37,7 @@ namespace WorldWeaver
             float lifeTime,
             float initialScale,
             int numParticles,
-            SpriteBlendMode spriteBlendMode, int drawOrder,
-            float addRate)
+            String technique)
         {
             this.texture_filename = texture_filename;
             this.initialVelocity = initialVelocity;
@@ -50,9 +45,7 @@ namespace WorldWeaver
             this.lifeTime = lifeTime;
             this.initialScale = initialScale;
             this.numParticles = numParticles;
-            this.spriteBlendMode = spriteBlendMode;
-            this.drawOrder = drawOrder;
-            this.addRate = addRate;
+            this.technique = technique;
         }
     }
     
@@ -64,15 +57,32 @@ namespace WorldWeaver
     class ParticleEffect_Behavior
     {
         public static Behavior 
-        orbit = new Behavior( "testParticle",
+        orbit = new Behavior("testParticle",
                     new Vector3(1.0f),
                     new Vector3(1.0f),
                     5.0f,
                     1.0f,
                     10,
-                    SpriteBlendMode.AlphaBlend,
-                    100,
-                    2.0f
+                    ParticleTechniques.Orbit
+        );
+
+        public static Behavior
+        spray = new Behavior("testParticle",
+                    new Vector3(1.0f),
+                    new Vector3(1.0f),
+                    2.0f,
+                    1.0f,
+                    1,
+                    ParticleTechniques.Spray
         );
     }
+
+    /// <summary>
+    /// Available shader techniques we can use!
+    /// </summary>
+    struct ParticleTechniques 
+    {
+        public static string Orbit = "Particle_Orbit";
+        public static string Spray = "Particle_Spray";
+    };
 }
