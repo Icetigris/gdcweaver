@@ -104,10 +104,6 @@ namespace WorldWeaver
         }
         #endregion
 
-        /*STILL NEED TO SAVE TEXTURES COLORED TO NEW TEXTURE!
-         * THIS WAY WE DONT LOOK UP PIXELS MORE THAN ONCE
-         * TO COLOR THE PLANETS!
-         */
         #region Set Phong Greymap
 
         public void Set_IsGreymapped(bool isGreyMapped)

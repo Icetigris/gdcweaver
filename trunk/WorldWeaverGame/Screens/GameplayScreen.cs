@@ -97,6 +97,9 @@ namespace WorldWeaver
 
             Globals.hudCamera = new HudCamera(new Vector3(0, 0, 0), Matrix.CreateLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, -1), new Vector3(0, 1, 0))/*camera.View*/, Globals.ChaseCamera.Projection);
 
+            
+
+
             //move played here to try to fix update order problem
             //Matt Song
             player = new Player(-1, camera, Content, graphics);
@@ -105,6 +108,7 @@ namespace WorldWeaver
             player.MySceneIndex = SceneGraphManager.SceneCount;
             SceneGraphManager.AddObject(player);
 
+           
             //Load models, fonts
             InitializeGraphics();
 
@@ -112,6 +116,10 @@ namespace WorldWeaver
 
             skybox.MySceneIndex = SceneGraphManager.SceneCount;
             SceneGraphManager.AddObject(skybox);
+
+
+            
+
 
             // Pre-calculate the HUD element positions.
             ChargeBarHUD chargeBar = new ChargeBarHUD();
@@ -134,6 +142,23 @@ namespace WorldWeaver
             Console.WriteLine("Skybox's index: " + skybox.MySceneIndex);
             Console.WriteLine("Player's index: " + player.MySceneIndex);
 
+
+            //wb
+            Vector3 temp = new Vector3(player.Position.X, player.Position.Y - 150.0f,
+                player.Position.Z);
+            orbit_x = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
+                    temp, 60, 'x');
+            orbit_y = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
+                    temp, 60, 'y');
+            orbit_z = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
+                    temp, 60, 'z');
+
+            SceneGraphManager.AddObject(orbit_x);
+            SceneGraphManager.AddObject(orbit_y);
+            SceneGraphManager.AddObject(orbit_z);
+            //end
+
+
             Globals.gyro = new GyroPersp(graphics);
 
             Globals.gyro.MySceneIndex = SceneGraphManager.SceneCount;
@@ -147,14 +172,7 @@ namespace WorldWeaver
             SceneGraphManager.Root.LoadContent();
             ScreenManager.Game.ResetElapsedTime();
 
-            //wb
-            orbit_x = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
-                    new Vector3(0.0f, 500.0f, 0.0f), 60, 'x');
-            orbit_y = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
-                    new Vector3(0.0f, 500.0f, 0.0f), 60, 'y');
-            orbit_z = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
-                    new Vector3(0.0f, 500.0f, 0.0f), 60, 'z');
-            //end
+           
         }
 
         public void InitializeGraphics()
@@ -283,9 +301,9 @@ namespace WorldWeaver
 
                 //wb
                 UpdateStageCleansed();
-                orbit_x.UpdatePos(gameTime, player.Position);
-                orbit_y.UpdatePos(gameTime, player.Position);
-                orbit_z.UpdatePos(gameTime, player.Position);
+                orbit_x.UpdatePosition(player.Position);
+                orbit_y.UpdatePosition(player.Position);
+                orbit_z.UpdatePosition(player.Position);
                 //
 
                 // Update the camera to chase the new target
@@ -351,13 +369,14 @@ namespace WorldWeaver
 
             player.GetPlayerRequirements(gameTime);
 
+            //wb
+            //orbit_x.Draw(gameTime);
+            //orbit_y.Draw(gameTime);
+            //orbit_z.Draw(gameTime);
+            //end
+
             DrawOverlayText();
 
-            //wb
-            orbit_x.Draw(gameTime);
-            orbit_y.Draw(gameTime);
-            orbit_z.Draw(gameTime);
-            //end
         }
         /*
         private void DrawHUD()
