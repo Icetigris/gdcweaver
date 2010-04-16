@@ -97,7 +97,13 @@ namespace WorldWeaver
 
             Globals.hudCamera = new HudCamera(new Vector3(0, 0, 0), Matrix.CreateLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, -1), new Vector3(0, 1, 0))/*camera.View*/, Globals.ChaseCamera.Projection);
 
-            
+            //Load models, fonts
+            InitializeGraphics();
+
+            skybox = new Skybox(camera, graphics);
+
+            skybox.MySceneIndex = SceneGraphManager.SceneCount;
+            SceneGraphManager.AddObject(skybox);
 
 
             //move played here to try to fix update order problem
@@ -108,18 +114,31 @@ namespace WorldWeaver
             player.MySceneIndex = SceneGraphManager.SceneCount;
             SceneGraphManager.AddObject(player);
 
-           
-            //Load models, fonts
-            InitializeGraphics();
 
-            skybox = new Skybox(camera, graphics);
+            //wb
+            Vector3 temp = new Vector3(player.Position.X, player.Position.Y - 150.0f,
+                player.Position.Z);
+            orbit_x = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
+                    temp, 60, 'x');
+            orbit_y = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
+                    temp, 60, 'y');
+            orbit_z = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
+                    temp, 60, 'z');
 
-            skybox.MySceneIndex = SceneGraphManager.SceneCount;
-            SceneGraphManager.AddObject(skybox);
+            SceneGraphManager.AddObject(orbit_x);
+            SceneGraphManager.AddObject(orbit_y);
+            SceneGraphManager.AddObject(orbit_z);
+            //end
 
+
+            Globals.gyro = new GyroPersp(graphics);
+            Globals.gyro.MySceneIndex = SceneGraphManager.SceneCount;
+            Console.WriteLine("Gyroscope's index: " + Globals.gyro.MySceneIndex);
+            SceneGraphManager.AddObject(Globals.gyro);
 
             
 
+            
 
             // Pre-calculate the HUD element positions.
             ChargeBarHUD chargeBar = new ChargeBarHUD();
@@ -142,28 +161,9 @@ namespace WorldWeaver
             Console.WriteLine("Skybox's index: " + skybox.MySceneIndex);
             Console.WriteLine("Player's index: " + player.MySceneIndex);
 
+            
 
-            //wb
-            Vector3 temp = new Vector3(player.Position.X, player.Position.Y - 150.0f,
-                player.Position.Z);
-            orbit_x = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
-                    temp, 60, 'x');
-            orbit_y = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
-                    temp, 60, 'y');
-            orbit_z = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
-                    temp, 60, 'z');
-
-            SceneGraphManager.AddObject(orbit_x);
-            SceneGraphManager.AddObject(orbit_y);
-            SceneGraphManager.AddObject(orbit_z);
-            //end
-
-
-            Globals.gyro = new GyroPersp(graphics);
-
-            Globals.gyro.MySceneIndex = SceneGraphManager.SceneCount;
-            Console.WriteLine("Gyroscope's index: " + Globals.gyro.MySceneIndex);
-            SceneGraphManager.AddObject(Globals.gyro);
+           
 
             //Star s = new Star("herp", Vector3.One, Globals.Player.Position, 1.0, Globals.Player.mPool);
             //s.MySceneIndex = SceneGraphManager.SceneCount;
@@ -171,7 +171,6 @@ namespace WorldWeaver
             //SceneGraphManager.AddObject(s);
             SceneGraphManager.Root.LoadContent();
             ScreenManager.Game.ResetElapsedTime();
-
            
         }
 

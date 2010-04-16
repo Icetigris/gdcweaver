@@ -227,6 +227,16 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </None>
+    <Compile Include="Textures\normalCube.dds">
+      <Name>normalCube</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Textures\testCubeMap.dds">
+      <Name>testCubeMap</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
     <Compile Include="Sound\xactProject.xap">
       <Name>xactProject</Name>
       <Importer>XactImporter</Importer>
@@ -339,6 +349,27 @@
   <ItemGroup>
     <Compile Include="Textures\testParticle.png">
       <Name>testParticle</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Textures\planet_cubeMap.png">
+      <Name>planet_cubeMap</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Textures\psudoBall.png">
+      <Name>psudoBall</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Textures\planet_normalCubeMap.png">
+      <Name>planet_normalCubeMap</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

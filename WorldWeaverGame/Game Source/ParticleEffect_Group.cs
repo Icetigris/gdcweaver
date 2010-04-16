@@ -191,7 +191,6 @@ namespace WorldWeaver
             renderState.AlphaBlendEnable = false;
             renderState.AlphaTestEnable = false;
 
-            renderState.DepthBufferEnable = false;
             renderState.DepthBufferWriteEnable = true;
         }
 

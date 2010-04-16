@@ -521,6 +521,7 @@ namespace WorldWeaver
         //they each Content.Load their own models
         public void LoadContent()
         {
+            visualEffects = new CustomEffects();
             model = content.Load<Model>(Globals.AssetList.playerModelPath);
             visualEffects.Phong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
             mTexture = content.Load<Texture2D>("Models\\testTex2");
