@@ -36,6 +36,8 @@ namespace WorldWeaver
         private CustomEffects visualEffects = new CustomEffects();
         private Vector3 greyMapColorA;
         private Vector3 greyMapColorB;
+        private Player player;
+        private BoundingSphere collisionSphere;
         //
         #endregion
 
@@ -45,6 +47,12 @@ namespace WorldWeaver
         {
             get { return mySceneIndex; }
             set { mySceneIndex = value; }
+        }
+
+        public BoundingSphere CollisionSphere
+        {
+            get { return collisionSphere; }
+            set { collisionSphere = value; }
         }
 
         #endregion
@@ -66,6 +74,8 @@ namespace WorldWeaver
             visualEffects = new CustomEffects();
             CreateGreyMapColors(pool);
             //
+
+            collisionSphere = new BoundingSphere(this.Position, (float)this.R);
         }
 
         #endregion
@@ -127,7 +137,61 @@ namespace WorldWeaver
 
         public void Update()
         {
+            player = Globals.Player;
+            CollidePlayer(this.collisionSphere, this.player);
         }
+
+        private void CollidePlayer(BoundingSphere boundingSphere, Player player) 
+        {
+            if (boundingSphere.Intersects(player.CollisionSphere))
+            {
+                Vector3 newPlayerPosition = new Vector3();
+
+                float distance = boundingSphere.Radius + player.CollisionSphere.Radius;
+
+                //is this faster than just doing (Math.Abs(Center) - Math.Abs(Position)) * (Center < 0) ? -1:1)
+                //Probably not?, this sorta works though?
+                Vector3 normalizedDifference = Vector3.Normalize(boundingSphere.Center - player.Position); //the normalized distance
+                Vector3 normalizedDifferencePlusOne = normalizedDifference + new Vector3(1); //make it all positive
+                Vector3 normalizedPositiveDifference = normalizedDifferencePlusOne / new Vector3(2); //scale it from 0 to 1
+                Vector3 normalDifference = Vector3.One - normalizedPositiveDifference; //find the distance we need to add to the player
+                Vector3 differenceOneHalfScale = (normalDifference - new Vector3(0.5f)); //scale it from -.5 to .5
+                Vector3 scaled = differenceOneHalfScale * new Vector3(2); //scale it from -1 to 1
+
+                newPlayerPosition.X = boundingSphere.Center.X + (scaled.X * distance);
+                newPlayerPosition.Y = boundingSphere.Center.Y + (scaled.Y * distance);
+                newPlayerPosition.Z = boundingSphere.Center.Z + (scaled.Z * distance);
+
+                player.Position = newPlayerPosition;
+            }
+        }
+
+        private void CollideParticle(BoundingSphere boundingSphere, Particle particle)
+        {
+            if (boundingSphere.Intersects(particle.CollectionSphere))
+            {
+                Vector3 newParticlePosition = new Vector3();
+
+                float distance = boundingSphere.Radius + player.CollisionSphere.Radius;
+
+                //is this faster than just doing (Math.Abs(Center) - Math.Abs(Position)) * (Center < 0) ? -1:1)
+                //Probably not?, this sorta works though?
+                Vector3 normalizedDifference = Vector3.Normalize(boundingSphere.Center - particle.Position); //the normalized distance
+                Vector3 normalizedDifferencePlusOne = normalizedDifference + new Vector3(1); //make it all positive
+                Vector3 normalizedPositiveDifference = normalizedDifferencePlusOne / new Vector3(2); //scale it from 0 to 1
+                Vector3 normalDifference = Vector3.One - normalizedPositiveDifference; //find the distance we need to add to the player
+                Vector3 differenceOneHalfScale = (normalDifference - new Vector3(0.5f)); //scale it from -.5 to .5
+                Vector3 scaled = differenceOneHalfScale * new Vector3(2); //scale it from -1 to 1
+
+                newParticlePosition.X = boundingSphere.Center.X + (scaled.X * distance);
+                newParticlePosition.Y = boundingSphere.Center.Y + (scaled.Y * distance);
+                newParticlePosition.Z = boundingSphere.Center.Z + (scaled.Z * distance);
+
+                particle.Position = newParticlePosition;
+            }
+        }
+
+
 
         //wb
         /* Switches between 2 colors depending on player.mPool.

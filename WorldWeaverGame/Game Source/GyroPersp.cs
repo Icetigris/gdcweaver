@@ -116,7 +116,7 @@ namespace WorldWeaver
             world = Matrix.Identity;
 
             world.Translation = new Vector3(230,-230,-800);
-
+            
             world.Forward = Globals.Player.Direction;
             world.Up = Globals.Player.Up;
             world.Right = Globals.Player.Right;
