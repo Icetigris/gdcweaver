@@ -121,6 +121,9 @@ namespace WorldWeaver
         Texture2D mTexture;
         //end Code[]
 
+        // Add a list of location
+        Vector3[] planetList = new Vector3[1] {new Vector3(0,0,0)};  // This array must expand with every planet creation.
+
         #endregion
 
         #region Constructors
@@ -205,6 +208,41 @@ namespace WorldWeaver
                 currentCharge = baseCharge;
             }
         }
+
+        // Expands the planet array
+        private void expandPlanetList()
+        {
+            // Create new array that is +1 original array's length
+            Vector3[] temp = new Vector3[planetList.Length + 1];
+
+            // Loop through temp array and copy data from original
+            for (int i = 0; i < planetList.Length; i++)
+            {
+                temp[i] = planetList[i];                
+            }
+
+            // Create new planetList, will be recovered from temp
+            planetList = new Vector3[temp.Length];
+
+            // Re-loop through array and re copy data
+            for (int i = 0; i < planetList.Length; i++)
+            {
+                planetList[i] = temp[i];
+            }
+        }
+
+        // Adds planet locations to the location array
+        public void addPlanetLocation(Vector3 location)
+        {
+            // Expand the planetlist
+            expandPlanetList();
+
+            // Add planet to last index
+            planetList[planetList.Length - 1] = location;
+
+        }
+
+
         #endregion
 
         #region Player and Chase camera update method
@@ -511,6 +549,47 @@ namespace WorldWeaver
                 // thrustAmount -= 0.001f; //maybe, set it a .001 for the sake of being able to move
                 thrustAmount -= BRAKE_CONST;
             }
+
+
+            // Focus Player, locks onto nearest planet
+            if (keyboardState.IsKeyDown(Keys.Q))
+            {
+                // Now use arrow keys to lock on to a planet in the planetList.
+                // + = i++
+                // - = i--
+                // Create cycle instance variable
+                int i = 0;  // Bottom of planetList
+
+                if (keyboardState.IsKeyDown(Keys.Add))
+                {
+                    if (i < planetList.Length - 1)
+                    {
+                        i++;
+                        this.Direction = planetList[i++];
+                    }
+                    else
+                    {
+                        i = 0;
+                        this.Direction = planetList[i];
+                    }
+                }
+                else if (keyboardState.IsKeyDown(Keys.Subtract))
+                {
+                    if (i > 0)
+                    {
+                        i--;
+                        this.Direction = planetList[i];
+                    }
+                    else
+                    {
+                        i = planetList.Length - 1;
+                        this.Direction = planetList[i];
+                    }
+                }
+                Console.WriteLine(i);
+
+            }
+
 
         }
 
