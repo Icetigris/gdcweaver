@@ -11,9 +11,9 @@ namespace WorldWeaver
     public class PopUpChargeData : HUDElement
     {
         // Variable List
-
-        //spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
-        //spriteFont = Content.Load<SpriteFont>("Fonts\\Arial");
+        // Constants
+        private const float FADE_VALUE = 1.0f;
+        private const float FADE_DECREMENT = 0.4f;
 
         GraphicsDeviceManager graphics;
         ContentManager Content = null;
@@ -23,6 +23,14 @@ namespace WorldWeaver
         Texture2D gradientTexture;
         int charge;
         bool collected = true;
+
+        // Time manager
+        private static float elapsedTime;
+
+        // Transparency Color data
+        private static float fadeAlpha = 1.0f;
+        private static float fadeCol = FADE_VALUE;
+        Color fade = new Color(1.0f, 1.0f, 1.0f, fadeAlpha);
 
         Vector2 stringSize;
 
@@ -36,18 +44,7 @@ namespace WorldWeaver
         {
             
         }
-
-        /*
-        //===============================
-        // CONSTRUCTOR
-        //===============================
-        public PopUpChargeData(bool isCollected, int pCharge)
-        {
-            collected = isCollected;
-            charge = pCharge;
-
-        }
-         * */
+        
 
         // Static method
         public static void setMessage(int i)
@@ -60,19 +57,12 @@ namespace WorldWeaver
             {
                 message = "+" + i;
             }
-        }
 
-        /*
-        public String Message
-        {
-            get { return message; }
-            set
-            {
-                message = value;
-                stringSize = spriteFont.MeasureString(message);
-            }
+            // Reset all data
+            fadeAlpha = 1.0f;
+            //Need more coffeee
+            elapsedTime = 0;
         }
-        */
 
 
         //===============================
@@ -84,67 +74,49 @@ namespace WorldWeaver
             Content = new ContentManager(Globals.hudManager.Game.Services, "Content");
             Globals.contentManager = Content;
 
-            
-
             spriteBatch = Globals.hudManager.SpriteBatch;
             spriteFont = Content.Load<SpriteFont>("Fonts\\Arial");
 
-            // Default text message so something prints
-            //Message = "Particle collected!";      
-
-            //gradientTexture = content.Load<Texture2D>("Images/gradient");
         }
 
-
-        /*
-        // Pop-up text message when the player picks up a particle.  Called everytime a particle is collected.
-        // How do we make it vanish?  -Joey        
-        private void checkForCollision(BoundingSphere playerCollisionSphere)
-        {
-
-            spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred,
-                SaveStateMode.SaveState);
-
-            
-
-            //string text = "Position: (" + (int)player.Position.X + ", " + (int)player.Position.Y + ", " + (int)player.Position.Z + ")";
-            // Draw the string twice to create a drop shadow, first colored black
-            // and offset one pixel to the bottom right, then again in white at the
-            // intended position. This makes text easier to read over the background.
-            //spriteBatch.DrawString(spriteFont, message, new Vector2(65, 65), Color.Black);
-            //spriteBatch.DrawString(spriteFont, text, new Vector2(64, 64), Color.White);
-
-            spriteBatch.End();
-        }
-        */
 
         //===============================
         // Draw()
         //===============================
         public override void Draw(GameTime gameTime)
         {
-            //checkForCollision(player.CollisionSphere);
+            // Check to see if message is != "", if so, begin counting timer
+            if (message.CompareTo("") != 0)
+                elapsedTime += gameTime.ElapsedRealTime.Milliseconds;
 
-            // Draw message, we'll calculate time later
-            
-            //if (collected == true)
-            //{                
+            // Check to see if 2.5 seconds has elapsed before we remove the text
+            if (elapsedTime < 2500.0f)
+            {
                 spriteBatch.DrawString(spriteFont, message, new Vector2(Globals.hudManager.HudAreaWidth / 2
-                    + Globals.hudManager.hudAreaX - stringSize.X / 2, Globals.hudManager.HudAreaHeight / 2 + Globals.hudManager.hudAreaY), Color.White);
+                + Globals.hudManager.hudAreaX - stringSize.X / 2, Globals.hudManager.HudAreaHeight / 2 + Globals.hudManager.hudAreaY), fade);
+
+                // Degrade the color values
+                fadeAlpha -= FADE_DECREMENT * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                        
+                // Create new color
+                fade = new Color(fadeCol, fadeCol, fadeCol, fadeAlpha);
+
+            }
+            else
+            {
+                message = "";
+
+                spriteBatch.DrawString(spriteFont, "", new Vector2(Globals.hudManager.HudAreaWidth / 2
+                + Globals.hudManager.hudAreaX - stringSize.X / 2, Globals.hudManager.HudAreaHeight / 2 + Globals.hudManager.hudAreaY), fade);
+                elapsedTime = 0.0f;
+
+                // Reset fade value
+                fadeAlpha = 1.0f;
                 
-            //}
-            //collected = false;
-
-
-
-        }
-
-        
-
-
-
-
-
+            }
+                     
+            
+         }
         
 
     }
