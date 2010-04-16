@@ -122,6 +122,7 @@
     <Compile Include="Screens\MenuScreen.cs" />
     <Compile Include="Screens\MessageBoxScreen.cs" />
     <Compile Include="Screens\PauseMenuScreen.cs" />
+    <Compile Include="Screens\SelectCharacterScreen.cs" />
     <Compile Include="Screens\StoryScreen.cs" />
   </ItemGroup>
   <ItemGroup>

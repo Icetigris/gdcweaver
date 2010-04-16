@@ -43,9 +43,11 @@ namespace WorldWeaver
                 case 0:
 
                     // Play the game.
-                    LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
-                    Globals.gameplayScreenDestroyed = false;
-                    titleCue.Stop(AudioStopOptions.AsAuthored);
+                    //LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
+                    //Globals.gameplayScreenDestroyed = false;
+                    //titleCue.Stop(AudioStopOptions.AsAuthored);
+
+                    ScreenManager.AddScreen(new SelectCharacterScreen(titleCue));
                     break;
                 case 1:
                     //Show story screen
