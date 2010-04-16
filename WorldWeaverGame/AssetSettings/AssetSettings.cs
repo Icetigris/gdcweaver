@@ -29,6 +29,7 @@ namespace WorldWeaver
         public string gameWonMusicCueName;
         public string gameStartMusicCueName;
         public string particleCollectSFXCueName;
+        public string gyro_needle;
 
         //wallace brown 11/01/09
         public string PhongFXPath;
@@ -61,6 +62,7 @@ namespace WorldWeaver
             //wallace brown 11/01/09
             allTheCrapInThisGame += PhongFXPath + "\n";
             //end Code[]
+            allTheCrapInThisGame += gyro_needle + "\n";
 
             return allTheCrapInThisGame;
         }

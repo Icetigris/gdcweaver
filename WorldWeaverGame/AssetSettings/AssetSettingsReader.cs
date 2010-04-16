@@ -42,6 +42,8 @@ namespace WorldWeaver
             settings.PhongFXPath = input.ReadString();
             // end Code[]
 
+            settings.gyro_needle = input.ReadString();
+
             return settings;
         }
     }

@@ -38,6 +38,8 @@ namespace AssetPipeline
         public string PhongFXPath = "Effects\\Phong";
         //end Code[]
 
+        public string gyro_needle = "Models\\gyro_hook";
+
         //Prints everything that is in this class
         public override string ToString()
         {
@@ -65,6 +67,8 @@ namespace AssetPipeline
             //wallace brown 11/01/09[]
             allTheCrapInThisGame += PhongFXPath + "\n";
             //end Code[]
+
+            gyro_needle += gyro_needle + "\n";
 
             return allTheCrapInThisGame;
         }

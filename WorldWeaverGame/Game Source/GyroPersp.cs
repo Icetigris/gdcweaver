@@ -24,14 +24,9 @@ namespace WorldWeaver
         
 
         // Create model variable
-        //private Model gyro;
-
-        // Create model path
-        String modelPath = "Models\\gyro_hook";   // This should read "Models\\gyro"
-
         private int mySceneIndex;
         private ContentManager content;
-        private Model model;
+        private Model model, gyro_needle;
         private GameTime gameTime;
         private HUDManager hudmanager;
         private bool readyToRender;
@@ -59,10 +54,6 @@ namespace WorldWeaver
         private HudCamera camera;
 
         Matrix world = Matrix.Identity;
-
-        
-
-        
 
         #endregion
 
@@ -105,6 +96,7 @@ namespace WorldWeaver
             //(int)((Globals.hudManager.HudAreaHeight - Globals.hudManager.HudAreaHeight * 0.1f) / 2));
 
             model = content.Load<Model>(Globals.AssetList.playerModelPath);
+            gyro_needle = content.Load<Model>(Globals.AssetList.gyro_needle);
             mTexture = content.Load<Texture2D>("Models\\testTex2");
             visualEffects.Phong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
             ReadyToRender = true;
@@ -125,20 +117,12 @@ namespace WorldWeaver
         {
             // Updates the Gyro's direction with each frame.
             world = Matrix.Identity;
-            //world.Forward = Direction;
-            //world.Up = Up;
-            //world.Right = right;
 
-            //world.Translation = Globals.ChaseCamera.Position + new Vector3(200, 200, 200); 
-            //Globals.Player.Position + new Vector3(125, 0, 0);
-            //world.Translation = Globals.Player.Position + (new Vector3(15, 15, 15) * Globals.Player.Direction);
-            world.Translation = new Vector3(350,-400,-1500);
+            world.Translation = new Vector3(230,-230,-800);
 
             world.Forward = Globals.Player.Direction;
             world.Up = Globals.Player.Up;
             world.Right = Globals.Player.Right;
-            //this.Scale = new Vector3(0.5f, 0.5f, 0.5f);
-
         }
 
 
@@ -153,17 +137,17 @@ namespace WorldWeaver
             //code End[]
             if (!Globals.gameplayScreenDestroyed)
             {
-                Matrix[] transforms = new Matrix[model.Bones.Count];
-                model.CopyAbsoluteBoneTransformsTo(transforms);
+                Matrix[] transforms = new Matrix[gyro_needle.Bones.Count];
+                gyro_needle.CopyAbsoluteBoneTransformsTo(transforms);
 
-                foreach (ModelMesh mesh in model.Meshes)
+                foreach (ModelMesh mesh in gyro_needle.Meshes)
                 //wallace brown 11/14/09
                 visualEffects.Set_Specials_Phong(false, false, false, false);
                 visualEffects.Set_Phong_Diffuse(new Vector3(1.0f, 1.0f, 1.0f), visualEffects.color_white);
                 visualEffects.Set_Phong_Ambient(visualEffects.color_white, new Vector4(0.1f, 0.1f, 0.1f, 1.0f));
                 visualEffects.Set_Phong_Specular(new Vector4(0.8f, 0.8f, 0.8f, 1.0f), visualEffects.color_white, 20.0f);
 
-                DrawModel_Phong(model, transforms, world, "Main");
+                DrawModel_Phong(gyro_needle, transforms, world, "Main");
                 //code End[]
             }
         }
@@ -196,9 +180,9 @@ namespace WorldWeaver
                                                                       part.BaseVertex, 0, part.NumVertices,
                                                                       part.StartIndex, part.PrimitiveCount);
                     }
-                    pass.End();
                     //mesh.Draw();
                 }
+                pass.End();
                 visualEffects.Phong.End();
             }
         }

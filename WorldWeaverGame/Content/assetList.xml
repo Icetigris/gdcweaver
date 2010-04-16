@@ -20,5 +20,6 @@
     <gameStartMusicCueName>LR_ArcaneMysteries</gameStartMusicCueName>
     <particleCollectSFXCueName>Sonic Ring</particleCollectSFXCueName>
     <PhongFXPath>Effects\Phong</PhongFXPath>
+    <gyro_needle>Models\gyro_hook</gyro_needle>
   </Asset>
 </XnaContent>
