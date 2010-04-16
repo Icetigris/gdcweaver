@@ -126,7 +126,7 @@ namespace WorldWeaver
                     if (!solarSystem.SystemEmpty())
                     {
                         // Spawn planet
-                        Planet planet = new Planet("Planet", Vector3.One, Globals.Player.Position, 1.0, Globals.Player.mPool, Globals.sceneGraphManager.GraphicsManager);
+                        Planet planet = new Planet("Planet", Vector3.One, Globals.Player.Position, 3000, Globals.Player.mPool, Globals.sceneGraphManager.GraphicsManager);
                         solarSystem.Add(planet);
                         planet.MySceneIndex = SceneGraphManager.SceneCount;
                         Console.WriteLine(planet.Name + "'s index: " + planet.MySceneIndex);
