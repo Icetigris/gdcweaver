@@ -19,7 +19,9 @@ namespace WorldWeaver
         private ChaseCamera camera;
         //wb
         private Texture2D planetMap;
+        private TextureCube planetMapCube;
         private Texture2D planetMap_normal;
+        private TextureCube planetMapCube_normal;
         private Texture2D planetMap_normal2;
         private Texture2D planetMap_normal3;
         private Texture2D clouds;
@@ -213,10 +215,10 @@ namespace WorldWeaver
             model = content.Load<Model>("..\\Content\\Models\\sphere");
             //model = content.Load<Model>("Models\\teapot");
             visualEffects.Phong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
-            planetMap = content.Load<Texture2D>("..\\Content\\Textures\\planetMap");
-            planetMap_normal = content.Load<Texture2D>("..\\Content\\Textures\\planetMap_normal");
-            planetMap_normal2 = content.Load<Texture2D>("..\\Content\\Textures\\planetMap_normal2");
-            planetMap_normal3 = content.Load<Texture2D>("..\\Content\\Textures\\planetMap_normal3");
+            planetMap = content.Load<Texture2D>("..\\Content\\Textures\\planet_cubeMap");
+            planetMapCube = content.Load<TextureCube>("..\\Content\\Textures\\testCubeMap");
+            planetMapCube_normal = content.Load<TextureCube>("..\\Content\\Textures\\normalCube");
+            planetMap_normal = content.Load<Texture2D>("..\\Content\\Textures\\planet_normalCubeMap");
             clouds = content.Load<Texture2D>("..\\Content\\Textures\\clouds2");
             //end wb
             ReadyToRender = true;
@@ -241,7 +243,7 @@ namespace WorldWeaver
                 {
                     //wallace brown 11/14/09
                     visualEffects.Set_Phong_Diffuse(new Vector3(1.0f, 1.0f, 1.0f), visualEffects.color_white);
-                    visualEffects.Set_Phong_Ambient(visualEffects.color_white, new Vector4(0.1f, 0.1f, 0.1f, 1.0f));
+                    visualEffects.Set_Phong_Ambient(visualEffects.color_white, new Vector4(0.2f, 0.2f, 0.2f, 1.0f));
                     visualEffects.Set_Phong_Specular(new Vector4(0.8f, 0.8f, 0.8f, 1.0f), visualEffects.color_white, 20.0f);
 
                     visualEffects.Set_IsGreymapped(true);
@@ -286,8 +288,8 @@ namespace WorldWeaver
                         {
                             visualEffects.Set_IsGreymapped(true);
                             visualEffects.Set_GreyMapColors(greyMapColorA, greyMapColorB);
-                            visualEffects.Phong.Parameters["gTex0"].SetValue(planetMap);
-                            visualEffects.Phong.Parameters["gTexN"].SetValue(planetMap_normal3);
+                            visualEffects.Phong.Parameters["gTex0"].SetValue(planetMapCube);
+                            visualEffects.Phong.Parameters["gTexN"].SetValue(planetMapCube_normal);
                             visualEffects.Phong.Parameters["gStratosphere"].SetValue(false);
                             visualEffects.Update_Rotate('z',0.1f);
                         }
@@ -299,6 +301,7 @@ namespace WorldWeaver
                             visualEffects.Update_Rotate('z',0.2f);
                         }
 
+                        visualEffects.Phong.CommitChanges();
                         Globals.sceneGraphManager.GraphicsDevice.Vertices[0].SetSource(mesh.VertexBuffer, part.StreamOffset, part.VertexStride);
                         Globals.sceneGraphManager.GraphicsDevice.Indices = mesh.IndexBuffer;
                         Globals.sceneGraphManager.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,

@@ -44,7 +44,7 @@ namespace WorldWeaver
             Phong.Parameters["gWInv"].SetValue(Matrix.Invert(world));
             Phong.Parameters["gWVP"].SetValue(world * view * projection);
             Phong.Parameters["gEyePosW"].SetValue(eyePos);
-            Phong.Parameters["gLightVecW"].SetValue(new Vector3(0.0f, 0.0f, -1.0f));
+            Phong.Parameters["gLightVecW"].SetValue(new Vector3(0.0f, -1.0f, 0.0f));
             Phong.CommitChanges();
         }
 

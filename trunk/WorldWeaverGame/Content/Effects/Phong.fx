@@ -79,6 +79,8 @@ uniform extern float3 gCenter;
 //globals
 uniform float PI = 3.1415926535f;
 uniform float HALF = 0.5f;
+uniform float planetScale = 1.0f;
+uniform float planetSize = 8.0f;
 
 //==================
 //	Texture Samples
@@ -100,8 +102,8 @@ sampler TexNmap = sampler_state
 	MinFilter = LINEAR;
 	MagFilter = LINEAR;
 	MipFilter = LINEAR;
-	AddressU  = WRAP;
-    AddressV  = WRAP;
+	AddressU  = wrap;
+    AddressV  = wrap;
 };
 
 sampler TexStratosphere = sampler_state
@@ -157,7 +159,7 @@ struct stratVertOut{
 /* normal mapping. */
 struct vertNormOut{
     float4 posH    : POSITION0;
-    float2 tex0    : TEXCOORD0;
+    float3 tex0    : TEXCOORD0;
     float3 toEye   : TEXCOORD1;
     float3 lightDir   : TEXCOORD2;
 };
@@ -260,6 +262,19 @@ float4 Rotate(float4 inPos,float time){
 	}
 }
 
+float2 Get3DTexCoord(float2 tex_in)
+{
+	float2 tex_out = (float2)0.0f;
+	
+	tex_out.x = tex_out.x/abs(max(tex_in.x,tex_in.y));
+	tex_out.y = tex_out.y/abs(max(tex_in.x,tex_in.y));
+	
+	tex_out.x = 0.5f*(tex_out.x + 1.0f);
+	tex_out.y = 0.5f*(tex_out.y + 1.0f);
+	
+	return tex_out;	
+}
+
 //========================
 // VertexShaders
 //========================
@@ -319,36 +334,37 @@ vertNormOut normalMapVS(float3 pos	: POSITION0,
 	
 	/* Make Tangent-Binormal-Normal Matrix */
 	float3x3 TBN;
-	TBN[0] = tangent;
-	TBN[1] = binormal;
-	TBN[2] = normal;
+	TBN[0] = mul(normalize(tangent),gWorld);
+	TBN[1] = mul(normalize(binormal),gWorld);
+	TBN[2] = mul(normalize(normal),gWorld);
 	
 	/* transform toEye vector to tan space */
 	float3 eyePos = mul(gWInv,float4(gEyePosW,1.0f));
-	vOut.toEye = normalize(mul(eyePos,TBN));
+	vOut.toEye = normalize(mul(eyePos - pos,TBN));
 	
 	/* transform lightDir vector to tan space */
-	float3 lightDir = mul(gWInv,float4(gLightVecW,0.0f)).xyz;
-	vOut.lightDir = mul(lightDir, TBN);
+	vOut.lightDir = normalize(mul(gLightVecW, TBN));
 	
-	float size = 12.0f;
-	
-	vOut.tex0 = tex0 * 5.0f;
-		
+	vOut.tex0 = pos;
+
 	if(gRotate){
 		if(gStratosphere){
-			vOut.posH = mul(Rotate(float4(pos*(size + 0.4f),1.0f),gTime), gWVP);
+			vOut.posH = mul(Rotate(float4(pos*(planetSize + 0.4f),1.0f),gTime), gWVP);
 		}
 		else{
-			vOut.posH = mul(Rotate(float4(pos*size, 1.0f),gTime), gWVP);
+			vOut.posH = mul(Rotate(float4(pos*planetSize, 1.0f),gTime), gWVP);
+			vOut.posH = mul(float4(pos*planetSize, 1.0f), gWVP);
 		}
 	}
 	else{
 		if(gStratosphere){
-			vOut.posH = mul(float4(pos*(size + 0.4f), 1.0f), gWVP);
+			vOut.posH = mul(float4(pos*(planetSize + 0.4f), 1.0f), gWVP);
 		}
-		vOut.posH = mul(float4(pos*size, 1.0f), gWVP);
+			vOut.posH = mul(float4(pos*planetSize, 1.0f), gWVP);
 	}
+	
+	float sine = sin(gTime);
+	vOut.posH.y += 50*sine;
 	
 	return vOut;
 }
@@ -365,24 +381,25 @@ stratVertOut StratosphereVS(appdata IN)
 		vOut.posH.xyz = Blob(vOut.posH,vOut.normalW,20.0f);
 	}
 	
-	float size = 12.0f;
-	
-	vOut.tex0 = IN.tex0 * 5.0f;
+	vOut.tex0 = IN.tex0 *= planetScale + 0.5f;
 		
 	if(gRotate){
 		if(gStratosphere){
-			vOut.posH = mul(Rotate(float4(IN.posL*(size + 0.4f),1.0f),gTime), gWVP);
+			vOut.posH = mul(Rotate(float4(IN.posL*(planetSize + 0.4f),1.0f),gTime), gWVP);
 		}
 		else{
-			vOut.posH = mul(Rotate(float4(IN.posL*size, 1.0f),gTime), gWVP);
+			vOut.posH = mul(Rotate(float4(IN.posL*planetSize, 1.0f),gTime), gWVP);
 		}
 	}
 	else{
 		if(gStratosphere){
-			vOut.posH = mul(float4(IN.posL*(size + 0.7f), 1.0f), gWVP);
+			vOut.posH = mul(float4(IN.posL*(planetSize + 0.7f), 1.0f), gWVP);
 		}
-		vOut.posH = mul(float4(IN.posL*size, 1.0f), gWVP);
+		vOut.posH = mul(float4(IN.posL*planetSize, 1.0f), gWVP);
 	}
+	
+	float sine = sin(gTime);
+	vOut.posH.y += 50*sine;
 	
     return vOut;
 }
@@ -534,28 +551,23 @@ float4 GlowPS(vertOut IN) : COLOR
 
 float4 NormalMapPS(	vertNormOut IN) : COLOR
 {
+	float3 eye = normalize(IN.toEye);
+	float3 light = normalize(IN.lightDir);
+	float4 texCol = texCUBE(TexS,IN.tex0);
+	
 	//=======================================================
 	// Normal Mapping
+	float3 normalTex = texCUBE(TexNmap,IN.tex0);
 	
-	IN.toEye = normalize(IN.toEye);
-	IN.lightDir = normalize(IN.lightDir);
-	
-	float3 normalTex = tex2D(TexNmap,IN.tex0);
-	
-	normalTex = (normalTex*2.0f) - 1.0f;
-	normalTex = normalize(normalTex);
+	normalTex = normalize((normalTex*2.0f) - 1.0f);
 	//=======================================================
-	
-	float4 texCol = tex2D(TexS,IN.tex0);
 	
 	//=======================================================
 	// Lighting
+	float s = max(dot(light, normalTex),0.0f);
 
-	float s = max(dot(-IN.lightDir, normalTex), 0.0f);
-
-	float3 diffuse = s*(gDiffuseMtrl*gDiffuseLight).rgb;
-	float3 ambient = gAmbientMtrl*gAmbientLight;
-
+	float3 diffuse = s*(gDiffuseMtrl*gDiffuseLight);
+	float3 ambient = (gAmbientMtrl*gAmbientLight);
 	//=======================================================
 	
 	if(gGreyMap){
@@ -619,6 +631,12 @@ float4 SpriteParticle_PS(float4 color : COLOR0,
 	return col;
 }
 
+float4 SimpleOut_PS(float4 color : COLOR0,
+					float2 tex1	 : TEXCOORD0) : COLOR
+{
+	return color;					
+}
+
 technique Main
 {
     pass P0
@@ -665,6 +683,7 @@ technique Planet
 		
 		CullMode = CCW;
 	}
+	
 }
 
 technique Stratosphere

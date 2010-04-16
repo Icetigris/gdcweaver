@@ -27,9 +27,6 @@ namespace WorldWeaver
         private int mySceneIndex;
         private ContentManager content;
         private Model model, gyro_needle;
-        private GameTime gameTime;
-        private HUDManager hudmanager;
-        private bool readyToRender;
 
         //public Vector3 Position;
         public Vector3 Direction;
@@ -183,8 +180,8 @@ namespace WorldWeaver
                     //mesh.Draw();
                 }
                 pass.End();
-                visualEffects.Phong.End();
             }
+            visualEffects.Phong.End();
         }
 
         private void DrawModel_Phong_Special(Model model, Matrix[] transform, Matrix world, string technique, GameTime time)

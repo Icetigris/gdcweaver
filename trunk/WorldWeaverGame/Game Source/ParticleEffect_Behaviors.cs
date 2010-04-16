@@ -56,7 +56,7 @@ namespace WorldWeaver
     /// </summary>
     class ParticleEffect_Behavior
     {
-        public static Behavior 
+        public static Behavior
         orbit = new Behavior("testParticle",
                     new Vector3(1.0f),
                     new Vector3(1.0f),
