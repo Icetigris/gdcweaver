@@ -66,8 +66,22 @@ namespace WorldWeaver
 
                 case 1:
                     //Build planet
-                    if (solarSystem.SystemEmpty())
+                    if (solarSystem.SystemEmpty() ) // Requires at least 1 sun
                     {
+                        Planet s = new Planet("Planet", Vector3.One, p.Position, 1.0, p.mPool, Globals.sceneGraphManager.GraphicsManager);
+                        solarSystem.Add(s);
+                        s.MySceneIndex = SceneGraphManager.SceneCount;
+                        Console.WriteLine(s.Name + "'s index: " + s.MySceneIndex);
+                        s.LoadContent();
+                        SceneGraphManager.AddObject(s);
+                        p.mPool.Particles.Clear();
+                        Console.WriteLine("Mass: " + s.Mass + "\n");
+                        //Console.WriteLine("Magnetic field: " + s.hasMagneticField + "\n");
+                        Console.WriteLine("Effective Temp: " + s.EffectiveTemp + "\n");
+
+                        // Add location to list of planet locations in player
+                        p.addPlanetLocation(s.Position);
+
                     }
                     break;
 
