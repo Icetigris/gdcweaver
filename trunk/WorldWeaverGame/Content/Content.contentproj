@@ -216,7 +216,6 @@
       <Name>gyro_hook</Name>
       <Importer>FbxImporter</Importer>
       <Processor>ModelProcessor</Processor>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Models\sphere.FBX">
       <Name>sphere</Name>

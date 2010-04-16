@@ -32,6 +32,7 @@ namespace AssetPipeline
             //wallace brown 11/01/09[]
             output.Write(value.PhongFXPath);
             //end Code[]
+            output.Write(value.gyro_needle);
         }
 
         public override string GetRuntimeType(TargetPlatform targetPlatform)
