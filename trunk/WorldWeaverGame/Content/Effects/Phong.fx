@@ -709,6 +709,8 @@ technique Particle_Orbit
 	{
 		vertexShader = compile vs_2_0 SpriteParticle_Orbit_VS();
         pixelShader  = compile ps_2_0 SpriteParticle_PS();
+        ZEnable = true;
+		ZWriteEnable = true;
 	}
 }
 
