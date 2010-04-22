@@ -1,15 +1,21 @@
 //=============================================================================
-// Phong.fx by Wallace Brown (C) 2010 All Rights Reserved.
+// Phong.fx by Wallace Brown <2010>
 //
 // Impliments PerPixel Lighting w/ Texturing.
 //	Notes:
-//		A Monolithic effect. Performs other non PostProcess effects through booleans
-//			and additional parameters.
+//		A Monolithic effect. Performs other non PostProcess effects.
 //=============================================================================
 
 //==========
 // Globals
 //==========
+
+//globals
+uniform float PI = 3.1415926535f;
+uniform float HALF = 0.5f;
+uniform float planetScale = 1.0f;
+uniform float planetSize = 8.0f;
+uniform float starSize = 8.0f;
 
 //basic values
 uniform extern float4x4 gWorld;
@@ -29,6 +35,7 @@ uniform extern float  gSpecularPower;
 //texture
 uniform extern texture gTex0;
 uniform extern texture gTex1;
+uniform extern texture gTex2;
 uniform extern texture gTexN;
 uniform extern texture gTexAnimated;
 
@@ -60,8 +67,9 @@ uniform extern float  gRotSpeed;
 
 //GreyMap values
 uniform extern bool	  gGreyMap;
-uniform extern float3 gPlanetColorA;
-uniform extern float3 gPlanetColorB;
+uniform extern float3 gGreyMapColorA;
+uniform extern float3 gGreyMapColorB;
+uniform extern float3 gGreyMapColorC;
 
 //alpha testing values
 uniform extern bool	  gStratosphere;
@@ -76,11 +84,6 @@ uniform extern float  gGrav;
 uniform extern float  gOrbitSpeed;
 uniform extern float3 gCenter;
 
-//globals
-uniform float PI = 3.1415926535f;
-uniform float HALF = 0.5f;
-uniform float planetScale = 1.0f;
-uniform float planetSize = 8.0f;
 
 //==================
 //	Texture Samples
@@ -125,6 +128,40 @@ sampler ParticleTex = sampler_state
 	AddressU  = clamp;
     AddressV  = clamp;
 }; 
+
+sampler StarTex_Low = sampler_state
+{
+	Texture = <gTex0>;
+	MinFilter = anisotropic;
+	MagFilter = linear;
+	MaxAnisotropy = 8;
+	MipFilter = Linear;
+	AddressU  = mirror;
+    AddressV  = clamp;
+};
+
+sampler StarTex_Mid = sampler_state
+{
+	Texture = <gTex1>;
+	MinFilter = anisotropic;
+	MagFilter = linear;
+	MaxAnisotropy = 8;
+	MipFilter = Linear;
+	AddressU  = mirror;
+    AddressV  = clamp;
+};
+
+sampler StarTex_Top = sampler_state
+{
+	Texture = <gTex2>;
+	MinFilter = anisotropic;
+	MagFilter = linear;
+	MaxAnisotropy = 8;
+	MipFilter = Linear;
+	AddressU  = wrap;
+    AddressV  = wrap;
+};
+
 
 //========================
 // VS/PS structures
@@ -173,8 +210,8 @@ struct particleVertInOut{
 //============
 // Utility Methods
 //============
-float ClampedSin(float ceil, float floor, float inNum, float offset){
-	float range = sin(gTime) * offset;
+float ClampedSin(float ceil, float floor, float inNum, float scale){
+	float range = sin(gTime) * scale;
 	if(range >= ceil){
 		inNum = ceil;
 	}
@@ -220,14 +257,14 @@ float3 Blob(float3 position, float3 normal, float stretch){
 	return position;
 }
 
-float4 Rotate(float4 inPos,float time){
+float4 Rotate(float4 inPos,float time, int axis){
 	float4 outPos = inPos;
 	time *= gRotSpeed;
 	float sin,cos;
 	
 	sincos(time,sin,cos);
 	
-	if(gRotAxis == 'x'){
+	if(axis == 'x'){
 		float3x3 xRot;
 		xRot[0] = float3(1.0f,0.0f,0.0f);
 		xRot[1] = float3(0.0f,cos,sin);
@@ -237,7 +274,7 @@ float4 Rotate(float4 inPos,float time){
 		outPos.z = (xRot[0][2]*inPos.x)+(xRot[1][2]*inPos.y)+(xRot[2][2]*inPos.z);	
 		return outPos;
 	}
-	else if(gRotAxis == 'y'){
+	else if(axis == 'y'){
 		float3x3 yRot;
 		yRot[0] = float3(cos,0.0f,-sin);
 		yRot[1] = float3(0.0f,1.0f,0.0f);
@@ -247,7 +284,7 @@ float4 Rotate(float4 inPos,float time){
 		outPos.z = (yRot[0][2]*inPos.x)+(yRot[1][2]*inPos.y)+(yRot[2][2]*inPos.z);	
 		return outPos;
 	}
-	else if(gRotAxis == 'z'){
+	else if(axis == 'z'){
 		float3x3 zRot;
 		zRot[0] = float3(cos,sin,0.0f);
 		zRot[1] = float3(-sin,cos,0.0f);
@@ -262,19 +299,6 @@ float4 Rotate(float4 inPos,float time){
 	}
 }
 
-float2 Get3DTexCoord(float2 tex_in)
-{
-	float2 tex_out = (float2)0.0f;
-	
-	tex_out.x = tex_out.x/abs(max(tex_in.x,tex_in.y));
-	tex_out.y = tex_out.y/abs(max(tex_in.x,tex_in.y));
-	
-	tex_out.x = 0.5f*(tex_out.x + 1.0f);
-	tex_out.y = 0.5f*(tex_out.y + 1.0f);
-	
-	return tex_out;	
-}
-
 //========================
 // VertexShaders
 //========================
@@ -282,7 +306,6 @@ vertOut PhongVS(appdata IN)
 {
 	vertOut vOut = (vertOut)0;
 	vOut.normalW = mul(float4(IN.normalL, 0.0f), gWIT).xyz;
-	vOut.normalW = normalize(vOut.normalW);
 	vOut.posW  = mul(float4(IN.posL, 1.0f), gWorld).xyz;
 	vOut.posH = mul(float4(IN.posL, 1.0f), gWVP);
 	vOut.tex0 = IN.tex0;
@@ -291,9 +314,20 @@ vertOut PhongVS(appdata IN)
 		vOut.posH.xyz = Blob(vOut.posH,vOut.normalW,20.0f);
 	}
 	if(gRotate){
-		vOut.posH = mul(Rotate(float4(IN.posL,1.0f),gTime), gWVP);
-		vOut.normalW = mul(Rotate(float4(IN.normalL,1.0f),gTime), gWIT).xyz;
+		vOut.posH = mul(Rotate(float4(IN.posL,1.0f),gTime,gRotAxis), gWVP);
+		vOut.normalW = mul(Rotate(float4(IN.normalL,1.0f),gTime,gRotAxis), gWIT).xyz ;
 	}
+	
+    return vOut;
+}
+
+vertOut Phong_Player_VS(appdata IN)
+{
+	vertOut vOut = (vertOut)0;
+	vOut.normalW = mul(float4(IN.normalL,1.0f), gWIT).xyz;
+	vOut.posW  = mul(float4(IN.posL, 1.0f), gWorld).xyz;
+	vOut.posH = mul(float4(IN.posL,1.0f), gWVP);
+	vOut.tex0 = IN.tex0;
 	
     return vOut;
 }
@@ -310,7 +344,7 @@ vertOut GlowVS(appdata IN){
     Po += (ClampedSin(4.0f,2.0f,0.0f,gInflation)*normalize(float4(IN.normalL.xyz,0.0f)));
     
 	if(gRotate){
-		Po = Rotate(Po,gTime);
+		Po = Rotate(Po,gTime,gRotAxis);
 	}
     float4 Pw = mul(Po,gWorld);
     vOut.viewW = normalize(gViewInv[3].xyz - Pw.xyz);
@@ -325,7 +359,7 @@ vertOut GlowVS(appdata IN){
 	return vOut;	
 }
 
-vertNormOut normalMapVS(float3 pos	: POSITION0,
+vertNormOut normalMap_Planet_VS(float3 pos	: POSITION0,
 					float3 tangent	: TANGENT0,
 					float3 binormal	: BINORMAL0,
 					float3 normal	: NORMAL0,
@@ -349,10 +383,10 @@ vertNormOut normalMapVS(float3 pos	: POSITION0,
 
 	if(gRotate){
 		if(gStratosphere){
-			vOut.posH = mul(Rotate(float4(pos*(planetSize + 0.4f),1.0f),gTime), gWVP);
+			vOut.posH = mul(Rotate(float4(pos*(planetSize + 0.4f),1.0f),gTime,gRotAxis), gWVP);
 		}
 		else{
-			vOut.posH = mul(Rotate(float4(pos*planetSize, 1.0f),gTime), gWVP);
+			//vOut.posH = mul(Rotate(float4(pos*planetSize, 1.0f),gTime,gRotAxis), gWVP);
 			vOut.posH = mul(float4(pos*planetSize, 1.0f), gWVP);
 		}
 	}
@@ -385,10 +419,10 @@ stratVertOut StratosphereVS(appdata IN)
 		
 	if(gRotate){
 		if(gStratosphere){
-			vOut.posH = mul(Rotate(float4(IN.posL*(planetSize + 0.4f),1.0f),gTime), gWVP);
+			vOut.posH = mul(Rotate(float4(IN.posL*(planetSize + 0.4f),1.0f),gTime,gRotAxis), gWVP);
 		}
 		else{
-			vOut.posH = mul(Rotate(float4(IN.posL*planetSize, 1.0f),gTime), gWVP);
+			vOut.posH = mul(Rotate(float4(IN.posL*planetSize, 1.0f),gTime,gRotAxis), gWVP);
 		}
 	}
 	else{
@@ -489,6 +523,40 @@ particleVertInOut SpriteParticle_Spray_VS(float3 pos    : POSITION0,
     return outgoing;
 }
 
+vertNormOut normalMap_Star_VS(float3 pos	: POSITION0,
+					float3 tangent	: TANGENT0,
+					float3 binormal	: BINORMAL0,
+					float3 normal	: NORMAL0,
+					float3 tex0	: TEXCOORD0){
+	vertNormOut vOut = (vertNormOut)0;
+	
+	/* Make Tangent-Binormal-Normal Matrix */
+	float3x3 TBN;
+	TBN[0] = mul(normalize(tangent),gWorld);
+	TBN[1] = mul(normalize(binormal),gWorld);
+	TBN[2] = mul(normalize(normal),gWorld);
+	
+	/* transform toEye vector to tan space */
+	float3 eyePos = mul(gWInv,float4(gEyePosW,1.0f));
+	vOut.toEye = normalize(mul(eyePos - pos,TBN));
+	
+	/* transform lightDir vector to tan space */
+	vOut.lightDir = normalize(mul(gLightVecW, TBN));
+	
+	vOut.tex0 = pos;
+
+	if(gRotate){
+		if(gStratosphere){
+			vOut.posH = mul(Rotate(float4(pos*(planetSize + 0.4f),1.0f),gTime,gRotAxis), gWVP);
+		}
+		else{
+			vOut.posH = mul(Rotate(float4(pos*planetSize, 1.0f),gTime,gRotAxis), gWVP);
+		}
+	}
+	
+	return vOut;
+}
+
 //========================
 // PixelShaders
 //========================
@@ -521,15 +589,15 @@ float4 PhongPS(vertOut IN) : COLOR
 		return float4((ColorShift().rgb) + ambient + spec, gDiffuseMtrl.a);
 	}
 	else if(gGreyMap){
-		if(diffuseTex.r != 0 && diffuseTex.g != 0 && diffuseTex.b != 0){
-			diffuseTex.r = gPlanetColorA.r;
-			diffuseTex.g = gPlanetColorA.b;
-			diffuseTex.b = gPlanetColorA.g;
+		if(diffuseTex.r + diffuseTex.g + diffuseTex.b != 0){
+			diffuseTex.r = gGreyMapColorA.r;
+			diffuseTex.g = gGreyMapColorA.b;
+			diffuseTex.b = gGreyMapColorA.g;
 		}
-		if(diffuseTex.r == 0 && diffuseTex.g == 0 && diffuseTex.b == 0){
-			diffuseTex.r = gPlanetColorB.r;
-			diffuseTex.g = gPlanetColorB.b;
-			diffuseTex.b = gPlanetColorB.g;
+		if(diffuseTex.r + diffuseTex.g + diffuseTex.b == 0){
+			diffuseTex.r = gGreyMapColorB.r;
+			diffuseTex.g = gGreyMapColorB.b;
+			diffuseTex.b = gGreyMapColorB.g;
 		}
 		return float4(diffuseTex + ambient + spec, gDiffuseMtrl.a);
 	}
@@ -537,6 +605,39 @@ float4 PhongPS(vertOut IN) : COLOR
 		return float4(diffuseTex + ambient + spec, gDiffuseMtrl.a);
 	}
 	
+}
+
+float4 Phong_Player_PS(vertOut IN) : COLOR
+{
+	IN.normalW = normalize(IN.normalW);
+	//=======================================================
+	// Lighting
+
+	float3 toEye = normalize(gEyePosW - IN.posW);
+	float3 r = reflect(-gLightVecW, IN.normalW);
+	float t  = pow(max(dot(r, toEye), 0.0f), gSpecularPower);
+	float s = max(dot(gLightVecW, IN.normalW), 0.0f);
+
+	float3 spec = t*(gSpecularMtrl*gSpecularLight).rgb;
+	float4 diffuse = s*(gDiffuseMtrl*gDiffuseLight);
+	float3 ambient = gAmbientMtrl*gAmbientLight;
+
+	//=======================================================
+	float4 texColor = tex2D(TexS,IN.tex0);
+	
+	float clamp = 0.35f;
+	diffuse.r = Clamp(clamp,diffuse.r);
+	diffuse.g = Clamp(clamp,diffuse.g);
+	diffuse.b = Clamp(clamp,diffuse.b);
+	
+	float4 diffuseTex = diffuse * texColor;
+	
+	if(gColorShift){
+		return float4((ColorShift().rgb) + ambient + spec, diffuseTex.a);
+	}
+	else{
+		return float4(diffuseTex.rgb + ambient + spec, texColor.a);
+	}
 }
 
 float4 GlowPS(vertOut IN) : COLOR
@@ -549,7 +650,7 @@ float4 GlowPS(vertOut IN) : COLOR
     return float4(result,edge);
 }
 
-float4 NormalMapPS(	vertNormOut IN) : COLOR
+float4 NormalMap_Planet_PS(	vertNormOut IN) : COLOR
 {
 	float3 eye = normalize(IN.toEye);
 	float3 light = normalize(IN.lightDir);
@@ -574,15 +675,15 @@ float4 NormalMapPS(	vertNormOut IN) : COLOR
 		if(	(texCol.r >= 0.4f && texCol.r < 0.6f) && 
 			(texCol.g >= 0.4f && texCol.g < 0.6f) &&
 			(texCol.b >= 0.4f && texCol.b < 0.6f)){
-			texCol.r = gPlanetColorA.r;
-			texCol.g = gPlanetColorA.g;
-			texCol.b = gPlanetColorA.b;
+			texCol.r = gGreyMapColorA.r;
+			texCol.g = gGreyMapColorA.g;
+			texCol.b = gGreyMapColorA.b;
 			texCol.a = 1.0f;
 		}
 		else if(texCol.r == 0.0f && texCol.g == 0.0f && texCol.b == 0.0f){
-			texCol.r = gPlanetColorB.r;
-			texCol.g = gPlanetColorB.g;
-			texCol.b = gPlanetColorB.b;
+			texCol.r = gGreyMapColorB.r;
+			texCol.g = gGreyMapColorB.g;
+			texCol.b = gGreyMapColorB.b;
 			texCol.a = 1.0f;
 		}
 		else{
@@ -631,10 +732,100 @@ float4 SpriteParticle_PS(float4 color : COLOR0,
 	return col;
 }
 
-float4 SimpleOut_PS(float4 color : COLOR0,
-					float2 tex1	 : TEXCOORD0) : COLOR
+float4 StarGreyMap_Body(float4 texIn)
 {
-	return color;					
+	
+	if(	(texIn.r < 0.7f) && 
+			(texIn.g < 0.7f) &&
+			(texIn.b < 0.7f)){
+			texIn.r = gGreyMapColorB.r;
+			texIn.g = gGreyMapColorB.g;
+			texIn.b = gGreyMapColorB.b;
+			texIn.a = 1.0f;
+		}
+		else{
+			//texIn.r = gGreyMapColorA.r;
+			//texIn.g = gGreyMapColorA.g;
+			//texIn.b = gGreyMapColorA.b;
+			texIn.r = gGreyMapColorB.r + cos(gTime/4) + 0.98f;
+			texIn.g = gGreyMapColorB.g + cos(gTime/4) + 0.98f;
+			texIn.b = gGreyMapColorB.b + cos(gTime/4) + 0.98f;
+			texIn.a = 1.0f;
+		}
+		
+		return texIn;
+}
+
+
+float4 NormalMap_Star_PS(vertNormOut IN) : COLOR
+{
+	float3 light = normalize(IN.lightDir);
+	float4 tex =  texCUBE(StarTex_Mid,IN.tex0);
+	
+	//=======================================================
+	// Lighting
+	float s = max(dot(light, float3(1.0f,1.0f,1.0f)),0.0f);
+
+	float3 diffuse = s*(gDiffuseMtrl*gDiffuseLight);
+	//float3 ambient = (gAmbientMtrl*gAmbientLight);
+	float3 ambient = float3(1.0f,1.0f,1.0f);
+	//=======================================================
+	
+	if(gGreyMap){
+		tex = StarGreyMap_Body(tex);
+		float3 color = (ambient + diffuse)*tex.rgb;
+		return float4(color,tex.a);
+	}
+	else{
+		float3 color = (ambient + diffuse)*tex.rgb;
+		return float4(color,tex.a);
+	}
+}
+float4 StarGreyMap_Surface(float4 texIn)
+{
+	
+	if(	
+		(texIn.r < 0.55f) && 
+			(texIn.g < 0.55f) &&
+			(texIn.b < 0.55f) &&
+			texIn.a < 1){
+		texIn.r = gGreyMapColorC.r;
+		texIn.g = gGreyMapColorC.g;
+		texIn.b = gGreyMapColorC.b;
+		texIn.a = cos(gTime/2) + 1.2f;
+	}
+	else{
+		texIn.a = 0;
+	}
+	return texIn;
+}
+float4 NormalMap_Star_Surface_PS(vertNormOut IN) : COLOR
+{
+	float3 texCoord = IN.tex0;
+	texCoord.x += cos(gTime);
+	texCoord.y += sin(gTime);
+	float3 light = normalize(IN.lightDir);
+	float4 tex =  texCUBE(StarTex_Top,texCoord);
+	
+	
+	//=======================================================
+	// Lighting
+	float s = max(dot(light, float3(1.0f,1.0f,1.0f)),0.0f);
+
+	float3 diffuse = s*(gDiffuseMtrl*gDiffuseLight);
+	//float3 ambient = (gAmbientMtrl*gAmbientLight);
+	float3 ambient = float3(1.0f,1.0f,1.0f);
+	//=======================================================
+	
+	if(gGreyMap){
+		tex = StarGreyMap_Surface(tex);
+		float3 color = (ambient + diffuse)*tex.rgb;
+		return float4(color,tex.a);
+	}
+	else{
+		float3 color = (ambient + diffuse)*tex.rgb;
+		return float4(color,tex.a);
+	}
 }
 
 technique Main
@@ -643,6 +834,20 @@ technique Main
     {
         vertexShader = compile vs_2_0 PhongVS();
         pixelShader  = compile ps_2_0 PhongPS();
+		CullMode = CCW;
+    }
+}
+
+technique Player
+{
+    pass P0
+    {
+        vertexShader = compile vs_2_0 Phong_Player_VS();
+        pixelShader  = compile ps_2_0 Phong_Player_PS();
+        
+        ZEnable = true;
+		ZWriteEnable = true;
+		
 		CullMode = CCW;
     }
 }
@@ -672,8 +877,8 @@ technique Planet
 {
 	pass P0
 	{
-        vertexShader = compile vs_2_0 normalMapVS();
-        pixelShader  = compile ps_2_0 NormalMapPS();
+        vertexShader = compile vs_2_0 normalMap_Planet_VS();
+        pixelShader  = compile ps_2_0 NormalMap_Planet_PS();
         
         ZEnable = true;
 		ZWriteEnable = true;
@@ -720,5 +925,32 @@ technique Particle_Spray
 	{
 		vertexShader = compile vs_2_0 SpriteParticle_Spray_VS();
         pixelShader  = compile ps_2_0 SpriteParticle_PS();
+        ZEnable = true;
+		ZWriteEnable = true;
+	}
+}
+
+technique Star
+{
+	pass P0
+	{
+		vertexShader = compile vs_2_0 normalMap_Star_VS();
+        pixelShader  = compile ps_2_0 NormalMap_Star_PS();
+        
+        ZEnable = true;
+		ZWriteEnable = true;
+		CullMode = CCW;
+	}
+	pass P1
+	{
+		vertexShader = compile vs_2_0 normalMap_Star_VS();
+        pixelShader  = compile ps_2_0 NormalMap_Star_Surface_PS();
+        
+        ZEnable = true;
+		ZWriteEnable = true;
+		AlphaBlendEnable = true;
+		SrcBlend = SrcAlpha;
+		DestBlend = InvSrcAlpha;
+		CullMode = CCW;
 	}
 }
