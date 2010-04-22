@@ -603,7 +603,9 @@ namespace WorldWeaver
             visualEffects = new CustomEffects();
             model = content.Load<Model>(Globals.AssetList.playerModelPath);
             visualEffects.Phong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
-            mTexture = content.Load<Texture2D>("Models\\testTex2");
+            mTexture = content.Load<Texture2D>("Images\\whattrex");
+            Effect customPhong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
+            CustomEffects.ChangeEffectUsedByModel(model, customPhong);
             ReadyToRender = true;
         }
 
@@ -632,7 +634,7 @@ namespace WorldWeaver
                         visualEffects.Set_Phong_Specular(new Vector4(0.8f, 0.8f, 0.8f, 1.0f), visualEffects.color_white, 20.0f);
                         visualEffects.Set_Specials_Phong(false, false, false, false);
 
-                        DrawModel_Phong(model, transforms, world, "Main");
+                        DrawModel_Phong(model, transforms, world, "Player");
                         //code End[]
                         BoundingSphereRenderer.Render(collisionSphere, Globals.sceneGraphManager.GraphicsDevice, Globals.ChaseCamera.View, Globals.ChaseCamera.Projection, Globals.DEBUG);
                     }
@@ -644,34 +646,82 @@ namespace WorldWeaver
         {
             this.camera = Globals.ChaseCamera;
 
-            graphics.GraphicsDevice.VertexDeclaration = new VertexDeclaration(graphics.GraphicsDevice, VertexPositionNormalTextureTangentBinormal.VertexElements);
-            visualEffects.Phong.CurrentTechnique = visualEffects.Phong.Techniques[technique];
+            // Set suitable renderstates for drawing a 3D model.
+            RenderState renderState = graphics.GraphicsDevice.RenderState;
 
-            visualEffects.Phong.Begin();
+            renderState.AlphaBlendEnable = false;
+            renderState.AlphaTestEnable = false;
+            renderState.DepthBufferEnable = true;
 
-            foreach (EffectPass pass in visualEffects.Phong.CurrentTechnique.Passes)
+            // Look up the bone transform matrices.
+            Matrix[] transforms = new Matrix[model.Bones.Count];
+
+            model.CopyAbsoluteBoneTransformsTo(transforms);
+
+            // Draw the model.
+            foreach (ModelMesh mesh in model.Meshes)
             {
-                // Begin current pass
-                pass.Begin();
-
-                foreach (ModelMesh mesh in model.Meshes)
+                foreach (Effect effect in mesh.Effects)
                 {
-                    foreach (ModelMeshPart part in mesh.MeshParts)
-                    {
-                        part.Effect = visualEffects.Phong;
-                        visualEffects.Update_Phong(transform[mesh.ParentBone.Index] * world, camera.View, camera.Projection, camera.Position);
-                        visualEffects.Phong.Parameters["gTex0"].SetValue(mTexture);
+                    // Specify which effect technique to use.
+                    effect.CurrentTechnique = effect.Techniques[technique];
 
-                        graphics.GraphicsDevice.Vertices[0].SetSource(mesh.VertexBuffer, part.StreamOffset, part.VertexStride);
-                        graphics.GraphicsDevice.Indices = mesh.IndexBuffer;
-                        graphics.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
-                                                                      part.BaseVertex, 0, part.NumVertices,
-                                                                      part.StartIndex, part.PrimitiveCount);
-                    }
+                    Matrix localWorld = transforms[mesh.ParentBone.Index] * world;
+
+                    effect.Parameters["gWorld"].SetValue(localWorld);
+                    effect.Parameters["gWIT"].SetValue(Matrix.Invert(Matrix.Transpose(localWorld)));
+                    effect.Parameters["gWInv"].SetValue(Matrix.Invert(localWorld));
+                    effect.Parameters["gWVP"].SetValue(localWorld * camera.View * camera.Projection);
+                    effect.Parameters["gEyePosW"].SetValue(camera.Position);
+
+                    effect.Parameters["gLightVecW"].SetValue(new Vector3(0.0f, -1.0f, 0.0f));
+                    effect.Parameters["gDiffuseMtrl"].SetValue(new Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+                    effect.Parameters["gDiffuseLight"].SetValue(Color.White.ToVector4());
+                    effect.Parameters["gAmbientMtrl"].SetValue(Color.White.ToVector4());
+                    effect.Parameters["gAmbientLight"].SetValue(new Vector4(0.1f, 0.1f, 0.1f, 1.0f));
+                    effect.Parameters["gSpecularMtrl"].SetValue(new Vector4(0.8f, 0.8f, 0.8f, 1.0f));
+                    effect.Parameters["gSpecularLight"].SetValue(Color.White.ToVector4());
+                    effect.Parameters["gSpecularPower"].SetValue(20.0f);
+
+                    effect.Parameters["gRotSpeed"].SetValue(1.0f);
+
+                    effect.CommitChanges();
                 }
-                pass.End();
+
+                mesh.Draw();
             }
-            visualEffects.Phong.End();
+
+            //graphics.GraphicsDevice.VertexDeclaration = new VertexDeclaration(graphics.GraphicsDevice, VertexPositionNormalTextureTangentBinormal.VertexElements);
+            //visualEffects.Phong.CurrentTechnique = visualEffects.Phong.Techniques[technique];
+
+            //visualEffects.Phong.Begin();
+
+            //foreach (EffectPass pass in visualEffects.Phong.CurrentTechnique.Passes)
+            //{
+            //    // Begin current pass
+            //    pass.Begin();
+
+            //    foreach (ModelMesh mesh in model.Meshes)
+            //    {
+            //        foreach (ModelMeshPart part in mesh.MeshParts)
+            //        {
+            //                //part.Effect = visualEffects.Phong;
+            //                visualEffects.Update_Phong(transform[mesh.ParentBone.Index] * world, camera.View, camera.Projection, camera.Position);
+            //                //visualEffects.Phong.Parameters["gTex0"].SetValue(mTexture);
+            //                visualEffects.Phong.CommitChanges();
+
+            //                graphics.GraphicsDevice.Vertices[0].SetSource(mesh.VertexBuffer, part.StreamOffset, part.VertexStride);
+            //                graphics.GraphicsDevice.Indices = mesh.IndexBuffer;
+            //                graphics.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
+            //                                                              part.BaseVertex, 0, part.NumVertices,
+            //                                                              part.StartIndex, part.PrimitiveCount);
+                        
+                        
+            //        }
+            //    }
+            //    pass.End();
+            //}
+            //visualEffects.Phong.End();
         }
 
         private void DrawModel_Phong_Special(Model model, Matrix[] transform, Matrix world, string technique, GameTime time)
@@ -694,6 +744,7 @@ namespace WorldWeaver
                     {
                         part.Effect = visualEffects.Phong;
                         visualEffects.Update_Phong(transform[mesh.ParentBone.Index] * world, camera.View, camera.Projection, camera.Position);
+                        //visualEffects.Phong.Parameters["gTex0"].SetValue(mTexture);
 
                         graphics.GraphicsDevice.Vertices[0].SetSource(mesh.VertexBuffer, part.StreamOffset, part.VertexStride);
                         graphics.GraphicsDevice.Indices = mesh.IndexBuffer;

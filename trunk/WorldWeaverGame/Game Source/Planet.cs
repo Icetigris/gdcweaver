@@ -28,9 +28,9 @@ namespace WorldWeaver
         private ChaseCamera camera;
         //wb
         private Texture2D planetMap;
+        private TextureCube planetMapCube;
         private Texture2D planetMap_normal;
-        private Texture2D planetMap_normal2;
-        private Texture2D planetMap_normal3;
+        private TextureCube planetMapCube_normal;
         private Texture2D clouds;
         private String curTechnique;
         private CustomEffects visualEffects = new CustomEffects();
@@ -171,7 +171,6 @@ namespace WorldWeaver
             if (boundingSphere.Intersects(particle.CollectionSphere))
             {
                 Vector3 newParticlePosition = new Vector3();
-
                 float distance = boundingSphere.Radius + player.CollisionSphere.Radius;
 
                 //is this faster than just doing (Math.Abs(Center) - Math.Abs(Position)) * (Center < 0) ? -1:1)
@@ -191,46 +190,13 @@ namespace WorldWeaver
             }
         }
 
-
-
-        //wb
-        /* Switches between 2 colors depending on player.mPool.
-		 * Once this system is plugged into planets and not Planets
-		 * this will only be called once upon planet creation, so
-		 * it won't be an update method.
-         */
+        /// <summary>
+        /// Manages the colors of the greymaps currently used to texture
+        /// the planets. At this time supports only 2 colors at a time.
+        /// </summary>
+        /// <param name="mPool"></param>
         public void CreateGreyMapColors(MoleculePool mPool)
         {
-            //if (mPool.Particles.Count > 0 &&
-            //    mPool.Particles.Count <= 4)
-            //{
-            //    greyMapColorA = new Vector3(0, 1, 0);
-            //    greyMapColorB = new Vector3(0, 0, 1);
-            //}
-            //else if (mPool.Particles.Count > 4 &&
-            //    mPool.Particles.Count <= 8)
-            //{
-            //    greyMapColorA = new Vector3(1, 0, 0);
-            //    greyMapColorB = new Vector3(1.0f, 0.0f, 1.0f);
-            //}
-            //else if (mPool.Particles.Count > 8 &&
-            //    mPool.Particles.Count <= 12)
-            //{
-            //    greyMapColorA = new Vector3(1, 1, 0);
-            //    greyMapColorB = new Vector3(0.0f, 1.0f, 1.0f);
-            //}
-            //else if (mPool.Particles.Count > 12 &&
-            //    mPool.Particles.Count <= 16)
-            //{
-            //    greyMapColorA = new Vector3(0.3f, 1, 0.3f);
-            //    greyMapColorB = new Vector3(1.0f, 1.0f, 1.0f);
-            //}
-            //else
-            //{
-            //    greyMapColorA = new Vector3(0, 0, 1.0f);
-            //    greyMapColorB = new Vector3(0, 1.0f, 0);
-            //}
-
             //ELIZABETH TIEM:
             //make the greyMap A and B colours dependent on the 2 most predominant colours in the mPool
             greyMapColorA = Particle.convertColor((int)mPool.getColourFrequencies()[0]);
@@ -242,13 +208,13 @@ namespace WorldWeaver
         public void LoadContent()
         {
             //wb
-            model = content.Load<Model>("..\\Content\\Models\\plus1");
+            model = content.Load<Model>("..\\Content\\Models\\sphere");
             //model = content.Load<Model>("Models\\teapot");
             visualEffects.Phong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
-            planetMap = content.Load<Texture2D>("..\\Content\\Textures\\planetMap");
-            planetMap_normal = content.Load<Texture2D>("..\\Content\\Textures\\planetMap_normal");
-            planetMap_normal2 = content.Load<Texture2D>("..\\Content\\Textures\\planetMap_normal2");
-            planetMap_normal3 = content.Load<Texture2D>("..\\Content\\Textures\\planetMap_normal3");
+            planetMap = content.Load<Texture2D>("..\\Content\\Textures\\planet_cubeMap");
+            planetMapCube = content.Load<TextureCube>("..\\Content\\Textures\\testCubeMap");
+            planetMapCube_normal = content.Load<TextureCube>("..\\Content\\Textures\\normalCube");
+            planetMap_normal = content.Load<Texture2D>("..\\Content\\Textures\\planet_normalCubeMap");
             clouds = content.Load<Texture2D>("..\\Content\\Textures\\clouds2");
             //end wb
             ReadyToRender = true;
@@ -323,19 +289,20 @@ namespace WorldWeaver
                         {
                             visualEffects.Set_IsGreymapped(true);
                             visualEffects.Set_GreyMapColors(greyMapColorA, greyMapColorB);
-                            visualEffects.Phong.Parameters["gTex0"].SetValue(planetMap);
-                            visualEffects.Phong.Parameters["gTexN"].SetValue(planetMap_normal3);
+                            visualEffects.Phong.Parameters["gTex0"].SetValue(planetMapCube);
+                            visualEffects.Phong.Parameters["gTexN"].SetValue(planetMapCube_normal);
                             visualEffects.Phong.Parameters["gStratosphere"].SetValue(false);
-                            visualEffects.Update_Rotate('z',0.1f);
+                            visualEffects.Update_Rotate('z', 0.1f);
                         }
                         if (curTechnique.Equals("Stratosphere"))
                         {
                             visualEffects.Set_IsGreymapped(false);
                             visualEffects.Phong.Parameters["gTexAnimated"].SetValue(clouds);
                             visualEffects.Phong.Parameters["gStratosphere"].SetValue(true);
-                            visualEffects.Update_Rotate('z',0.2f);
+                            visualEffects.Update_Rotate('z', 0.2f);
                         }
 
+                        visualEffects.Phong.CommitChanges();
                         Globals.sceneGraphManager.GraphicsDevice.Vertices[0].SetSource(mesh.VertexBuffer, part.StreamOffset, part.VertexStride);
                         Globals.sceneGraphManager.GraphicsDevice.Indices = mesh.IndexBuffer;
                         Globals.sceneGraphManager.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,

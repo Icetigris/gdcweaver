@@ -18,17 +18,14 @@ namespace WorldWeaver
         private Matrix world;
         private ChaseCamera camera;
         //wb
-        private Texture2D planetMap;
-        private TextureCube planetMapCube;
-        private Texture2D planetMap_normal;
-        private TextureCube planetMapCube_normal;
-        private Texture2D planetMap_normal2;
-        private Texture2D planetMap_normal3;
-        private Texture2D clouds;
-        private String curTechnique;
+        private TextureCube starCubeMap_Low;
+        private TextureCube starCubeMap_Mid;
+        private TextureCube starCubeMap_Top;
+        private TextureCube starCubeMap_Normal;
         private CustomEffects visualEffects = new CustomEffects();
         private Vector3 greyMapColorA;
         private Vector3 greyMapColorB;
+        private Vector3 greyMapColorC;
         //
         #endregion
 
@@ -163,12 +160,7 @@ namespace WorldWeaver
         {
         }
 
-        //wb
-        /* Switches between 2 colors depending on player.mPool.
-		 * Once this system is plugged into planets and not stars
-		 * this will only be called once upon planet creation, so
-		 * it won't be an update method.
-         */
+      
         public void CreateGreyMapColors(MoleculePool mPool)
         {
             //if (mPool.Particles.Count > 0 &&
@@ -203,8 +195,12 @@ namespace WorldWeaver
 
             //ELIZABETH TIEM:
             //make the greyMap A and B colours dependent on the 2 most predominant colours in the mPool
-            greyMapColorA = Particle.convertColor((int)mPool.getColourFrequencies()[0]);
-            greyMapColorB = Particle.convertColor((int)mPool.getColourFrequencies()[1]);
+            //greyMapColorA = Particle.convertColor((int)mPool.getColourFrequencies()[0]);
+            //greyMapColorB = Particle.convertColor((int)mPool.getColourFrequencies()[1]);
+
+            greyMapColorA = new Vector3(1, 1, 1); 
+            greyMapColorB = new Vector3(1, 0.49f, 0.14f);
+            greyMapColorC = new Vector3(0.80f,0,0);
         }
 
         //When the scene graph calls each loadable object's LoadContent(), 
@@ -215,11 +211,8 @@ namespace WorldWeaver
             model = content.Load<Model>("..\\Content\\Models\\sphere");
             //model = content.Load<Model>("Models\\teapot");
             visualEffects.Phong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
-            planetMap = content.Load<Texture2D>("..\\Content\\Textures\\planet_cubeMap");
-            planetMapCube = content.Load<TextureCube>("..\\Content\\Textures\\testCubeMap");
-            planetMapCube_normal = content.Load<TextureCube>("..\\Content\\Textures\\normalCube");
-            planetMap_normal = content.Load<Texture2D>("..\\Content\\Textures\\planet_normalCubeMap");
-            clouds = content.Load<Texture2D>("..\\Content\\Textures\\clouds2");
+            starCubeMap_Mid = content.Load<TextureCube>("..\\Content\\Textures\\grey_cube_mid");
+            starCubeMap_Top = content.Load<TextureCube>("..\\Content\\Textures\\top_5");
             //end wb
             ReadyToRender = true;
 
@@ -247,15 +240,12 @@ namespace WorldWeaver
                     visualEffects.Set_Phong_Specular(new Vector4(0.8f, 0.8f, 0.8f, 1.0f), visualEffects.color_white, 20.0f);
 
                     visualEffects.Set_IsGreymapped(true);
-                    visualEffects.Set_GreyMapColors(greyMapColorA, greyMapColorB);
+                    visualEffects.Set_GreyMapColors(greyMapColorA, greyMapColorB, greyMapColorC);
 
                     visualEffects.Set_Specials_Phong(false, false, false, true);
                     visualEffects.Update_Time(gameTime);
                     visualEffects.Update_Rotate('z',0.1f);
-                    curTechnique = "Planet";
-                    DrawModel_Phong(model, transforms, world, curTechnique);
-                    curTechnique = "Stratosphere";
-                    DrawModel_Phong(model, transforms, world, curTechnique);
+                    DrawModel_Phong(model, transforms, world, "Star");
                     //code End[]
 
                     mesh.Draw();
@@ -284,22 +274,10 @@ namespace WorldWeaver
                         part.Effect = visualEffects.Phong;
                         visualEffects.Update_Phong(transform[mesh.ParentBone.Index] * world, camera.View, camera.Projection, camera.Position);
 
-                        if (curTechnique.Equals("Planet"))
-                        {
-                            visualEffects.Set_IsGreymapped(true);
-                            visualEffects.Set_GreyMapColors(greyMapColorA, greyMapColorB);
-                            visualEffects.Phong.Parameters["gTex0"].SetValue(planetMapCube);
-                            visualEffects.Phong.Parameters["gTexN"].SetValue(planetMapCube_normal);
-                            visualEffects.Phong.Parameters["gStratosphere"].SetValue(false);
-                            visualEffects.Update_Rotate('z',0.1f);
-                        }
-                        if (curTechnique.Equals("Stratosphere"))
-                        {
-                            visualEffects.Set_IsGreymapped(false);
-                            visualEffects.Phong.Parameters["gTexAnimated"].SetValue(clouds);
-                            visualEffects.Phong.Parameters["gStratosphere"].SetValue(true);
-                            visualEffects.Update_Rotate('z',0.2f);
-                        }
+                        visualEffects.Phong.Parameters["gTex1"].SetValue(starCubeMap_Mid);
+                        visualEffects.Phong.Parameters["gTex2"].SetValue(starCubeMap_Top);
+                        visualEffects.Phong.Parameters["gStratosphere"].SetValue(false);
+                        visualEffects.Update_Rotate('z', 0.1f);
 
                         visualEffects.Phong.CommitChanges();
                         Globals.sceneGraphManager.GraphicsDevice.Vertices[0].SetSource(mesh.VertexBuffer, part.StreamOffset, part.VertexStride);

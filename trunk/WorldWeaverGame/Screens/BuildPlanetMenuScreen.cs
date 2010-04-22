@@ -66,7 +66,7 @@ namespace WorldWeaver
 
                 case 1:
                     //Build planet
-                    if (solarSystem.SystemEmpty() ) // Requires at least 1 sun
+                    if (solarSystem.SystemEmpty() && Globals.numStars > 0) // Requires at least 1 sun
                     {
                         Planet s = new Planet("Planet", Vector3.One, p.Position, 1.0, p.mPool, Globals.sceneGraphManager.GraphicsManager);
                         solarSystem.Add(s);

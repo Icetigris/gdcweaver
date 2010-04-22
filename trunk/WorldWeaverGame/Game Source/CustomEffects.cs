@@ -113,8 +113,15 @@ namespace WorldWeaver
         }
         public void Set_GreyMapColors(Vector3 colorA, Vector3 colorB)
         {
-            Phong.Parameters["gPlanetColorA"].SetValue(colorA);
-            Phong.Parameters["gPlanetColorB"].SetValue(colorB);
+            Phong.Parameters["gGreyMapColorA"].SetValue(colorA);
+            Phong.Parameters["gGreyMapColorB"].SetValue(colorB);
+            Phong.CommitChanges();
+        }
+        public void Set_GreyMapColors(Vector3 colorA, Vector3 colorB, Vector3 colorC)
+        {
+            Phong.Parameters["gGreyMapColorA"].SetValue(colorA);
+            Phong.Parameters["gGreyMapColorB"].SetValue(colorB);
+            Phong.Parameters["gGreyMapColorC"].SetValue(colorC);
             Phong.CommitChanges();
         }
 
@@ -129,6 +136,51 @@ namespace WorldWeaver
         }
 
         #endregion
+
+        #endregion
+
+        #region ChangeModelEffect
+
+        /// <summary>
+        /// Alters a model so it will draw using a custom effect, while preserving
+        /// whatever textures were set on it as part of the original effects.
+        /// </summary>
+        public static void ChangeEffectUsedByModel(Model model, Effect replacementEffect)
+        {
+            // Table mapping the original effects to our replacement versions.
+            Dictionary<Effect, Effect> effectMapping = new Dictionary<Effect, Effect>();
+
+            foreach (ModelMesh mesh in model.Meshes)
+            {
+                // Scan over all the effects currently on the mesh.
+                foreach (BasicEffect oldEffect in mesh.Effects)
+                {
+                    // If we haven't already seen this effect...
+                    if (!effectMapping.ContainsKey(oldEffect))
+                    {
+                        // Make a clone of our replacement effect. We can't just use
+                        // it directly, because the same effect might need to be
+                        // applied several times to different parts of the model using
+                        // a different texture each time, so we need a fresh copy each
+                        // time we want to set a different texture into it.
+                        Effect newEffect = replacementEffect.Clone(
+                                                    replacementEffect.GraphicsDevice);
+
+                        // Copy across the texture from the original effect.
+                        newEffect.Parameters["gTex0"].SetValue(oldEffect.Texture);
+
+                        effectMapping.Add(oldEffect, newEffect);
+                    }
+                }
+
+                // Now that we've found all the effects in use on this mesh,
+                // update it to use our new replacement versions.
+                foreach (ModelMeshPart meshPart in mesh.MeshParts)
+                {
+                    meshPart.Effect = effectMapping[meshPart.Effect];
+                }
+            }
+        }
 
         #endregion
 
