@@ -610,14 +610,35 @@ namespace WorldWeaver
             switch(Globals.godcharge)
             {
 
-                case 3:
-                    model = content.Load<Model>("Models//teapot");
-                    break;
-                    
                 case -1:
 
                     model = content.Load<Model>(Globals.AssetList.playerModelPath);
                     break;
+
+                case 3:
+                    model = content.Load<Model>("Models//teapot");
+                    break;
+
+                case -2:
+                    model = content.Load<Model>("Models//teapot");
+                    break;
+
+                case -3:
+                    model = content.Load<Model>("Models//teapot");
+                    break;
+                case 2:
+                    model = content.Load<Model>("Models//teapot");
+                    break;
+
+                case -4:
+                    model = content.Load<Model>("Models//teapot");
+                    break;
+
+                case 1:
+                    model = content.Load<Model>("Models//teapot");
+                    break;
+                    
+                
             }
 
 
