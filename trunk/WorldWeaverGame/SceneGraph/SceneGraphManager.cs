@@ -47,6 +47,7 @@ namespace WorldWeaver
             //graphics.GraphicsDevice.RenderState.DepthBufferEnable = true;
             base.Draw(gameTime);
             _root.Draw(gameTime);
+            GC.Collect();
         }
 
         //Load content
