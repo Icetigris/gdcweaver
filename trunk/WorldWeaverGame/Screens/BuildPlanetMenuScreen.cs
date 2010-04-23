@@ -9,7 +9,6 @@ namespace WorldWeaver
 
         #region Variables
 
-        SolarSystem solarSystem;
         Player p;
         #endregion
 
@@ -21,7 +20,7 @@ namespace WorldWeaver
         public BuildPlanetMenuScreen(Player player)
             : base("Build Celestial Body Menu")
         {
-            solarSystem = new SolarSystem();
+            Globals.solarSystem = new SolarSystem();
 
             MenuEntries.Add(new MenuEntry("Build Star"));
             MenuEntries.Add(new MenuEntry("Build Planet"));
@@ -52,7 +51,7 @@ namespace WorldWeaver
                     {
                         Star s = new Star("Sun", Vector3.One, p.Position, 400.0, p.mPool, Globals.sceneGraphManager.GraphicsManager);
                         Globals.numStars++;
-                        solarSystem.Add(s);
+                        Globals.solarSystem.Add(s);
                         s.MySceneIndex = SceneGraphManager.SceneCount;
                         Console.WriteLine(s.Name + "'s index: " + s.MySceneIndex);
                         s.LoadContent();
@@ -66,10 +65,10 @@ namespace WorldWeaver
 
                 case 1:
                     //Build planet
-                    if (solarSystem.SystemEmpty() && Globals.numStars > 0) // Requires at least 1 sun
+                    if (Globals.solarSystem.SystemEmpty() && Globals.numStars > 0) // Requires at least 1 sun
                     {
                         Planet s = new Planet("Planet", Vector3.One, p.Position, 400.0, p.mPool, Globals.sceneGraphManager.GraphicsManager);
-                        solarSystem.Add(s);
+                        Globals.solarSystem.Add(s);
                         s.MySceneIndex = SceneGraphManager.SceneCount;
                         Console.WriteLine(s.Name + "'s index: " + s.MySceneIndex);
                         s.LoadContent();

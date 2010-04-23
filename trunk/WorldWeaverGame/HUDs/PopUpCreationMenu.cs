@@ -14,9 +14,6 @@ namespace WorldWeaver
     {
         private Texture2D pmenu;
         Player p = Globals.Player;
-        SolarSystem solarSystem = new SolarSystem();
-
-
 
         //loading extra icons, Kevin
         private Texture2D aIcon;
@@ -110,7 +107,7 @@ namespace WorldWeaver
                     {
                         Star s = new Star("Sun", Vector3.One, Globals.Player.Position, 400.0, Globals.Player.mPool, Globals.sceneGraphManager.GraphicsManager);
                         Globals.numStars++;
-                        solarSystem.Add(s);
+                        Globals.solarSystem.Add(s);
                         s.MySceneIndex = SceneGraphManager.SceneCount;
                         Console.WriteLine(s.Name + "'s index: " + s.MySceneIndex);
                         s.LoadContent();
@@ -125,11 +122,11 @@ namespace WorldWeaver
                 else if ((canCreate == true) && 
                         (gamePadState.IsButtonDown(Buttons.DPadLeft) || keyboardState.IsKeyDown(Keys.A)))
                 {
-                    if (!solarSystem.SystemEmpty())
+                    if (!Globals.solarSystem.SystemEmpty())
                     {
                         // Spawn planet
                         Planet planet = new Planet("Planet", Vector3.One, Globals.Player.Position, 400, Globals.Player.mPool, Globals.sceneGraphManager.GraphicsManager);
-                        solarSystem.Add(planet);
+                        Globals.solarSystem.Add(planet);
                         planet.MySceneIndex = SceneGraphManager.SceneCount;
                         Console.WriteLine(planet.Name + "'s index: " + planet.MySceneIndex);
                         planet.LoadContent();

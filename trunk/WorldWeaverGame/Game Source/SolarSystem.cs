@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WorldWeaver
 {
-    class SolarSystem
+    public class SolarSystem
     {
         //int gravityPoints; //gravity points = SolarSystem.Sun.Mass * 10
         bool centralStarExists = false; //true when there is at least 1 star in the bodyList, false when it's empty
@@ -26,8 +26,6 @@ namespace WorldWeaver
         //adds CelestialBody object to SolarSystem
         public void Add(CelestialBody body)
         {
-            //I got an exception for having 2 things with the same key in a Dictionary once
-            //but I can't seem to replicate the error. - Elizabeth
             if (bodyList.ContainsKey(body.Name) && !hitList.ContainsKey(body.Name))
             {
                 hitList.Add(body.Name, 1);

@@ -23,7 +23,7 @@ namespace WorldWeaver
         public static GyroPersp gyro;
         public static HudCamera hudCamera;
         public static bool DEBUG = false;
-
+        public static SolarSystem solarSystem;
         public static Last10ParticlesHUD last10ParticlesHUD;
         //km
         public static int godcharge;
