@@ -39,6 +39,7 @@ namespace AssetPipeline
         //end Code[]
 
         public string gyro_needle = "Models\\gyro_hook";
+        public string introLogo = "Images\\UMBCGDCLogoscreen";
 
         //Prints everything that is in this class
         public override string ToString()
@@ -69,6 +70,7 @@ namespace AssetPipeline
             //end Code[]
 
             gyro_needle += gyro_needle + "\n";
+            introLogo += introLogo + "\n";
 
             return allTheCrapInThisGame;
         }

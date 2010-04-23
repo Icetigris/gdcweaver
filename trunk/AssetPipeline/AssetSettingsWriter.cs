@@ -33,6 +33,7 @@ namespace AssetPipeline
             output.Write(value.PhongFXPath);
             //end Code[]
             output.Write(value.gyro_needle);
+            output.Write(value.introLogo);
         }
 
         public override string GetRuntimeType(TargetPlatform targetPlatform)
