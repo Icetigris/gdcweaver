@@ -166,9 +166,7 @@ namespace WorldWeaver
             Console.WriteLine("Skybox's index: " + skybox.MySceneIndex);
             Console.WriteLine("Player's index: " + player.MySceneIndex);
 
-            
-
-           
+            Globals.solarSystem = new SolarSystem();
 
             //Star s = new Star("herp", Vector3.One, Globals.Player.Position, 1.0, Globals.Player.mPool);
             //s.MySceneIndex = SceneGraphManager.SceneCount;

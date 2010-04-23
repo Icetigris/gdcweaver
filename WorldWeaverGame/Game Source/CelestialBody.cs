@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 namespace WorldWeaver
 {
-    abstract class CelestialBody : SceneObject
+    public abstract class CelestialBody : SceneObject
     {
         #region Variables
 
