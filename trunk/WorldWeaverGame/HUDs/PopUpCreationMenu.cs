@@ -101,7 +101,8 @@ namespace WorldWeaver
                 opacity.A = opaque;
                 canCreate = true;
 
-                if ((canCreate == true && gamePadState.IsButtonDown(Buttons.DPadUp)))
+                if ((canCreate == true) && 
+                    (gamePadState.IsButtonDown(Buttons.DPadUp) || keyboardState.IsKeyDown(Keys.W)))
                 {
                     //Make Star
 
@@ -121,7 +122,8 @@ namespace WorldWeaver
                     }
 
                 }
-                else if ((canCreate == true && gamePadState.IsButtonDown(Buttons.DPadLeft)))
+                else if ((canCreate == true) && 
+                        (gamePadState.IsButtonDown(Buttons.DPadLeft) || keyboardState.IsKeyDown(Keys.A)))
                 {
                     if (!solarSystem.SystemEmpty())
                     {

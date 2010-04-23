@@ -291,9 +291,9 @@ namespace WorldWeaver
                 currentKeyboardState = Keyboard.GetState();
                 currentGamePadState = GamePad.GetState(PlayerIndex.One);
 
-                // Pressing the Back button or A key toggles the spring behavior on and off
-                if (lastKeyboardState.IsKeyUp(Keys.A) &&
-                    (currentKeyboardState.IsKeyDown(Keys.A)) ||
+                // Pressing the Back button or Home key toggles the spring behavior on and off
+                if (lastKeyboardState.IsKeyUp(Keys.Home) &&
+                    (currentKeyboardState.IsKeyDown(Keys.Home)) ||
                     (lastGamePadState.Buttons.Back == ButtonState.Released &&
                     currentGamePadState.Buttons.Back == ButtonState.Pressed))
                 {
