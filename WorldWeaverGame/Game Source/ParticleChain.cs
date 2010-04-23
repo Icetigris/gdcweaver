@@ -52,6 +52,7 @@ namespace WorldWeaver
             set
             {
                 particleChain = value;
+                Globals.last10ParticlesHUD.updateChain();
             }
         }
 
@@ -76,6 +77,8 @@ namespace WorldWeaver
             particleChain.Add(particle);
             sumChainCharge();
             totalParticlesCollected++;
+
+            Globals.last10ParticlesHUD.updateChain();
         }
 
         //adds the charges of every particle in the chain and returns the overall charge

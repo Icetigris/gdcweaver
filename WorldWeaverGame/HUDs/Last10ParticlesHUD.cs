@@ -79,7 +79,7 @@ namespace WorldWeaver
         {
             if (TotalParticlesCollected != Globals.Player.CurrentChain.Chain.Count)
             {
-                List<HUDParticle> tempParticleList = lastTen.ToList();
+                 List<HUDParticle> tempParticleList = lastTen.ToList();
 
                 int numNewParticles = Math.Max(0, Globals.Player.CurrentChain.Chain.Count - TotalParticlesCollected);
 
@@ -105,8 +105,11 @@ namespace WorldWeaver
 
                     if (!particleExists)
                     {
-                        HUDParticle hudP = new HUDParticle(new Vector2(p.Position.X, p.Position.Y),
+                        HUDParticle hudP = new HUDParticle(new Vector2( Math.Max(Math.Min(p.Position.X, 1028), 0) , Math.Max(Math.Min(p.Position.Y, 1028), 0)),
                             new Color(p.AssignColor((int)p.Colour)), twoDparticle, p);
+
+                        Console.WriteLine(p.Position);
+
                         lastTen.Enqueue(hudP);
                     }
 

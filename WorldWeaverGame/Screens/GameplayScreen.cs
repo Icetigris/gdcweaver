@@ -97,6 +97,8 @@ namespace WorldWeaver
 
             Globals.hudCamera = new HudCamera(new Vector3(0, 0, 0), Matrix.CreateLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, -1), new Vector3(0, 1, 0))/*camera.View*/, Globals.ChaseCamera.Projection);
 
+            Globals.last10ParticlesHUD = new Last10ParticlesHUD();
+
             //Load models, fonts
             InitializeGraphics();
 
@@ -145,7 +147,7 @@ namespace WorldWeaver
             Globals.hudManager.AddElement(chargeBar);
             Globals.hudManager.AddElement(new PopUpCreationMenuHUD());
             Globals.hudManager.AddElement(new ChargeBarSliderHUD(chargeBar));
-            Globals.hudManager.AddElement(new Last10ParticlesHUD());
+            Globals.hudManager.AddElement(Globals.last10ParticlesHUD);
             Globals.hudManager.AddElement(new PopUpChargeData());
 
             List<HUDElement> hudElement = HUDManager.HudElements;

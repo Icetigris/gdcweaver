@@ -22,6 +22,7 @@ namespace WorldWeaver
         public static SceneGraphManager sceneGraphManager;
         public static GyroPersp gyro;
         public static HudCamera hudCamera;
-        public static bool DEBUG = false;
+        public static bool DEBUG = true;
+        public static Last10ParticlesHUD last10ParticlesHUD;
     }
 }
