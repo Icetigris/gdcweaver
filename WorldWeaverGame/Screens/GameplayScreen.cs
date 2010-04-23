@@ -74,10 +74,9 @@ namespace WorldWeaver
             TransitionOnTime = TimeSpan.FromSeconds(1.0);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
             gameStartMusic.Play();
-            //wb
-            Globals.cleansedGalaxy = false;
-            havePlayedCleansedSong = false;
-            Globals.numStars = 0;
+          
+
+            
             //
         }
 
@@ -89,7 +88,7 @@ namespace WorldWeaver
                 Content = new ContentManager(ScreenManager.Game.Services, "Content");
                 Globals.contentManager = Content;
             }
-            graphics = ScreenManager.GraphicsManager;
+             graphics = ScreenManager.GraphicsManager;
             
             //Create chase camera
             camera = new ChaseCamera(graphics);            
@@ -110,12 +109,16 @@ namespace WorldWeaver
 
             //move played here to try to fix update order problem
             //Matt Song
-            player = new Player(-1, camera, Content, graphics);
+            //wb
+            Globals.cleansedGalaxy = false;
+            havePlayedCleansedSong = false;
+            Globals.numStars = 0;
+            player = new Player(Globals.godcharge, camera, Content, graphics);
             Globals.Player = player;
 
+            //REMEMBER TO UNCOMMENT SOON
             player.MySceneIndex = SceneGraphManager.SceneCount;
             SceneGraphManager.AddObject(player);
-
 
             //wb
             Vector3 temp = new Vector3(player.Position.X, player.Position.Y - 150.0f,
