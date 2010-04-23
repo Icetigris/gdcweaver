@@ -122,7 +122,7 @@ namespace WorldWeaver
         //end Code[]
 
         // Add a list of location
-        Vector3[] planetList = new Vector3[1] {new Vector3(0,0,0)};  // This array must expand with every planet creation.
+        Vector3[] planetList = new Vector3[] {new Vector3(0,0,0)};  // This array must expand with every planet creation.
 
         #endregion
 
@@ -552,7 +552,7 @@ namespace WorldWeaver
 
 
             // Focus Player, locks onto nearest planet
-            if (keyboardState.IsKeyDown(Keys.Q))
+            if (keyboardState.IsKeyDown(Keys.Q) || gamePadState.IsButtonDown(Buttons.LeftShoulder))
             {
                 // Now use arrow keys to lock on to a planet in the planetList.
                 // + = i++
@@ -560,7 +560,7 @@ namespace WorldWeaver
                 // Create cycle instance variable
                 int i = 0;  // Bottom of planetList
 
-                if (keyboardState.IsKeyDown(Keys.Add))
+                if (keyboardState.IsKeyDown(Keys.Add) || gamePadState.IsButtonDown(Buttons.DPadRight))
                 {
                     if (i < planetList.Length - 1)
                     {
@@ -573,7 +573,7 @@ namespace WorldWeaver
                         this.Direction = planetList[i];
                     }
                 }
-                else if (keyboardState.IsKeyDown(Keys.Subtract))
+                else if (keyboardState.IsKeyDown(Keys.Subtract) || gamePadState.IsButtonDown(Buttons.DPadLeft))
                 {
                     if (i > 0)
                     {
