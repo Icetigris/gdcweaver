@@ -105,8 +105,7 @@ namespace WorldWeaver
             soundBank = new SoundBank(audioEngine, settings.soundBankPath);
             Globals.musicSoundBank = soundBank;
 
-            screenManager.AddScreen(new BackgroundScreen());
-            screenManager.AddScreen(new MainMenuScreen());
+            screenManager.AddScreen(new IntroScreen());
         }
 
 
