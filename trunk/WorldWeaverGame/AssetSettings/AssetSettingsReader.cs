@@ -43,6 +43,7 @@ namespace WorldWeaver
             // end Code[]
 
             settings.gyro_needle = input.ReadString();
+            settings.introLogo = input.ReadString();
 
             return settings;
         }
