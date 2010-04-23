@@ -601,7 +601,29 @@ namespace WorldWeaver
         public void LoadContent()
         {
             visualEffects = new CustomEffects();
-            model = content.Load<Model>(Globals.AssetList.playerModelPath);
+           // model = content.Load<Model>(Globals.AssetList.playerModelPath); //might need to uncomment soon
+            
+
+            //different model, different player
+            // It works!
+
+            switch(Globals.godcharge)
+            {
+
+                case 3:
+                    model = content.Load<Model>("Models//teapot");
+                    break;
+                    
+                case -1:
+
+                    model = content.Load<Model>(Globals.AssetList.playerModelPath);
+                    break;
+            }
+
+
+
+
+
             visualEffects.Phong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
             mTexture = content.Load<Texture2D>("Images\\whattrex");
             Effect customPhong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
