@@ -108,8 +108,6 @@ namespace WorldWeaver
                         HUDParticle hudP = new HUDParticle(new Vector2( Math.Max(Math.Min(p.Position.X, 1028), 0) , Math.Max(Math.Min(p.Position.Y, 1028), 0)),
                             new Color(p.AssignColor((int)p.Colour)), twoDparticle, p);
 
-                        Console.WriteLine(p.Position);
-
                         lastTen.Enqueue(hudP);
                     }
 
