@@ -15,12 +15,14 @@ namespace WorldWeaver
         ContentManager content;
         Texture2D introTexture;
         double timeInSeconds;
+        bool fadingOut;
 
         public IntroScreen() : base("Intro")
         {
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
             timeInSeconds = 0;
+            fadingOut = false;
         }
 
         public override void LoadContent()
@@ -62,10 +64,11 @@ namespace WorldWeaver
         {
             timeInSeconds += gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (timeInSeconds > INTRO_SCREEN_TIME)
+            if (timeInSeconds > INTRO_SCREEN_TIME && !fadingOut)
             {
-                LoadingScreen.Load(ScreenManager, true, new BackgroundScreen(),
+                LoadingScreen.Load(ScreenManager, false, new BackgroundScreen(),
                                    new MainMenuScreen());
+                fadingOut = true;
             }
 
             base.Update(gameTime, otherScreenHasFocus, false);
