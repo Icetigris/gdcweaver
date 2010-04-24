@@ -641,10 +641,6 @@ namespace WorldWeaver
                 
             }
 
-
-
-
-
             visualEffects.Phong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
             mTexture = content.Load<Texture2D>("Images\\whattrex");
             Effect customPhong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
@@ -734,37 +730,6 @@ namespace WorldWeaver
                 mesh.Draw();
             }
 
-            //graphics.GraphicsDevice.VertexDeclaration = new VertexDeclaration(graphics.GraphicsDevice, VertexPositionNormalTextureTangentBinormal.VertexElements);
-            //visualEffects.Phong.CurrentTechnique = visualEffects.Phong.Techniques[technique];
-
-            //visualEffects.Phong.Begin();
-
-            //foreach (EffectPass pass in visualEffects.Phong.CurrentTechnique.Passes)
-            //{
-            //    // Begin current pass
-            //    pass.Begin();
-
-            //    foreach (ModelMesh mesh in model.Meshes)
-            //    {
-            //        foreach (ModelMeshPart part in mesh.MeshParts)
-            //        {
-            //                //part.Effect = visualEffects.Phong;
-            //                visualEffects.Update_Phong(transform[mesh.ParentBone.Index] * world, camera.View, camera.Projection, camera.Position);
-            //                //visualEffects.Phong.Parameters["gTex0"].SetValue(mTexture);
-            //                visualEffects.Phong.CommitChanges();
-
-            //                graphics.GraphicsDevice.Vertices[0].SetSource(mesh.VertexBuffer, part.StreamOffset, part.VertexStride);
-            //                graphics.GraphicsDevice.Indices = mesh.IndexBuffer;
-            //                graphics.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
-            //                                                              part.BaseVertex, 0, part.NumVertices,
-            //                                                              part.StartIndex, part.PrimitiveCount);
-                        
-                        
-            //        }
-            //    }
-            //    pass.End();
-            //}
-            //visualEffects.Phong.End();
         }
 
         private void DrawModel_Phong_Special(Model model, Matrix[] transform, Matrix world, string technique, GameTime time)
