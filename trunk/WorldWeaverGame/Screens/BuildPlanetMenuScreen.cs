@@ -49,7 +49,8 @@ namespace WorldWeaver
                     /// Build star
                     if (p.mPool.Particles.Count != 0) //check if mPool is empty before trying to make stuff
                     {
-                        Star s = new Star("Sun", Vector3.One, p.Position, 400.0, p.mPool, Globals.sceneGraphManager.GraphicsManager);
+                        float starRadius = 400;
+                        Star s = new Star("Sun", Vector3.One, p.Position + (new Vector3(starRadius) * Globals.Player.Direction), starRadius, p.mPool, Globals.sceneGraphManager.GraphicsManager);
                         Globals.numStars++;
                         Globals.solarSystem.Add(s);
                         s.MySceneIndex = SceneGraphManager.SceneCount;
@@ -67,7 +68,8 @@ namespace WorldWeaver
                     //Build planet
                     if (Globals.solarSystem.SystemEmpty() && Globals.numStars > 0) // Requires at least 1 sun
                     {
-                        Planet s = new Planet("Planet", Vector3.One, p.Position, 400.0, p.mPool, Globals.sceneGraphManager.GraphicsManager);
+                        float planetRadius = 400;
+                        Planet s = new Planet("Planet", Vector3.One, p.Position + new Vector3(planetRadius) * Globals.Player.Direction, planetRadius, p.mPool, Globals.sceneGraphManager.GraphicsManager);
                         Globals.solarSystem.Add(s);
                         s.MySceneIndex = SceneGraphManager.SceneCount;
                         Console.WriteLine(s.Name + "'s index: " + s.MySceneIndex);
