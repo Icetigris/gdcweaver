@@ -23,7 +23,6 @@ namespace WorldWeaver
             Shiny
         }
 
-
         #region Declarations
 
         private ContentManager content;
@@ -44,6 +43,19 @@ namespace WorldWeaver
         GraphicsDeviceManager graphics;
         private Vector3 glowColor;
         private ParticleEffect_Emmiter orbital;
+        private ChaseCamera camera;
+
+        ///Models loaded once only for flexible use
+        private static bool models_loaded = false;
+        private static Model plus_1;
+        private static Model plus_2;
+        private static Model plus_3;
+        private static Model plus_4;
+        private static Model minus_1;
+        private static Model minus_2;
+        private static Model minus_3;
+        private static Model minus_4;
+
         // end code
 
         Matrix orientation,
@@ -504,6 +516,17 @@ namespace WorldWeaver
         #region Loading
         public void LoadContent()
         {
+            if (!Particle.models_loaded)
+            {
+                LoadModels();
+                Particle.models_loaded = true;
+
+            }
+            model = LoadParticleFromCharge(charge);
+            model = CloneModelEffect(model, charge);
+
+            #region old code
+            /*
             switch (charge)
             {
                 case 1:
@@ -531,18 +554,146 @@ namespace WorldWeaver
                     model = content.Load<Model>(Globals.AssetList.particleMinus4ModelPath);
                     break;
             }
-            // wallace Brown 11/01/09[]
+            */
+            #endregion
+           
+            //wb
             visualEffects.Phong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
-            mTexture = content.Load<Texture2D>("Models\\Checker");
-            // end Code[]
+            //mTexture = content.Load<Texture2D>("Models\\Checker");
+            // end Code
             ReadyToRender = true;
             collectSound = Globals.musicSoundBank.GetCue(Globals.AssetList.particleCollectSFXCueName);
+        }
+
+        public void LoadModels()
+        {
+            ///Currently the particle models are loaded multiple times. After research
+            ///I've found that it is more efficient and flexible to load the models once
+            ///and clone them unpon reuse.
+
+            Effect customPhong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
+
+            Particle.plus_1 = content.Load<Model>(Globals.AssetList.particlePlus1ModelPath);
+            CustomEffects.ChangeEffectUsedByModel(Particle.plus_1, customPhong);
+            Particle.plus_2 = content.Load<Model>(Globals.AssetList.particlePlus2ModelPath);
+            CustomEffects.ChangeEffectUsedByModel(Particle.plus_2, customPhong);
+            Particle.plus_3 = content.Load<Model>(Globals.AssetList.particlePlus3ModelPath);
+            CustomEffects.ChangeEffectUsedByModel(Particle.plus_3, customPhong);
+            Particle.plus_4 = content.Load<Model>(Globals.AssetList.particlePlus4ModelPath);
+            CustomEffects.ChangeEffectUsedByModel(Particle.plus_4, customPhong);
+            Particle.minus_1 = content.Load<Model>(Globals.AssetList.particleMinus1ModelPath);
+            CustomEffects.ChangeEffectUsedByModel(Particle.minus_1, customPhong);
+            Particle.minus_2 = content.Load<Model>(Globals.AssetList.particleMinus2ModelPath);
+            CustomEffects.ChangeEffectUsedByModel(Particle.minus_2, customPhong);
+            Particle.minus_3 = content.Load<Model>(Globals.AssetList.particleMinus3ModelPath);
+            CustomEffects.ChangeEffectUsedByModel(Particle.minus_3, customPhong);
+            Particle.minus_4 = content.Load<Model>(Globals.AssetList.particleMinus4ModelPath);
+            CustomEffects.ChangeEffectUsedByModel(Particle.minus_4, customPhong);
+        }
+       
+        public Model LoadParticleFromCharge(int charge)
+        {
+            Model model;
+            switch (charge)
+            {
+                case 1:
+                    model = content.Load<Model>(Globals.AssetList.particlePlus1ModelPath);
+                    break;
+                case 2:
+                    model = content.Load<Model>(Globals.AssetList.particlePlus2ModelPath);
+                    break;
+                case 3:
+                    model = content.Load<Model>(Globals.AssetList.particlePlus3ModelPath);
+                    break;
+                case 4:
+                    model = content.Load<Model>(Globals.AssetList.particlePlus4ModelPath);
+                    break;
+                case -1:
+                    model = content.Load<Model>(Globals.AssetList.particleMinus1ModelPath);
+                    break;
+                case -2:
+                    model = content.Load<Model>(Globals.AssetList.particleMinus2ModelPath);
+                    break;
+                case -3:
+                    model = content.Load<Model>(Globals.AssetList.particleMinus3ModelPath);
+                    break;
+                case -4:
+                    model = content.Load<Model>(Globals.AssetList.particleMinus4ModelPath);
+                    break;
+                default: 
+                    model = content.Load<Model>(Globals.AssetList.particlePlus1ModelPath);
+                    break;
+            }
+            return (model);
+        }
+
+        public Model CloneModelEffect(Model newModel, int charge)
+        {
+            switch (charge)
+            {
+                case 1:
+                    for (int v = 0; v < newModel.Meshes[v].MeshParts.Count - 1; v++)
+                    {
+                        newModel.Meshes[v].MeshParts[v].Effect = Particle.plus_1.Meshes[v].Effects[0].Clone(graphics.GraphicsDevice);
+                    }
+                    break;
+                case 2:
+                    for (int v = 0; v < newModel.Meshes[v].MeshParts.Count; v++)
+                    {
+                        newModel.Meshes[v].MeshParts[v].Effect = Particle.plus_2.Meshes[v].Effects[0].Clone(graphics.GraphicsDevice);
+                    }
+                    break;
+                case 3:
+                    for (int v = 0; v < newModel.Meshes[v].MeshParts.Count; v++)
+                    {
+                        newModel.Meshes[v].MeshParts[v].Effect = Particle.plus_3.Meshes[v].Effects[0].Clone(graphics.GraphicsDevice);
+                    }
+                    break;
+                case 4:
+                    for (int v = 0; v < newModel.Meshes[v].MeshParts.Count; v++)
+                    {
+                        newModel.Meshes[v].MeshParts[v].Effect = Particle.plus_4.Meshes[v].Effects[0].Clone(graphics.GraphicsDevice);
+                    }
+                    break;
+                case -1:
+                    for (int v = 0; v < newModel.Meshes[v].MeshParts.Count; v++)
+                    {
+                        newModel.Meshes[v].MeshParts[v].Effect = Particle.minus_1.Meshes[v].Effects[0].Clone(graphics.GraphicsDevice);
+                    }
+                    break;
+                case -2:
+                    for (int v = 0; v < newModel.Meshes[v].MeshParts.Count; v++)
+                    {
+                        newModel.Meshes[v].MeshParts[v].Effect = Particle.minus_2.Meshes[v].Effects[0].Clone(graphics.GraphicsDevice);
+                    }
+                    break;
+                case -3:
+                    for (int v = 0; v < newModel.Meshes[v].MeshParts.Count; v++)
+                    {
+                        newModel.Meshes[v].MeshParts[v].Effect = Particle.minus_3.Meshes[v].Effects[0].Clone(graphics.GraphicsDevice);
+                    }
+                    break;
+                case -4:
+                    for (int v = 0; v < newModel.Meshes[v].MeshParts.Count; v++)
+                    {
+                        newModel.Meshes[v].MeshParts[v].Effect = Particle.minus_4.Meshes[v].Effects[0].Clone(graphics.GraphicsDevice);
+                    }
+                    break;
+                default:
+                    for (int v = 0; v < newModel.Meshes[v].MeshParts.Count; v++)
+                    {
+                        newModel.Meshes[v].MeshParts[v].Effect = Particle.plus_1.Meshes[v].Effects[0].Clone(graphics.GraphicsDevice);
+                    }
+                    break;
+            }
+            return (newModel);
         }
 
         #endregion
 
         public void UnloadContent()
         {
+            Particle.models_loaded = false;
         }
 
         //particles need the view and projection matrices from the current camera in order to draw themselves
@@ -575,7 +726,7 @@ namespace WorldWeaver
                     visualEffects.Set_Specials_Phong(false, false, true, true);
                     visualEffects.Update_Time(gameTime);
                     visualEffects.Update_Glow(3.0f, 1.0f);
-                    visualEffects.Update_Rotate('x',0.5f);
+                    visualEffects.Update_Rotate('y',0.5f);
                     glowColor = new Vector3(0.1f, 0.0f, 0.1f);
                     DrawModel_Phong(model, transforms, world, "Glow");
                 }
@@ -592,7 +743,7 @@ namespace WorldWeaver
                     else if (targetColour == Color.Blue.ToVector3() ||
                         targetColour == Color.Green.ToVector3())
                     {
-                        visualEffects.Update_Rotate('y',0.1f);
+                        visualEffects.Update_Rotate('x',0.1f);
                     }
                     glowColor = new Vector3(0.1f, 0.0f, 0.1f);
                     DrawModel_Phong(model, transforms, world, "Glow");
@@ -610,7 +761,7 @@ namespace WorldWeaver
                     else if (targetColour == Color.Blue.ToVector3() ||
                         targetColour == Color.Green.ToVector3())
                     {
-                        visualEffects.Update_Rotate('y', 0.1f);
+                        visualEffects.Update_Rotate('x', 0.1f);
                     }
                     glowColor = new Vector3(1.0f, 1.0f, 1.0f);
                     DrawModel_Phong(model, transforms, world, "Glow");
@@ -633,37 +784,94 @@ namespace WorldWeaver
 
         #region Draw Methods
 
-        private void DrawModel_Phong(Model model, Matrix[] transform, 
+        private void DrawModel_Phong(Model model, Matrix[] transform,
             Matrix world, string technique)
         {
-            graphics.GraphicsDevice.VertexDeclaration = new VertexDeclaration(graphics.GraphicsDevice, VertexPositionNormalTextureTangentBinormal.VertexElements);
-            visualEffects.Phong.CurrentTechnique = visualEffects.Phong.Techniques[technique];
+            this.camera = Globals.ChaseCamera;
 
-            visualEffects.Phong.Begin();
+            // Set suitable renderstates for drawing a 3D model.
+            RenderState renderState = graphics.GraphicsDevice.RenderState;
 
-            foreach (EffectPass pass in visualEffects.Phong.CurrentTechnique.Passes)
+            renderState.AlphaBlendEnable = false;
+            renderState.AlphaTestEnable = false;
+            renderState.DepthBufferEnable = true;
+
+            // Look up the bone transform matrices.
+            Matrix[] transforms = new Matrix[model.Bones.Count];
+
+            model.CopyAbsoluteBoneTransformsTo(transforms);
+
+            // Draw the model.
+            foreach (ModelMesh mesh in model.Meshes)
             {
-                // Begin current pass
-                pass.Begin();
-                foreach (ModelMesh mesh in model.Meshes)
+                foreach (Effect effect in mesh.Effects)
                 {
-                    foreach (ModelMeshPart part in mesh.MeshParts)
-                    {
-                        part.Effect = visualEffects.Phong;
-                        visualEffects.Update_Phong(transform[mesh.ParentBone.Index] * world, Globals.ChaseCamera.View, Globals.ChaseCamera.Projection, Globals.ChaseCamera.Position);
-                        visualEffects.Phong.Parameters["gTex0"].SetValue(mTexture);
-                        visualEffects.Phong.Parameters["gGlowColor"].SetValue(glowColor);
+                    // Specify which effect technique to use.
+                    effect.CurrentTechnique = effect.Techniques[technique];
 
-                        graphics.GraphicsDevice.Vertices[0].SetSource(mesh.VertexBuffer, part.StreamOffset, part.VertexStride);
-                        graphics.GraphicsDevice.Indices = mesh.IndexBuffer;
-                        graphics.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
-                                                                      part.BaseVertex, 0, part.NumVertices,
-                                                                      part.StartIndex, part.PrimitiveCount);
-                    }
+                    Matrix localWorld = transforms[mesh.ParentBone.Index] * world;
+
+                    effect.Parameters["gWorld"].SetValue(localWorld);
+                    effect.Parameters["gWIT"].SetValue(Matrix.Invert(Matrix.Transpose(localWorld)));
+                    effect.Parameters["gWInv"].SetValue(Matrix.Invert(localWorld));
+                    effect.Parameters["gWVP"].SetValue(localWorld * camera.View * camera.Projection);
+                    effect.Parameters["gEyePosW"].SetValue(camera.Position);
+
+                    effect.Parameters["gLightVecW"].SetValue(new Vector3(0.0f, 0.0f, -1.0f));
+                    effect.Parameters["gDiffuseMtrl"].SetValue(new Vector4(targetColour.X, targetColour.Y, targetColour.Z, 1.0f));
+                    effect.Parameters["gDiffuseLight"].SetValue(new Vector4(1.0f));
+                    effect.Parameters["gAmbientMtrl"].SetValue(new Vector4(targetColour.X, targetColour.Y, targetColour.Z, 1.0f));
+                    effect.Parameters["gAmbientLight"].SetValue(new Vector4(0.4f));
+                    effect.Parameters["gSpecularMtrl"].SetValue(new Vector4(0.8f, 0.8f, 0.8f, 1.0f));
+                    effect.Parameters["gSpecularLight"].SetValue(Color.White.ToVector4());
+                    effect.Parameters["gSpecularPower"].SetValue(15.0f);
+
+                    effect.Parameters["gRotate"].SetValue(visualEffects.useRotate);
+                    effect.Parameters["gRotSpeed"].SetValue(visualEffects.gRotSpeed);
+                    effect.Parameters["gRotAxis"].SetValue(visualEffects.gRotAxis);
+
+                    effect.Parameters["gGlowColor"].SetValue(glowColor);
+                    effect.Parameters["gInflation"].SetValue(visualEffects.gInflation);
+                    effect.Parameters["gGlowExp"].SetValue(visualEffects.gGlowExp);
+
+                    effect.Parameters["gTime"].SetValue(visualEffects.gTime);
+
+                    effect.CommitChanges();
                 }
-                pass.End();
+
+                mesh.Draw();
             }
-            visualEffects.Phong.End();
+
+            #region oldcode
+            //    Globals.sceneGraphManager.GraphicsDevice.VertexDeclaration = new VertexDeclaration(Globals.sceneGraphManager.GraphicsDevice, VertexPositionNormalTextureTangentBinormal.VertexElements);
+        //    visualEffects.Phong.CurrentTechnique = visualEffects.Phong.Techniques[technique];
+
+        //    visualEffects.Phong.Begin();
+
+        //    foreach (EffectPass pass in visualEffects.Phong.CurrentTechnique.Passes)
+        //    {
+        //        // Begin current pass
+        //        pass.Begin();
+        //        foreach (ModelMesh mesh in model.Meshes)
+        //        {
+        //            foreach (ModelMeshPart part in mesh.MeshParts)
+        //            {
+        //                part.Effect = visualEffects.Phong;
+        //                visualEffects.Update_Phong(transform[mesh.ParentBone.Index] * world, Globals.ChaseCamera.View, Globals.ChaseCamera.Projection, Globals.ChaseCamera.Position);
+        //                visualEffects.Phong.Parameters["gTex0"].SetValue(mTexture);
+        //                visualEffects.Phong.Parameters["gGlowColor"].SetValue(glowColor);
+
+        //                graphics.GraphicsDevice.Vertices[0].SetSource(mesh.VertexBuffer, part.StreamOffset, part.VertexStride);
+        //                graphics.GraphicsDevice.Indices = mesh.IndexBuffer;
+        //                graphics.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList,
+        //                                                              part.BaseVertex, 0, part.NumVertices,
+        //                                                              part.StartIndex, part.PrimitiveCount);
+        //            }
+        //        }
+        //        pass.End();
+        //    }
+            //    visualEffects.Phong.End();
+            #endregion
         }
  
         #endregion

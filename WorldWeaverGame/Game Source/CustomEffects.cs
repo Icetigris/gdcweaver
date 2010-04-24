@@ -15,6 +15,35 @@ namespace WorldWeaver
         public Vector4 color_white = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
         private float elapsedTime;
 
+        /// <summary>
+        /// under the new organization we can use a full set of
+        /// variables to express our effect
+        /// </summary>
+        public Matrix gWorld;
+        public Matrix gWIT;
+        public Matrix gWInv;
+        public Matrix gWVP;
+        
+        public Vector3 gEyePosW;
+        public Vector3 gLightVecW;
+
+        public bool gBlob;
+
+        public float gGlow;
+        public float gGlowgRotate;
+        public float gTime;
+        
+        public float gInflation;
+        public float gGlowExp;
+
+        public bool useRotate;
+        public int gRotAxis;
+        public float gRotSpeed;
+
+        public int gViewportHeight;
+
+        public Vector3 gAccel;
+
         #endregion
 
         #region Constructors
@@ -56,23 +85,32 @@ namespace WorldWeaver
             Phong.Parameters["gGlow"].SetValue(useGlow);
             Phong.Parameters["gRotate"].SetValue(useRotate);
             Phong.CommitChanges();
+
+            this.useRotate = useRotate;
         }
         public void Update_Time(GameTime time)
         {
             elapsedTime += (float)time.ElapsedGameTime.Milliseconds / 100;
             Phong.Parameters["gTime"].SetValue(elapsedTime);
+            this.gTime = elapsedTime;
             Phong.CommitChanges();
         }
         public void Update_Glow(float glowSize, float glowIntensity)
         {
             Phong.Parameters["gInflation"].SetValue(glowSize);
             Phong.Parameters["gGlowExp"].SetValue(glowIntensity);
+
+            this.gInflation = glowSize;
+            this.gGlowExp = glowIntensity;
             Phong.CommitChanges();
         }
         public void Update_Rotate(int axis,float speed)
         {
             Phong.Parameters["gRotAxis"].SetValue(axis);
             Phong.Parameters["gRotSpeed"].SetValue(speed);
+
+            this.gRotAxis = axis;
+            this.gRotSpeed = speed;
             Phong.CommitChanges();
         }
         public void Set_Viewport_Height(int height)
@@ -153,32 +191,69 @@ namespace WorldWeaver
             foreach (ModelMesh mesh in model.Meshes)
             {
                 // Scan over all the effects currently on the mesh.
-                foreach (BasicEffect oldEffect in mesh.Effects)
+
+                if (!Globals.convertedModels.ContainsKey(model))
                 {
-                    // If we haven't already seen this effect...
-                    if (!effectMapping.ContainsKey(oldEffect))
+                    foreach (BasicEffect oldEffect in mesh.Effects)
                     {
-                        // Make a clone of our replacement effect. We can't just use
-                        // it directly, because the same effect might need to be
-                        // applied several times to different parts of the model using
-                        // a different texture each time, so we need a fresh copy each
-                        // time we want to set a different texture into it.
-                        Effect newEffect = replacementEffect.Clone(
-                                                    replacementEffect.GraphicsDevice);
+                        // If we haven't already seen this effect...
+                        if (!effectMapping.ContainsKey(oldEffect))
+                        {
+                            // Make a clone of our replacement effect. We can't just use
+                            // it directly, because the same effect might need to be
+                            // applied several times to different parts of the model using
+                            // a different texture each time, so we need a fresh copy each
+                            // time we want to set a different texture into it.
+                            Effect newEffect = replacementEffect.Clone(
+                                                        replacementEffect.GraphicsDevice);
 
-                        // Copy across the texture from the original effect.
-                        newEffect.Parameters["gTex0"].SetValue(oldEffect.Texture);
+                            // Copy across the texture from the original effect.
+                            newEffect.Parameters["gTex0"].SetValue(oldEffect.Texture);
 
-                        effectMapping.Add(oldEffect, newEffect);
+                            effectMapping.Add(oldEffect, newEffect);
+                        }
                     }
+                    // Now that we've found all the effects in use on this mesh,
+                    // update it to use our new replacement versions.
+                    foreach (ModelMeshPart meshPart in mesh.MeshParts)
+                    {
+                        meshPart.Effect = effectMapping[meshPart.Effect];
+                    }
+                    Globals.convertedModels.Add(model, model);
+                    System.Console.WriteLine("Model converted!");
                 }
-
-                // Now that we've found all the effects in use on this mesh,
-                // update it to use our new replacement versions.
-                foreach (ModelMeshPart meshPart in mesh.MeshParts)
+                else
                 {
-                    meshPart.Effect = effectMapping[meshPart.Effect];
+                    foreach (Effect oldEffect in mesh.Effects)
+                    {
+                        // If we haven't already seen this effect...
+                        if (!effectMapping.ContainsKey(oldEffect))
+                        {
+                            BasicEffect tempEffect = (BasicEffect)oldEffect.Clone(oldEffect.GraphicsDevice);
+                            // Make a clone of our replacement effect. We can't just use
+                            // it directly, because the same effect might need to be
+                            // applied several times to different parts of the model using
+                            // a different texture each time, so we need a fresh copy each
+                            // time we want to set a different texture into it.
+                            Effect newEffect = replacementEffect.Clone(
+                                                        replacementEffect.GraphicsDevice);
+
+                            // Copy across the texture from the original effect.
+                            newEffect.Parameters["gTex0"].SetValue(tempEffect.Texture);
+
+                            effectMapping.Add(oldEffect, newEffect);
+                        }
+                    }
+                    // Now that we've found all the effects in use on this mesh,
+                    // update it to use our new replacement versions.
+                    foreach (ModelMeshPart meshPart in mesh.MeshParts)
+                    {
+                        meshPart.Effect = effectMapping[meshPart.Effect];
+                    }
+                    System.Console.WriteLine("Model conversion skipped!");
                 }
+                
+                
             }
         }
 
