@@ -186,7 +186,33 @@ namespace WorldWeaver
                 newPlayerPosition.Y = boundingSphere.Center.Y + (scaled.Y * distance);
                 newPlayerPosition.Z = boundingSphere.Center.Z + (scaled.Z * distance);
 
-                player.Position = newPlayerPosition;
+                Vector3 temp = new Vector3(newPlayerPosition.X, newPlayerPosition.Y, newPlayerPosition.Z);
+                //Vector3 distanceFromBorder;
+
+                //distanceFromBorder.Y = Math.Min(Player.MaximumAltitude - newPlayerPosition.Y, newPlayerPosition.Y - Player.MinimumAltitude);
+                //distanceFromBorder.X = Math.Min(Player.MaximumX - newPlayerPosition.X, newPlayerPosition.X - Player.MinimumX);
+                //distanceFromBorder.Z = Math.Min(Player.MaximumZ - newPlayerPosition.Z, newPlayerPosition.Z - Player.MinimumZ);
+
+                //if (distanceFromBorder.Y < 10)
+                {
+                    // Prevent player from flying under the ground
+                    temp.Y = Math.Max(newPlayerPosition.Y, Player.MinimumAltitude + (float)(R * 0f));
+                    temp.Y = Math.Min(newPlayerPosition.Y, Player.MaximumAltitude - (float)R * 0f);
+                }
+                //if (distanceFromBorder.X < 10)
+                {
+                    // Prevent player from flying out to nowhere in the x direction
+                    temp.X = Math.Max(newPlayerPosition.X, Player.MinimumX + (float)R * 0f);
+                    temp.X = Math.Min(newPlayerPosition.X, Player.MaximumX - (float)R * 0f);
+                }
+                //if (distanceFromBorder.Z < 10)
+                {
+                    // Prevent player from flying out to nowhere in the z direction
+                    temp.Z = Math.Max(newPlayerPosition.Z, Player.MinimumZ + (float)R * 0f);
+                    temp.Z = Math.Min(newPlayerPosition.Z, Player.MaximumZ - (float)R * 0f);
+                }
+
+                player.Position = temp;
             }
         }
 

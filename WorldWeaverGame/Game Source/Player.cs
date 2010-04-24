@@ -36,8 +36,8 @@ namespace WorldWeaver
 
         private MoleculePool moleculePool;
 
-        private const float MinimumAltitude = 150.0f;
-        private const float MaximumAltitude = 22000.0f;
+        public const float MinimumAltitude = 150.0f;
+        public const float MaximumAltitude = 22000.0f;
 
         public const float MinimumX = -11000.0f;
         public const float MaximumX = 11000.0f;
