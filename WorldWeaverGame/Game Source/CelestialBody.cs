@@ -20,7 +20,9 @@ namespace WorldWeaver
         private double density; //density = mass/volume
         private double effectiveTemp; //surface temperature
         private int gravityPoints; //gravity points
-        
+        private BoundingSphere collisionSphere;
+        protected bool isVisible;
+
         public MoleculePool mPool;
 
         public const double PI = 3.14159265358979323846;
@@ -32,6 +34,12 @@ namespace WorldWeaver
         #endregion
 
         #region Properties
+
+        public BoundingSphere CollisionSphere
+        {
+            get { return collisionSphere; }
+            set { collisionSphere = value; }
+        }
 
         public string Name
         {
@@ -54,13 +62,27 @@ namespace WorldWeaver
         public Vector3 Position
         {
             get { return position; }
-            set { position = value; }
+            set
+            {
+                position = value;
+                collisionSphere = new BoundingSphere(Position, (float)R);
+            }
+        }
+
+        public bool IsVisible
+        {
+            get { return isVisible; }
+            set { isVisible = value; }
         }
 
         public double R
         {
             get { return r; }
-            set { r = value; }
+            set
+            {
+                r = value;
+                collisionSphere = new BoundingSphere(Position, (float)R);
+            }
         }
 
         public double Mass

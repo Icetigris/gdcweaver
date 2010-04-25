@@ -10,8 +10,18 @@ namespace WorldWeaver
 
     //This will eventually become the pop up menu for easy planet creation...
 {
+    public enum CelestialBodies
+    {
+        None, Star, Planet,
+    }
+
     public class PopUpCreationMenuHUD : HUDElement
     {
+        public const float MIN_RADIUS = 100;
+        public const float MAX_RADIUS = 1000;
+        public const float MIN_DISTANCE = 100;
+        public const float NUM_RADIUS_AWAY = 2;
+
         private Texture2D pmenu;
         Player p = Globals.Player;
 
@@ -35,6 +45,9 @@ namespace WorldWeaver
         private Rectangle left;
         private Rectangle right;
 
+        private CelestialBody celestialBodyToCreate;
+        private CelestialBodies creatingBody;
+        private float _radius;
 
         public PopUpCreationMenuHUD()
         {
@@ -44,11 +57,26 @@ namespace WorldWeaver
             pIconPath = "Textures\\planeticon";
             sIconPath = "Textures\\staricon";
 
+            creatingBody = CelestialBodies.None;
+
             //Kevin tries to add some other pretty icons in conjuction with the D-Pad
             //IconA = "Textures\\atmoicon";
             //IconP = "Textures\\planeticon";
             //IconS = "Textures\\staricon";
             //extra icons end here
+        }
+
+        protected float radius
+        {
+            get { return _radius; }
+            private set
+            {
+                _radius = value;
+                if (_radius < MIN_RADIUS)
+                    _radius = MIN_RADIUS;
+                else if (_radius > MAX_RADIUS)
+                    _radius = MAX_RADIUS;
+            }
         }
 
         public override void LoadContent()
@@ -99,48 +127,104 @@ namespace WorldWeaver
                 canCreate = true;
 
                 if ((canCreate == true) && 
-                    (gamePadState.IsButtonDown(Buttons.DPadUp) || keyboardState.IsKeyDown(Keys.W)))
+                    (gamePadState.IsButtonDown(Buttons.DPadUp) || keyboardState.IsKeyDown(Keys.A)))
                 {
                     //Make Star
 
-                    if (Globals.Player.mPool.Particles.Count != 0) //check if mPool is empty before trying to make stuff
+                    if (Globals.Player.mPool.Particles.Count != 0 && creatingBody != CelestialBodies.Star) //check if mPool is empty before trying to make stuff
                     {
+                        RemoveCelestialBodyToCreate();
                         float starRadius = 400;
-                        Star s = new Star("Sun", Vector3.One, Globals.Player.Position + (Globals.Player.Direction * new Vector3(starRadius)), starRadius, Globals.Player.mPool, Globals.sceneGraphManager.GraphicsManager);
-                        Globals.numStars++;
-                        Globals.solarSystem.Add(s);
-                        s.MySceneIndex = SceneGraphManager.SceneCount;
-                        Console.WriteLine(s.Name + "'s index: " + s.MySceneIndex);
-                        s.LoadContent();
-                        SceneGraphManager.AddObject(s);
-                        Globals.Player.mPool.Particles.Clear();
-                        Console.WriteLine("Black hole?: " + s.IsBlackHole() + "\n");
-                        Console.WriteLine("Mass: " + s.Mass + "\n");
-                        Console.WriteLine("Effective Temp: " + s.EffectiveTemp + "\n");
+                        celestialBodyToCreate = new Star("Sun", Vector3.One, Globals.Player.Position + (Globals.Player.Direction * new Vector3((NUM_RADIUS_AWAY * starRadius) + MIN_DISTANCE)), starRadius, Globals.Player.mPool, Globals.sceneGraphManager.GraphicsManager);
+                        creatingBody = CelestialBodies.Star;
+                        radius = starRadius;
+
+                        celestialBodyToCreate.MySceneIndex = SceneGraphManager.SceneCount;
+                        Console.WriteLine(celestialBodyToCreate.Name + "'s index: " + celestialBodyToCreate.MySceneIndex);
+                        ((Star)celestialBodyToCreate).LoadContent();
+                        SceneGraphManager.AddObject(celestialBodyToCreate);
                     }
 
                 }
-                else if ((canCreate == true) && 
+                else if ((canCreate == true) &&
                         (gamePadState.IsButtonDown(Buttons.DPadLeft) || keyboardState.IsKeyDown(Keys.A)))
                 {
-                    if (!Globals.solarSystem.SystemEmpty())
+                    if (!Globals.solarSystem.SystemEmpty() && creatingBody != CelestialBodies.Planet)
                     {
                         // Spawn planet
+                        RemoveCelestialBodyToCreate();
                         float planetRadius = 400;
-                        Planet planet = new Planet("Planet", Vector3.One, Globals.Player.Position + (Globals.Player.Direction * new Vector3(planetRadius)), planetRadius, Globals.Player.mPool, Globals.sceneGraphManager.GraphicsManager);
-                        Globals.solarSystem.Add(planet);
-                        planet.MySceneIndex = SceneGraphManager.SceneCount;
-                        Console.WriteLine(planet.Name + "'s index: " + planet.MySceneIndex);
-                        planet.LoadContent();
-                        SceneGraphManager.AddObject(planet);
-                        Globals.Player.mPool.Particles.Clear();
+                        celestialBodyToCreate = new Planet("Planet", Vector3.One, Globals.Player.Position + (Globals.Player.Direction * new Vector3((NUM_RADIUS_AWAY * planetRadius) + MIN_DISTANCE)), planetRadius, Globals.Player.mPool, Globals.sceneGraphManager.GraphicsManager);
+                        creatingBody = CelestialBodies.Planet;
+                        radius = planetRadius;
 
-                        // Checks to see what kind of planet we have.
-                        Console.WriteLine("Mass: " + planet.Mass + "\n");
-                        Console.WriteLine("Gravity: " + planet.GravityPoints + "\n");
+                        celestialBodyToCreate.MySceneIndex = SceneGraphManager.SceneCount;
+                        Console.WriteLine(celestialBodyToCreate.Name + "'s index: " + celestialBodyToCreate.MySceneIndex);
+                        ((Planet)celestialBodyToCreate).LoadContent();
+                        SceneGraphManager.AddObject(celestialBodyToCreate);
+                    }
+                }
+                else
+                {
+                    if (gamePadState.IsButtonDown(Buttons.X) || keyboardState.IsKeyDown(Keys.Enter))
+                    {
+                        if (creatingBody == CelestialBodies.Star)
+                        {
+                            Star s = (Star)celestialBodyToCreate;
+                            s.IsVisible = true;
+                            s.R = radius;
+                            Globals.numStars++;
+                            Globals.solarSystem.Add(s);
+                            s.MySceneIndex = SceneGraphManager.SceneCount;
+                            Console.WriteLine(s.Name + "'s index: " + s.MySceneIndex);
+                            s.LoadContent();
+                            SceneGraphManager.AddObject(s);
+                            Globals.Player.mPool.Particles.Clear();
+                            Console.WriteLine("Black hole?: " + s.IsBlackHole() + "\n");
+                            Console.WriteLine("Mass: " + s.Mass + "\n");
+                            Console.WriteLine("Effective Temp: " + s.EffectiveTemp + "\n");
+                            Console.WriteLine("Radius: " + s.R);
+
+                            RemoveCelestialBodyToCreate();
+                        }
+                        else if (creatingBody == CelestialBodies.Planet)
+                        {
+                            Planet planet = (Planet)celestialBodyToCreate;
+                            planet.IsVisible = true;
+                            planet.R = radius;
+                            Globals.solarSystem.Add(planet);
+                            planet.MySceneIndex = SceneGraphManager.SceneCount;
+                            Console.WriteLine(planet.Name + "'s index: " + planet.MySceneIndex);
+                            planet.LoadContent();
+                            SceneGraphManager.AddObject(planet);
+                            Globals.Player.mPool.Particles.Clear();
+
+                            // Checks to see what kind of planet we have.
+                            Console.WriteLine("Mass: " + planet.Mass + "\n");
+                            Console.WriteLine("Gravity: " + planet.GravityPoints + "\n");
+                            Console.WriteLine("Radius: " + planet.R);
+
+                            RemoveCelestialBodyToCreate();
+                        }
+                    }
+                        //I wish I had access to gametime.
+                        //I am a sad panda
+                    else if (gamePadState.IsButtonDown(Buttons.RightThumbstickLeft) || keyboardState.IsKeyDown(Keys.Subtract))
+                    {
+                        radius -= 10;
+                        celestialBodyToCreate.R = radius;
+                    }
+                    else if (gamePadState.IsButtonDown(Buttons.RightThumbstickRight) || keyboardState.IsKeyDown(Keys.Add))
+                    {
+                        radius += 10;
+                        celestialBodyToCreate.R = radius;
                     }
                 }
 
+                if (celestialBodyToCreate != null)
+                {
+                    celestialBodyToCreate.Position = Globals.Player.Position + (Globals.Player.Direction * new Vector3((NUM_RADIUS_AWAY * (float)celestialBodyToCreate.R + MIN_DISTANCE)));
+                }
             }
 
             else if ((keyboardState.IsKeyDown(Keys.P) || gamePadState.IsButtonDown(Buttons.RightShoulder))
@@ -148,11 +232,12 @@ namespace WorldWeaver
             {
                 //you can make planets
                 opacity.A = greyedOut;
-
+                RemoveCelestialBodyToCreate();
             }
             else
             {
                 opacity.A = transparent;
+                RemoveCelestialBodyToCreate();
             }
 
 
@@ -160,6 +245,16 @@ namespace WorldWeaver
 
         //KeyboardState keyboardState = Keyboard.GetState(); //stays
         //GamePadState gamePadState = GamePad.GetState(PlayerIndex.One); //stays
+
+        private void RemoveCelestialBodyToCreate()
+        {
+            if (creatingBody != CelestialBodies.None)
+            {
+                creatingBody = CelestialBodies.None;
+                SceneGraphManager.RemoveObject(celestialBodyToCreate.MySceneIndex);
+                celestialBodyToCreate = null;
+            }
+        }
 
         public override void Draw(GameTime gameTime)
         {
@@ -173,6 +268,18 @@ namespace WorldWeaver
             Globals.hudManager.SpriteBatch.Draw(aIcon, right, opacity);
 
             //}
+
+            if (celestialBodyToCreate != null)
+            {
+                if (creatingBody == CelestialBodies.None && celestialBodyToCreate.IsVisible)
+                {
+                    celestialBodyToCreate.IsVisible = false;
+                }
+                else if(!celestialBodyToCreate.IsVisible)
+                {
+                    celestialBodyToCreate.IsVisible = true;
+                }
+            }
         }
     }
 }
