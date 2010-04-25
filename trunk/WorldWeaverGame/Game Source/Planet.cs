@@ -37,7 +37,6 @@ namespace WorldWeaver
         private Vector3 greyMapColorA;
         private Vector3 greyMapColorB;
         private Player player;
-        private BoundingSphere collisionSphere;
         //
         #endregion
 
@@ -47,12 +46,6 @@ namespace WorldWeaver
         {
             get { return mySceneIndex; }
             set { mySceneIndex = value; }
-        }
-
-        public BoundingSphere CollisionSphere
-        {
-            get { return collisionSphere; }
-            set { collisionSphere = value; }
         }
 
         #endregion
@@ -75,7 +68,8 @@ namespace WorldWeaver
             CreateGreyMapColors(pool);
             //
 
-            collisionSphere = new BoundingSphere(this.Position, (float)this.R);
+            CollisionSphere = new BoundingSphere(this.Position, (float)this.R);
+            isVisible = true;
         }
 
         #endregion
@@ -138,7 +132,7 @@ namespace WorldWeaver
         public void Update()
         {
             player = Globals.Player;
-            CollidePlayer(this.collisionSphere, this.player);
+            CollidePlayer(this.CollisionSphere, this.player);
         }
 
         private void CollidePlayer(BoundingSphere boundingSphere, Player player) 
@@ -254,10 +248,10 @@ namespace WorldWeaver
         //bool doOnce = true;
         public new void Draw(GameTime gameTime)
         {
-            if (!Globals.gameplayScreenDestroyed)
+            if (!Globals.gameplayScreenDestroyed && isVisible)
             {
                 //Particle's world matrix
-                world = Matrix.CreateTranslation(Position);
+                world = Matrix.Identity * Matrix.CreateScale((float)this.R / 400) * Matrix.CreateTranslation(Position);
 
                 Matrix[] transforms = new Matrix[model.Bones.Count];
                 model.CopyAbsoluteBoneTransformsTo(transforms);

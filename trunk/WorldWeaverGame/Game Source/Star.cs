@@ -26,7 +26,6 @@ namespace WorldWeaver
         private Vector3 greyMapColorA;
         private Vector3 greyMapColorB;
         private Vector3 greyMapColorC;
-        private BoundingSphere collisionSphere;
         //
         #endregion
 
@@ -58,7 +57,8 @@ namespace WorldWeaver
             CreateGreyMapColors(pool);
             //
 
-            collisionSphere = new BoundingSphere(Position, (float)R);
+            CollisionSphere = new BoundingSphere(Position, (float)R);
+            isVisible = true;
         }
 
         #endregion
@@ -157,7 +157,7 @@ namespace WorldWeaver
 
         public void Update()
         {
-            CollidePlayer(this.collisionSphere, Globals.Player);
+            CollidePlayer(this.CollisionSphere, Globals.Player);
         }
 
         public void Update(GameTime gameTime)
@@ -281,9 +281,9 @@ namespace WorldWeaver
         //bool doOnce = true;
         public new void Draw(GameTime gameTime)
         {
-            if (!Globals.gameplayScreenDestroyed)
+            if (!Globals.gameplayScreenDestroyed && isVisible)
             {
-                world = Matrix.CreateTranslation(Position);
+                world = Matrix.Identity * Matrix.CreateScale((float)this.R / 400) * Matrix.CreateTranslation(Position);
 
                 Matrix[] transforms = new Matrix[model.Bones.Count];
                 model.CopyAbsoluteBoneTransformsTo(transforms);
