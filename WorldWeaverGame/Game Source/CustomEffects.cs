@@ -220,7 +220,6 @@ namespace WorldWeaver
                         meshPart.Effect = effectMapping[meshPart.Effect];
                     }
                     Globals.convertedModels.Add(model, model);
-                    System.Console.WriteLine("Model converted!");
                 }
                 else
                 {
@@ -250,7 +249,6 @@ namespace WorldWeaver
                     {
                         meshPart.Effect = effectMapping[meshPart.Effect];
                     }
-                    System.Console.WriteLine("Model conversion skipped!");
                 }
                 
                 
@@ -296,6 +294,85 @@ namespace WorldWeaver
         public static int SizeInBytes { get { return sizeof(float) * 14; } }
     }
     #endregion
+
+    #endregion
+
+    #region Lights
+
+    /// <summary>
+    /// Describes the lights that we can have active in gameplay.
+    /// </summary>
+    public struct Lights
+    {
+        public Vector3 _position;
+        
+        ///Diffuse
+        public Vector4 _diffuse_material;
+        public Vector4 _diffuse_light;
+        public Vector4 _diffuse_intensity;
+
+        ///Specular
+        public Vector4 _specular_material;
+        public Vector4 _specular_light;
+
+        /// <summary>
+        /// Construct a Lights object.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="diffuse_material"></param>
+        /// <param name="diffuse_light"></param>
+        /// <param name="diffuse_intensity"></param>
+        /// <param name="specular_material"></param>
+        /// <param name="specular_light"></param>
+        public Lights(Vector3 pos,
+                      Vector4 diffuse_material,
+                      Vector4 diffuse_light,
+                      Vector4 diffuse_intensity,
+                      Vector4 specular_material,
+                      Vector4 specular_light)
+        {
+            _position = pos;
+            _diffuse_material = diffuse_material;
+            _diffuse_light = diffuse_light;
+            _diffuse_intensity = diffuse_intensity;
+            _specular_material = specular_material;
+            _specular_light = specular_light;
+        }
+
+        public Lights(Lights light)
+        {
+            _position = light._position;
+            _diffuse_material = light._diffuse_material;
+            _diffuse_light = light._diffuse_light;
+            _diffuse_intensity = light._diffuse_intensity;
+            _specular_material = light._specular_material;
+            _specular_light = light._specular_light;
+        }
+
+        /// <summary>
+        /// Return distance of incoming point from this
+        /// point.
+        /// </summary>
+        /// <param name="otherPosition"></param>
+        /// <returns></returns>
+        public float GetDistance(Vector3 otherPosition)
+        {
+            float x = otherPosition.X - _position.X;
+            float y = otherPosition.Y - _position.Y;
+            float z = otherPosition.Z - _position.Z;
+
+            return (float)Math.Sqrt(x*x - y*y - z*z);
+        }
+
+        public static void AddLight(Lights light)
+        {
+            if (Globals.numLights + 1 <= Globals.maxLights)
+            {
+                Globals.lights[Globals.numLights] = new Lights(light);
+                Globals.numLights++;
+            }
+        }
+    }
 
     #endregion
 }

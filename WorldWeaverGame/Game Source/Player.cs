@@ -673,7 +673,7 @@ namespace WorldWeaver
                         visualEffects.Set_Phong_Specular(new Vector4(0.8f, 0.8f, 0.8f, 1.0f), visualEffects.color_white, 20.0f);
                         visualEffects.Set_Specials_Phong(false, false, false, false);
 
-                        DrawModel_Phong(model, transforms, world, "Player");
+                        DrawModel_Phong(model, transforms, world, "Main_MultipleLights");
                         //code End[]
                         BoundingSphereRenderer.Render(collisionSphere, Globals.sceneGraphManager.GraphicsDevice, Globals.ChaseCamera.View, Globals.ChaseCamera.Projection, Globals.DEBUG);
                     }
@@ -713,16 +713,31 @@ namespace WorldWeaver
                     effect.Parameters["gWVP"].SetValue(localWorld * camera.View * camera.Projection);
                     effect.Parameters["gEyePosW"].SetValue(camera.Position);
 
-                    effect.Parameters["gLightVecW"].SetValue(new Vector3(0.0f, -1.0f, 0.0f));
-                    effect.Parameters["gDiffuseMtrl"].SetValue(new Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-                    effect.Parameters["gDiffuseLight"].SetValue(Color.White.ToVector4());
-                    effect.Parameters["gAmbientMtrl"].SetValue(Color.White.ToVector4());
-                    effect.Parameters["gAmbientLight"].SetValue(new Vector4(0.1f, 0.1f, 0.1f, 1.0f));
-                    effect.Parameters["gSpecularMtrl"].SetValue(new Vector4(0.8f, 0.8f, 0.8f, 1.0f));
-                    effect.Parameters["gSpecularLight"].SetValue(Color.White.ToVector4());
-                    effect.Parameters["gSpecularPower"].SetValue(20.0f);
+                    effect.Parameters["gNumLights"].SetValue(Globals.numLights);
 
-                    effect.Parameters["gRotSpeed"].SetValue(1.0f);
+                    String parameter;
+                    for (int v = 0; v < Globals.numLights; v++)
+                    {
+                        parameter = "gLightPos_multiple_" + (v + 1);
+                        effect.Parameters[parameter].SetValue(Globals.lights[v]._position);
+                        parameter = "gDiffuseMtrl_multiple_" + (v + 1);
+                        effect.Parameters[parameter].SetValue(Globals.lights[v]._diffuse_material);
+                        parameter = "gDiffuseLight_multiple_" + (v + 1);
+                        effect.Parameters[parameter].SetValue(Globals.lights[v]._diffuse_light);
+                        parameter = "gSpecularMtrl_multiple_" + (v + 1);
+                        effect.Parameters[parameter].SetValue(Globals.lights[v]._specular_material);
+                        parameter = "gSpecularLight_multiple_" + (v + 1);
+                        effect.Parameters[parameter].SetValue(Globals.lights[v]._specular_light);
+                    }
+
+                    //effect.Parameters["gLightVecW"].SetValue(new Vector3(0.0f, -1.0f, 0.0f));
+                    //effect.Parameters["gDiffuseMtrl"].SetValue(new Vector4(1.0f));
+                    //effect.Parameters["gDiffuseLight"].SetValue(Color.White.ToVector4());
+                    effect.Parameters["gAmbientMtrl"].SetValue(Color.White.ToVector4());
+                    effect.Parameters["gAmbientLight"].SetValue(new Vector4(0.1f));
+                    //effect.Parameters["gSpecularMtrl"].SetValue(new Vector4(0.8f, 0.8f, 0.8f, 1.0f));
+                    //effect.Parameters["gSpecularLight"].SetValue(Color.White.ToVector4());
+                    effect.Parameters["gSpecularPower"].SetValue(20.0f);
 
                     effect.CommitChanges();
                 }

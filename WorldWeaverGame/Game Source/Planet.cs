@@ -307,6 +307,24 @@ namespace WorldWeaver
 
                         if (curTechnique.Equals("Planet"))
                         {
+                            visualEffects.Phong.Parameters["gNumLights"].SetValue(Globals.numLights);
+
+                            String parameter;
+                            for (int v = 0; v < Globals.numLights; v++)
+                            {
+                                parameter = "gLightPos_multiple_" + (v + 1);
+                                visualEffects.Phong.Parameters[parameter].SetValue(Globals.lights[v]._position);
+                                parameter = "gDiffuseMtrl_multiple_" + (v + 1);
+                                visualEffects.Phong.Parameters[parameter].SetValue(Globals.lights[v]._diffuse_material);
+                                parameter = "gDiffuseLight_multiple_" + (v + 1);
+                                visualEffects.Phong.Parameters[parameter].SetValue(Globals.lights[v]._diffuse_light);
+                                parameter = "gSpecularMtrl_multiple_" + (v + 1);
+                                visualEffects.Phong.Parameters[parameter].SetValue(Globals.lights[v]._specular_material);
+                                parameter = "gSpecularLight_multiple_" + (v + 1);
+                                visualEffects.Phong.Parameters[parameter].SetValue(Globals.lights[v]._specular_light);
+                            }
+
+
                             visualEffects.Set_IsGreymapped(true);
                             visualEffects.Set_GreyMapColors(greyMapColorA, greyMapColorB);
                             visualEffects.Phong.Parameters["gTex0"].SetValue(planetMapCube);
