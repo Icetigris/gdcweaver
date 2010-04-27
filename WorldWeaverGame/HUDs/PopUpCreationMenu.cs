@@ -19,7 +19,7 @@ namespace WorldWeaver
     {
         public const float MIN_RADIUS = 100;
         public const float MAX_RADIUS = 1000;
-        public const float MIN_DISTANCE = 100;
+        public const float MIN_DISTANCE = 300;
         public const float NUM_RADIUS_AWAY = 2;
 
         private Texture2D pmenu;
@@ -211,13 +211,19 @@ namespace WorldWeaver
                         //I am a sad panda
                     else if (gamePadState.IsButtonDown(Buttons.RightThumbstickLeft) || keyboardState.IsKeyDown(Keys.Subtract))
                     {
-                        radius -= 10;
-                        celestialBodyToCreate.R = radius;
+                        if (celestialBodyToCreate != null)
+                        {
+                            radius -= 10;
+                            celestialBodyToCreate.R = radius;
+                        }
                     }
                     else if (gamePadState.IsButtonDown(Buttons.RightThumbstickRight) || keyboardState.IsKeyDown(Keys.Add))
                     {
-                        radius += 10;
-                        celestialBodyToCreate.R = radius;
+                        if (celestialBodyToCreate != null)
+                        {
+                            radius += 10;
+                            celestialBodyToCreate.R = radius;
+                        }
                     }
                 }
 
