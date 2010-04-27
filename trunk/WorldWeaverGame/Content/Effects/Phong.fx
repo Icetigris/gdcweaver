@@ -11,11 +11,15 @@
 //==========
 
 //globals
-uniform float PI = 3.1415926535f;
-uniform float HALF = 0.5f;
-uniform float planetScale = 1.0f;
-uniform float planetSize = 8.0f;
-uniform float starSize = 8.0f;
+#define PI 3.1415926535f
+#define planetScale 1.0f
+#define planetSize 8.0f
+#define starSize 8.0f
+#define maxLights 3
+#define attenMax 500.0f
+#define attenFactor 0.002f
+#define distanceScaleMainLight 0.00000002f;
+#define distanceScale 0.00002f;
 
 //basic values
 uniform extern float4x4 gWorld;
@@ -31,6 +35,34 @@ uniform extern float4 gAmbientLight;
 uniform extern float4 gSpecularMtrl;
 uniform extern float4 gSpecularLight;
 uniform extern float  gSpecularPower;
+
+//multiple light system
+uniform extern int gNumLights; 
+float3 gLightPos_multiple[maxLights];
+
+float4 gDiffuseMtrl_multiple[maxLights];
+float4 gDiffuseLight_multiple[maxLights];
+
+float4 gSpecularMtrl_multiple[maxLights];
+float4 gSpecularLight_multiple[maxLights];
+
+uniform extern float3 gLightPos_multiple_1;
+uniform extern float4 gDiffuseMtrl_multiple_1;
+uniform extern float4 gDiffuseLight_multiple_1;
+uniform extern float4 gSpecularMtrl_multiple_1;
+uniform extern float4 gSpecularLight_multiple_1;
+
+uniform extern float3 gLightPos_multiple_2;
+uniform extern float4 gDiffuseMtrl_multiple_2;
+uniform extern float4 gDiffuseLight_multiple_2;
+uniform extern float4 gSpecularMtrl_multiple_2;
+uniform extern float4 gSpecularLight_multiple_2;
+
+uniform extern float3 gLightPos_multiple_3;
+uniform extern float4 gDiffuseMtrl_multiple_3;
+uniform extern float4 gDiffuseLight_multiple_3;
+uniform extern float4 gSpecularMtrl_multiple_3;
+uniform extern float4 gSpecularLight_multiple_3;
 
 //texture
 uniform extern texture gTex0;
@@ -81,8 +113,15 @@ uniform extern float3 gAccel;
 uniform extern float  gAngle;
 uniform extern float3 gVelocity;
 uniform extern float  gGrav;
+uniform extern float  gAge;
+uniform extern float  gLifetime;
+uniform extern float  gRandX;
+uniform extern float  gRandZ;
 uniform extern float  gOrbitSpeed;
 uniform extern float3 gCenter;
+uniform extern float3 gPlayerPos;
+uniform extern float3 gDisplacement;
+uniform extern float4x4 gPlayerRot;
 
 
 //==================
@@ -183,6 +222,17 @@ struct vertOut{
     float3 viewW   : TEXCOORD3;
     float3 toEye   : TEXCOORD4;
     float3 lightDir   : TEXCOORD5;
+};
+
+/* data passed from vertex shader to pixel shader */
+struct vertOut_MultipleLights{
+    float4 posH    : POSITION0;
+    float2 tex0    : TEXCOORD0;
+    float3 normalW : TEXCOORD1;
+    float3 posW    : TEXCOORD2;
+    float3 toEye    : TEXCOORD3;
+    float3 intensity   : TEXCOORD4;
+    float3 lightDir[maxLights]   : TEXCOORD5;
 };
 
 /* data passed from vertex shader to pixel shader */
@@ -332,6 +382,75 @@ vertOut Phong_Player_VS(appdata IN)
     return vOut;
 }
 
+vertOut_MultipleLights Phong_MultipleLights_VS(appdata IN)
+{
+	vertOut_MultipleLights vOut = (vertOut_MultipleLights)0;
+	vOut.normalW = mul(float4(IN.normalL,1.0f), gWIT).xyz;
+	vOut.posW  = mul(float4(IN.posL, 1.0f), gWorld).xyz;
+	vOut.posH = mul(float4(IN.posL,1.0f), gWVP);
+	vOut.tex0 = IN.tex0;
+	
+	if(gBlob){
+		vOut.posH.xyz = Blob(vOut.posH,vOut.normalW,20.0f);
+	}
+	if(gRotate){
+		vOut.posH = mul(Rotate(float4(IN.posL,1.0f),gTime,gRotAxis), gWVP);
+		vOut.normalW = mul(Rotate(float4(IN.normalL,1.0f),gTime,gRotAxis), gWIT).xyz ;
+	}
+	
+	float3 LightPos_multiple[maxLights];
+	LightPos_multiple[0] = gLightPos_multiple_1;
+	LightPos_multiple[1] = gLightPos_multiple_2;
+	LightPos_multiple[2] = gLightPos_multiple_3;
+	
+	float distance = 0.0f;
+	float x = 0.0f;
+	float y = 0.0f;
+	float z = 0.0f;
+	
+	float LightIntensity_multiple[maxLights] = {0.0f,0.0f,0.0f};
+
+	for(int v = 0; v < maxLights; v++)
+	{
+		x = (LightPos_multiple[v].x - vOut.posW.x);
+		y = (LightPos_multiple[v].y - vOut.posW.y);
+		z = (LightPos_multiple[v].z - vOut.posW.z);
+		distance = sqrt(x*x + y*y + z*z);
+		distance *= distance;
+		if(v == 0){
+			distance *= distanceScaleMainLight;
+		}
+		else{
+			distance *= distanceScale;
+		}
+		
+		if(distance <= 1)
+		{
+			LightIntensity_multiple[v] = 1.0f;
+		}
+		else if(distance > 1 && distance < attenMax)
+		{
+			LightIntensity_multiple[v] = (attenMax - distance)*attenFactor;
+		}
+		else if(distance >= attenMax)
+		{
+			LightIntensity_multiple[v] = 0.0f;
+		}
+		
+		//find direction of light to vertex
+		x = (LightPos_multiple[v].x - vOut.posW.x);
+		y = (LightPos_multiple[v].y - vOut.posW.y);
+		z = (LightPos_multiple[v].z - vOut.posW.z);
+		vOut.lightDir[v] = normalize(float3(x,y,z));
+	}
+	
+	vOut.intensity.x = saturate(LightIntensity_multiple[0]);
+	vOut.intensity.y = saturate(LightIntensity_multiple[1]);
+	vOut.intensity.z = saturate(LightIntensity_multiple[2]);
+	
+    return vOut;
+}
+
 vertOut GlowVS(appdata IN){
 	vertOut vOut = (vertOut)0;
 
@@ -377,7 +496,15 @@ vertNormOut normalMap_Planet_VS(float3 pos	: POSITION0,
 	vOut.toEye = normalize(mul(eyePos - pos,TBN));
 	
 	/* transform lightDir vector to tan space */
-	vOut.lightDir = normalize(mul(gLightVecW, TBN));
+	//vOut.lightDir = normalize(mul(gLightVecW, TBN));
+	
+	
+	float x,y,z;
+	//find direction of light to vertex
+	x = (gLightPos_multiple_1.x - pos.x);
+	y = (gLightPos_multiple_1.y - pos.y);
+	z = (gLightPos_multiple_1.z - pos.z);
+	vOut.lightDir = normalize(mul(float3(x,y,z), TBN));
 	
 	vOut.tex0 = pos;
 
@@ -400,8 +527,105 @@ vertNormOut normalMap_Planet_VS(float3 pos	: POSITION0,
 	float sine = sin(gTime);
 	vOut.posH.y += 50*sine;
 	
+	
 	return vOut;
 }
+
+vertOut_MultipleLights normalMap_Planet_MultiLight_VS(float3 pos	: POSITION0,
+					float3 tangent	: TANGENT0,
+					float3 binormal	: BINORMAL0,
+					float3 normal	: NORMAL0,
+					float3 tex0	: TEXCOORD0,
+					float3 intensity   : TEXCOORD1,
+					float3 lightDir[maxLights]   : TEXCOORD2){
+	vertOut_MultipleLights vOut = (vertOut_MultipleLights)0;
+	
+	/* Make Tangent-Binormal-Normal Matrix */
+	float3x3 TBN;
+	TBN[0] = mul(normalize(tangent),gWorld);
+	TBN[1] = mul(normalize(binormal),gWorld);
+	TBN[2] = mul(normalize(normal),gWorld);
+	
+	/* transform toEye vector to tan space */
+	float3 eyePos = mul(gWInv,float4(gEyePosW,1.0f));
+	vOut.toEye = normalize(mul(eyePos - pos,TBN));
+	
+	vOut.tex0 = pos;
+
+	if(gRotate){
+		if(gStratosphere){
+			vOut.posH = mul(Rotate(float4(pos*(planetSize + 0.4f),1.0f),gTime,gRotAxis), gWVP);
+		}
+		else{
+			//vOut.posH = mul(Rotate(float4(pos*planetSize, 1.0f),gTime,gRotAxis), gWVP);
+			vOut.posH = mul(float4(pos*planetSize, 1.0f), gWVP);
+		}
+	}
+	else{
+		if(gStratosphere){
+			vOut.posH = mul(float4(pos*(planetSize + 0.4f), 1.0f), gWVP);
+		}
+			vOut.posH = mul(float4(pos*planetSize, 1.0f), gWVP);
+	}
+	
+	float sine = sin(gTime);
+	vOut.posH.y += 50*sine;
+	
+	/////////////////////////////
+	float3 LightPos_multiple[maxLights];
+	LightPos_multiple[0] = gLightPos_multiple_1;
+	LightPos_multiple[1] = gLightPos_multiple_2;
+	LightPos_multiple[2] = gLightPos_multiple_3;
+	
+	float distance = 0.0f;
+	float x = 0.0f;
+	float y = 0.0f;
+	float z = 0.0f;
+	
+	float LightIntensity_multiple[maxLights] = {0.0f,0.0f,0.0f};
+
+	for(int v = 0; v < maxLights; v++)
+	{
+		x = (LightPos_multiple[v].x - vOut.posW.x);
+		y = (LightPos_multiple[v].y - vOut.posW.y);
+		z = (LightPos_multiple[v].z - vOut.posW.z);
+		distance = sqrt(x*x + y*y + z*z);
+		distance *= distance;
+		if(v == 0){
+			distance *= distanceScaleMainLight;
+		}
+		else{
+			distance *= distanceScale;
+		}
+		
+		if(distance <= 1)
+		{
+			LightIntensity_multiple[v] = 1.0f;
+		}
+		else if(distance > 1 && distance < attenMax)
+		{
+			LightIntensity_multiple[v] = (attenMax - distance)*attenFactor;
+		}
+		else if(distance >= attenMax)
+		{
+			LightIntensity_multiple[v] = 0.0f;
+		}
+		
+		//find direction of light to vertex
+		x = (LightPos_multiple[v].x - vOut.posW.x);
+		y = (LightPos_multiple[v].y - vOut.posW.y);
+		z = (LightPos_multiple[v].z - vOut.posW.z);
+		vOut.lightDir[v] = normalize(mul(float3(x,y,z),TBN));
+	}
+	
+	vOut.intensity.x = saturate(LightIntensity_multiple[0]);
+	vOut.intensity.y = saturate(LightIntensity_multiple[1]);
+	vOut.intensity.z = saturate(LightIntensity_multiple[2]);
+	/////////////////////////////
+	
+	return vOut;
+}
+
 
 stratVertOut StratosphereVS(appdata IN)
 {
@@ -493,6 +717,31 @@ particleVertInOut SpriteParticle_Orbit_VS(float3 pos    : POSITION0,
 	
 	// Done--return the output.
     return outgoing;
+}
+
+particleVertInOut SpriteParticle_Fall_VS(float3 pos    : POSITION0, 
+									float3 velocityInitial	: TEXCOORD0,
+									float4 color			: COLOR0,
+									float size				: PSIZE0)
+{
+	particleVertInOut vOut = (particleVertInOut)0;
+	
+	pos.x += gDisplacement.x;
+	pos.y += gDisplacement.y;
+	pos.z += gDisplacement.z;
+	
+	// Transform to homogeneous clip space.
+	//vOut.pos = mul(float4(pos, 1.0f), gWVP);
+	//vOut.pos = mul(mul(float4(pos, 1.0f), gPlayerRot), gWVP);
+	vOut.pos = mul(float4(pos, 1.0f), mul(gPlayerRot, gWVP));
+	
+	// Also compute size as a function of the distance from the camera,
+	// and the viewport heights.  The constants were found by 
+	// experimenting.
+	float d = distance(pos, gEyePosW);
+	vOut.size = gViewportHeight*size/(1.0f + 3.0f*d);
+	
+    return vOut;
 }
 
 particleVertInOut SpriteParticle_Spray_VS(float3 pos    : POSITION0, 
@@ -640,6 +889,81 @@ float4 Phong_Player_PS(vertOut IN) : COLOR
 	}
 }
 
+float4 Phong_MultipleLights_PS(vertOut_MultipleLights IN) : COLOR
+{
+	IN.normalW = normalize(IN.normalW);
+	//=======================================================
+	// Lighting
+
+	float3 ambient = gAmbientMtrl*gAmbientLight;
+	float3 toEye = normalize(gEyePosW - IN.posW);
+	
+	float3 r = float3(0.0f,0.0f,0.0f);
+	float t = 0.0f;
+	float s = 0.0f;
+
+	float3 spec = float3(0.0f,0.0f,0.0f);
+	float4 diffuse = float4(0.0f,0.0f,0.0f,0.0f);
+	
+	//=======================================================
+	// Multiple Lights!
+	
+	float LightIntensity_multiple[maxLights];
+	LightIntensity_multiple[0] = IN.intensity.x;
+	LightIntensity_multiple[1] = IN.intensity.y;
+	LightIntensity_multiple[2] = IN.intensity.z;
+	
+	gSpecularMtrl_multiple[0] = gSpecularMtrl_multiple_1;
+	gSpecularMtrl_multiple[1] = gSpecularMtrl_multiple_2;
+	gSpecularMtrl_multiple[2] = gSpecularMtrl_multiple_3;
+	
+	gSpecularLight_multiple[0] = gSpecularLight_multiple_1;
+	gSpecularLight_multiple[1] = gSpecularLight_multiple_2;
+	gSpecularLight_multiple[2] = gSpecularLight_multiple_3;
+	
+	gDiffuseMtrl_multiple[0] = gDiffuseMtrl_multiple_1;
+	gDiffuseMtrl_multiple[1] = gDiffuseMtrl_multiple_2;
+	gDiffuseMtrl_multiple[2] = gDiffuseMtrl_multiple_3;
+	
+	gDiffuseLight_multiple[0] = gDiffuseLight_multiple_1;
+	gDiffuseLight_multiple[1] = gDiffuseLight_multiple_2;
+	gDiffuseLight_multiple[2] = gDiffuseLight_multiple_3;
+	
+	for(int v = 0; v < maxLights; v++)
+	{
+		r = reflect(-IN.lightDir[v], IN.normalW);
+		t  = pow(max(dot(r, toEye), 0.0f), gSpecularPower);
+		spec += t*(gSpecularMtrl_multiple[v]*gSpecularLight_multiple[v]).rgb*LightIntensity_multiple[v];
+		
+		s = max(dot(IN.lightDir[v], IN.normalW), 0.0f);
+		diffuse += s*(gDiffuseMtrl_multiple[v]+gDiffuseLight_multiple[v])*LightIntensity_multiple[v];
+	}
+
+	//=======================================================
+	float4 texColor = tex2D(TexS,IN.tex0);
+	
+	float clamp = 0.35f;
+	
+	if(diffuse.r < clamp)
+	{
+		diffuse.r = clamp;
+	}
+	if(diffuse.g < clamp)
+	{
+		diffuse.g = clamp;
+	}
+	if(diffuse.b < clamp)
+	{
+		diffuse.b = clamp;
+	}
+	
+	float4 diffuseTex = diffuse * texColor;
+	
+	
+	return float4(diffuseTex.rgb + ambient + spec, texColor.a);
+}
+
+
 float4 GlowPS(vertOut IN) : COLOR
 {
 	float3 normal = normalize(IN.normalW);
@@ -653,7 +977,7 @@ float4 GlowPS(vertOut IN) : COLOR
 float4 NormalMap_Planet_PS(	vertNormOut IN) : COLOR
 {
 	float3 eye = normalize(IN.toEye);
-	float3 light = normalize(IN.lightDir);
+	float3 lightDir = normalize(IN.lightDir);
 	float4 texCol = texCUBE(TexS,IN.tex0);
 	
 	//=======================================================
@@ -665,7 +989,7 @@ float4 NormalMap_Planet_PS(	vertNormOut IN) : COLOR
 	
 	//=======================================================
 	// Lighting
-	float s = max(dot(light, normalTex),0.0f);
+	float s = max(dot(lightDir, normalTex),0.0f);
 
 	float3 diffuse = s*(gDiffuseMtrl*gDiffuseLight);
 	float3 ambient = (gAmbientMtrl*gAmbientLight);
@@ -919,6 +1243,17 @@ technique Particle_Orbit
 	}
 }
 
+technique Particle_Fall
+{
+	pass P0
+	{
+		vertexShader = compile vs_2_0 SpriteParticle_Fall_VS();
+        pixelShader  = compile ps_2_0 SpriteParticle_PS();
+        ZEnable = true;
+		ZWriteEnable = true;
+	}
+}
+
 technique Particle_Spray
 {
 	pass P0
@@ -953,4 +1288,43 @@ technique Star
 		DestBlend = InvSrcAlpha;
 		CullMode = CCW;
 	}
+}
+
+technique Main_MultipleLights
+{
+    pass P0
+    {
+        vertexShader = compile vs_2_0 Phong_MultipleLights_VS();
+        pixelShader  = compile ps_2_0 Phong_MultipleLights_PS();
+        
+        ZEnable = true;
+		ZWriteEnable = true;
+		
+		CullMode = CCW;
+    }
+}
+
+technique Particles_MultipleLights
+{
+    pass P0
+    {
+        vertexShader = compile vs_2_0 Phong_MultipleLights_VS();
+        pixelShader  = compile ps_2_0 Phong_MultipleLights_PS();
+        
+        ZEnable = true;
+		ZWriteEnable = true;
+		
+		CullMode = CCW;
+    }
+    pass P1
+    {
+        vertexShader = compile vs_2_0 GlowVS();
+        pixelShader  = compile ps_2_0 GlowPS();
+        ZEnable = true;
+		ZWriteEnable = true;
+		AlphaBlendEnable = true;
+		SrcBlend = SrcAlpha;
+		DestBlend = InvSrcAlpha;
+		CullMode = CW;
+    }
 }

@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace WorldWeaver
 {
-    class Star : CelestialBody, IDrawableObject, ILoadableObject, IUpdatableObject
+    public class Star : CelestialBody, IDrawableObject, ILoadableObject, IUpdatableObject
     {
         #region Declarations
 
@@ -18,10 +18,8 @@ namespace WorldWeaver
         private Matrix world;
         private ChaseCamera camera;
         //wb
-        private TextureCube starCubeMap_Low;
         private TextureCube starCubeMap_Mid;
         private TextureCube starCubeMap_Top;
-        private TextureCube starCubeMap_Normal;
         private CustomEffects visualEffects = new CustomEffects();
         private Vector3 greyMapColorA;
         private Vector3 greyMapColorB;
@@ -55,6 +53,7 @@ namespace WorldWeaver
             //wb
             visualEffects = new CustomEffects();
             CreateGreyMapColors(pool);
+            AddLight();
             //
 
             CollisionSphere = new BoundingSphere(Position, (float)R);
@@ -65,7 +64,46 @@ namespace WorldWeaver
 
         #region Methods
 
-        
+        //wb
+        private void AddLight()
+        {
+            if (Globals.lightSource.Count == 3)
+            {
+                foreach (Star star in Globals.lightSource)
+                {
+                    if (this.Radius.X > star.Radius.X)
+                    {
+                        Globals.lightSource.Remove(Globals.lightSource.Find(star));
+                        Globals.lightSource.AddLast(this);
+
+                        Lights.AddLight(new Lights(
+                            this.Position,
+                            new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                            new Vector4(greyMapColorB.X, greyMapColorB.Y, greyMapColorB.Z, 1.0f),
+                            Color.White.ToVector4(),
+                            new Vector4(0.8f, 0.8f, 0.8f, 1.0f),
+                            new Vector4(greyMapColorB.X, greyMapColorB.Y, greyMapColorB.Z, 1.0f))
+                        );
+                    }
+                }
+            }
+            else
+            {
+                Globals.lightSource.AddLast(this);
+
+                Lights.AddLight(new Lights(
+                    this.Position,
+                    new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                    new Vector4(greyMapColorB.X, greyMapColorB.Y, greyMapColorB.Z, 1.0f),
+                    Color.White.ToVector4(),
+                    new Vector4(0.8f, 0.8f, 0.8f, 1.0f),
+                    new Vector4(greyMapColorB.X, greyMapColorB.Y, greyMapColorB.Z, 1.0f))
+                );
+            }
+            
+            
+        }
+        //end
 
         //Is this star a black hole?
         public bool IsBlackHole()

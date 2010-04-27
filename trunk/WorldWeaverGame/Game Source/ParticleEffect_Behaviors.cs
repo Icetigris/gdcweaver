@@ -65,7 +65,7 @@ namespace WorldWeaver
                     10,
                     ParticleTechniques.Orbit
         );
-
+        
         public static Behavior
         spray = new Behavior("testParticle",
                     new Vector3(1.0f),
@@ -74,6 +74,16 @@ namespace WorldWeaver
                     1.0f,
                     1,
                     ParticleTechniques.Spray
+        );
+
+        public static Behavior
+        fall = new Behavior("testParticle",
+                    new Vector3(1.0f),
+                    new Vector3(1.0f),
+                    1.0f,
+                    1.0f,
+                    1,
+                    ParticleTechniques.Fall
         );
     }
 
@@ -84,5 +94,6 @@ namespace WorldWeaver
     {
         public static string Orbit = "Particle_Orbit";
         public static string Spray = "Particle_Spray";
+        public static string Fall = "Particle_Fall";
     };
 }

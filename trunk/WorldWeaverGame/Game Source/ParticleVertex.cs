@@ -16,9 +16,18 @@ namespace WorldWeaver
         public Vector3 position;
         public Vector3 velocity;
         public Vector3 velocityInitial;
+        public Vector3 displacement;
         public Color color;
         public float size;
         public float angle;
+
+        public float age;
+        public float lifetime;
+
+        public float offset_X;
+        public float offset_Z;
+
+        public bool isAlive;
 
         public static VertexElement[] VertexElements =
         {
@@ -34,8 +43,24 @@ namespace WorldWeaver
                  VertexElementMethod.Default, VertexElementUsage.PointSize, 0),
              new VertexElement(0, sizeof(float)*11, VertexElementFormat.Single, 
                  VertexElementMethod.Default, VertexElementUsage.TextureCoordinate, 0),
+                 
+             new VertexElement(0, sizeof(float)*12, VertexElementFormat.Single, 
+                 VertexElementMethod.Default, VertexElementUsage.TextureCoordinate, 1),
+             new VertexElement(0, sizeof(float)*13, VertexElementFormat.Single, 
+                 VertexElementMethod.Default, VertexElementUsage.TextureCoordinate, 2),
+             new VertexElement(0, sizeof(float)*14, VertexElementFormat.Single, 
+                 VertexElementMethod.Default, VertexElementUsage.TextureCoordinate, 3),
+             new VertexElement(0, sizeof(float)*15, VertexElementFormat.Single, 
+                 VertexElementMethod.Default, VertexElementUsage.TextureCoordinate, 4),
+                 
+             new VertexElement(0, sizeof(float)*16, VertexElementFormat.Color, 
+                 VertexElementMethod.Default, VertexElementUsage.Color, 1),
+
+                 
+             new VertexElement(0, sizeof(float)*17, VertexElementFormat.Vector3, 
+                 VertexElementMethod.Default, VertexElementUsage.Position, 3),
         };
-        public static int SizeInBytes = sizeof(float) * 12;
+        public static int SizeInBytes = sizeof(float) * 20;
     }
 
     struct ParticleVertex_Handler
@@ -44,17 +69,27 @@ namespace WorldWeaver
             Behavior behavior)
         {
             Vector3 randVelocity = new Vector3(
-                ParticleEffect_Utility.RandomBetween(0.2f,behavior.initialVelocity.X),
-                ParticleEffect_Utility.RandomBetween(0.2f, behavior.initialVelocity.Y),
-                ParticleEffect_Utility.RandomBetween(0.2f, behavior.initialVelocity.Z)
+                ParticleEffect_Utility.RandomBetween(0.02f,behavior.initialVelocity.X),
+                ParticleEffect_Utility.RandomBetween(0.02f, behavior.initialVelocity.Y),
+                ParticleEffect_Utility.RandomBetween(0.02f, behavior.initialVelocity.Z)
                 );
 
             p.position = position;
             p.velocity = randVelocity;
             p.velocityInitial = p.velocity;
+            p.displacement = position;
             p.size = behavior.initialScale;
 
             p.color = Color.Black;
+
+            
+            p.age = 0.0f;
+            p.lifetime = behavior.lifeTime;
+
+            p.offset_X = 0.0f;
+            p.offset_Z = 0.0f;
+
+            p.isAlive = true;
 
             return (p);
         }

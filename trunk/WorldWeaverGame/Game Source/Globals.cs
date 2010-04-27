@@ -26,12 +26,14 @@ namespace WorldWeaver
         public static bool DEBUG = false;
         public static SolarSystem solarSystem;
         public static Last10ParticlesHUD last10ParticlesHUD;
+        public static GameTime gameTime;
 
         //wb
         public static Dictionary<Model, Model> convertedModels = new Dictionary<Model, Model>();
-
-        
-
+        public static int maxLights = 3;
+        public static int numLights = 0;
+        public static Lights[] lights;
+        public static LinkedList<Star> lightSource;
         //end wb
 
         //km

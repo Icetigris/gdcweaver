@@ -74,12 +74,26 @@ namespace WorldWeaver
             TransitionOnTime = TimeSpan.FromSeconds(1.0);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
             gameStartMusic.Play();
-          
 
+            AddInitialWorldLight();
             
             //
         }
 
+        public void AddInitialWorldLight()
+        {
+            Globals.lights = new Lights[Globals.maxLights];
+            Lights.AddLight(new Lights(
+                new Vector3(0.0f, 100.0f, 0.0f),
+                new Vector4(0.4f),
+                new Vector4(0.4f),
+                Color.White.ToVector4(),
+                new Vector4(0.8f, 0.8f, 0.8f, 1.0f),
+                Color.White.ToVector4())
+                );
+
+            Globals.lightSource = new LinkedList<Star>();
+        }
 
         public override void LoadContent()
         {
@@ -123,11 +137,11 @@ namespace WorldWeaver
             //wb
             Vector3 temp = new Vector3(player.Position.X, player.Position.Y - 150.0f,
                 player.Position.Z);
-            orbit_x = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
+            orbit_x = new ParticleEffect_Emmiter(ParticleEffect_Behavior.fall, 25.0f,
                     temp, 60, 'x');
-            orbit_y = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
+            orbit_y = new ParticleEffect_Emmiter(ParticleEffect_Behavior.fall, 25.0f,
                     temp, 60, 'y');
-            orbit_z = new ParticleEffect_Emmiter(ParticleEffect_Behavior.orbit, 25.0f,
+            orbit_z = new ParticleEffect_Emmiter(ParticleEffect_Behavior.fall, 25.0f,
                     temp, 60, 'z');
 
             SceneGraphManager.AddObject(orbit_x);
@@ -265,7 +279,14 @@ namespace WorldWeaver
             Globals.gameplayScreenDestroyed = true;
             SceneGraphManager.Root.UnloadContent();
             SceneGraphManager.EmptyGraph();
+            DestroyLights();
             Content.Unload();
+        }
+
+        private void DestroyLights()
+        {
+            Globals.lights = null;
+            Globals.numLights = 0;
         }
 
 
@@ -302,10 +323,15 @@ namespace WorldWeaver
                 player.GetPlayerRequirements(gameTime);
 
                 //wb
+                if (Globals.gameTime == null)
+                {
+                    Globals.gameTime = gameTime;
+                }
                 UpdateStageCleansed();
-                orbit_x.UpdatePosition(player.Position);
-                orbit_y.UpdatePosition(player.Position);
-                orbit_z.UpdatePosition(player.Position);
+                Vector3 t = new Vector3(player.Position.X + 30.0f, player.Position.Y - 50.0f, player.Position.Z - 140.0f);
+                orbit_x.UpdatePosition(t);
+                orbit_y.UpdatePosition(t);
+                orbit_z.UpdatePosition(t);
                 //
 
                 // Update the camera to chase the new target
@@ -370,12 +396,6 @@ namespace WorldWeaver
             ScreenManager.GraphicsDevice.SamplerStates[0].MipFilter = TextureFilter.Linear;            
 
             player.GetPlayerRequirements(gameTime);
-
-            //wb
-            //orbit_x.Draw(gameTime);
-            //orbit_y.Draw(gameTime);
-            //orbit_z.Draw(gameTime);
-            //end
 
             DrawOverlayText();
 
