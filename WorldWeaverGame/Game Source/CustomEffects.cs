@@ -220,6 +220,9 @@ namespace WorldWeaver
                         meshPart.Effect = effectMapping[meshPart.Effect];
                     }
                     Globals.convertedModels.Add(model, model);
+
+                    //System.Console.WriteLine("Model converted!");
+
                 }
                 else
                 {

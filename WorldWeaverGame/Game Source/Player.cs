@@ -477,7 +477,7 @@ namespace WorldWeaver
                 //Matrix.CreateRotationY((float)Math.PI);
             }
 
-            if (gamePadState.IsButtonDown(Buttons.A))
+            if (gamePadState.IsButtonDown(Buttons.Y))
             {
                 quickTurning = true;
                 timeSinceLastRotate = 0;

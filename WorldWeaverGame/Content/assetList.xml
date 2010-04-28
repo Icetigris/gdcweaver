@@ -16,7 +16,7 @@
     <waveBankPath>Content\Sound\myWaveBank.xwb</waveBankPath>
     <soundBankPath>Content\Sound\mySoundBank.xsb</soundBankPath>
     <titleThemeCueName>SoA-Title</titleThemeCueName>
-    <gameWonMusicCueName>SOA-SkiesInTheAlbatross</gameWonMusicCueName>
+    <gameWonMusicCueName>WorldWeaverFinalDavidCarls</gameWonMusicCueName>
     <gameStartMusicCueName>LR_ArcaneMysteries</gameStartMusicCueName>
     <particleCollectSFXCueName>Sonic Ring</particleCollectSFXCueName>
     <PhongFXPath>Effects\Phong</PhongFXPath>

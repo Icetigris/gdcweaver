@@ -21,7 +21,7 @@ namespace WorldWeaver
         SpriteFont spriteFont;
         //wb
         Cue gameWonMusic = Globals.musicSoundBank.GetCue(Globals.AssetList.gameWonMusicCueName);
-        Cue gameStartMusic = Globals.musicSoundBank.GetCue(Globals.AssetList.gameStartMusicCueName);
+        //Cue gameStartMusic = Globals.musicSoundBank.GetCue(Globals.AssetList.gameStartMusicCueName);
         bool havePlayedCleansedSong;
         ParticleEffect_Emmiter orbit_x, orbit_y, orbit_z;
         //end wb
@@ -73,7 +73,8 @@ namespace WorldWeaver
         {
             TransitionOnTime = TimeSpan.FromSeconds(1.0);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
-            gameStartMusic.Play();
+            //gameStartMusic.Play();
+            gameWonMusic.Play();
 
             AddInitialWorldLight();
             
@@ -275,7 +276,7 @@ namespace WorldWeaver
         public override void UnloadContent()
         {
             gameWonMusic.Stop(AudioStopOptions.AsAuthored);
-            gameStartMusic.Stop(AudioStopOptions.AsAuthored);
+            //gameStartMusic.Stop(AudioStopOptions.AsAuthored);
             Globals.gameplayScreenDestroyed = true;
             SceneGraphManager.Root.UnloadContent();
             SceneGraphManager.EmptyGraph();
@@ -370,8 +371,8 @@ namespace WorldWeaver
             if (Globals.cleansedGalaxy && !havePlayedCleansedSong)
             {
                 havePlayedCleansedSong = true;
-                gameStartMusic.Stop(AudioStopOptions.AsAuthored);
-                gameWonMusic.Play();
+                //gameStartMusic.Stop(AudioStopOptions.AsAuthored);
+                //gameWonMusic.Play();
             }
         }
         //end wb
