@@ -16,8 +16,8 @@ Global Settings
     Header File = C:\Documents and Settings\CS 182\Desktop\WorldWeaverGame\WorldWeaverGame\Content\Sound\xactProject.h;
     Exclude Category Names = 0;
     Exclude Variable Names = 0;
-    Last Modified Low = 3454448384;
-    Last Modified High = 30055171;
+    Last Modified Low = 30055171;
+    Last Modified High = 3454448384;
 
     Category
     {
@@ -242,12 +242,8 @@ Wave Bank
     Windows Bank Path Edited = 0;
     Seek Tables = 1;
     Compression Preset Name = <none>;
-    Xbox Bank Last Modified Low = 0;
-    Xbox Bank Last Modified High = 0;
-    PC Bank Last Modified Low = 3455378384;
-    PC Bank Last Modified High = 30055171;
-    Bank Last Revised Low = 3455138384;
-    Bank Last Revised High = 30055171;
+    Bank Last Revised Low = 1171479376;
+    Bank Last Revised High = 30074519;
 
     Wave
     {
@@ -409,6 +405,29 @@ Wave Bank
             Last Modified High = 30055168;
         }
     }
+
+    Wave
+    {
+        Name = WorldWeaverFinalDavidCarls;
+        File = WorldWeaverFinalDavidCarls.wav;
+        Build Settings Last Modified Low = 1142629376;
+        Build Settings Last Modified High = 30074519;
+
+        Cache
+        {
+            Format Tag = 0;
+            Channels = 2;
+            Sampling Rate = 44100;
+            Bits Per Sample = 1;
+            Play Region Offset = 44;
+            Play Region Length = 50462208;
+            Loop Region Offset = 0;
+            Loop Region Length = 0;
+            File Type = 1;
+            Last Modified Low = 1502003968;
+            Last Modified High = 30074517;
+        }
+    }
 }
 
 Sound Bank
@@ -418,10 +437,6 @@ Sound Bank
     Windows File = Win\mySoundBank.xsb;
     Xbox Bank Path Edited = 0;
     Windows Bank Path Edited = 0;
-    Bank Last Modified Low = 3498338384;
-    Bank Last Modified High = 30055171;
-    Header Last Modified High = 0;
-    Header Last Modified Low = 0;
 
     Sound
     {
@@ -748,6 +763,7 @@ Sound Bank
 
             Play Wave Event
             {
+                Loop Count = 255;
                 Break Loop = 0;
                 Use Speaker Position = 0;
                 Use Center Speaker = 1;
@@ -769,6 +785,53 @@ Sound Bank
                     Bank Index = 0;
                     Entry Name = LR_ArcaneMysteries;
                     Entry Index = 6;
+                    Weight = 255;
+                    Weight Min = 0;
+                }
+            }
+        }
+    }
+
+    Sound
+    {
+        Name = WorldWeaverFinalDavidCarls;
+        Volume = -1200;
+        Pitch = 0;
+        Priority = 0;
+
+        Category Entry
+        {
+            Name = Default;
+        }
+
+        Track
+        {
+            Volume = 0;
+
+            Play Wave Event
+            {
+                Loop Count = 255;
+                Break Loop = 0;
+                Use Speaker Position = 0;
+                Use Center Speaker = 1;
+                New Speaker Position On Loop = 1;
+                Speaker Position Angle = 0.000000;
+                Speaer Position Arc = 0.000000;
+
+                Event Header
+                {
+                    Timestamp = 0;
+                    Relative = 0;
+                    Random Recurrence = 0;
+                    Random Offset = 0;
+                }
+
+                Wave Entry
+                {
+                    Bank Name = myWaveBank;
+                    Bank Index = 0;
+                    Entry Name = WorldWeaverFinalDavidCarls;
+                    Entry Index = 7;
                     Weight = 255;
                     Weight Min = 0;
                 }
@@ -911,6 +974,26 @@ Sound Bank
         {
             Name = LR_ArcaneMysteries;
             Index = 6;
+            Weight Min = 0;
+            Weight Max = 255;
+        }
+    }
+
+    Cue
+    {
+        Name = WorldWeaverFinalDavidCarls;
+
+        Variation
+        {
+            Variation Type = 3;
+            Variation Table Type = 1;
+            New Variation on Loop = 0;
+        }
+
+        Sound Entry
+        {
+            Name = WorldWeaverFinalDavidCarls;
+            Index = 7;
             Weight Min = 0;
             Weight Max = 255;
         }

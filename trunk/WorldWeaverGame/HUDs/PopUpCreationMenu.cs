@@ -166,7 +166,7 @@ namespace WorldWeaver
                 }
                 else
                 {
-                    if (gamePadState.IsButtonDown(Buttons.X) || keyboardState.IsKeyDown(Keys.Enter))
+                    if (gamePadState.IsButtonDown(Buttons.A) || keyboardState.IsKeyDown(Keys.Enter))
                     {
                         if (creatingBody == CelestialBodies.Star)
                         {
@@ -207,8 +207,8 @@ namespace WorldWeaver
                             RemoveCelestialBodyToCreate();
                         }
                     }
-                        //I wish I had access to gametime.
-                        //I am a sad panda
+
+                    //Radius picking controls
                     else if (gamePadState.IsButtonDown(Buttons.RightThumbstickLeft) || keyboardState.IsKeyDown(Keys.Subtract))
                     {
                         if (celestialBodyToCreate != null)
