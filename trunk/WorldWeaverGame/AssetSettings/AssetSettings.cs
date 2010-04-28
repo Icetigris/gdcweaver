@@ -8,7 +8,14 @@ namespace WorldWeaver
     public class AssetSettings
     {
         public string skyboxModelPath;
-        public string playerModelPath;
+        public string playerNEG1ModelPath;
+        public string playerNEG2ModelPath;
+        public string playerNEG3ModelPath;
+        public string playerNEG4ModelPath;
+        public string playerPOS1ModelPath;
+        public string playerPOS2ModelPath;
+        public string playerPOS3ModelPath;
+        public string playerPOS4ModelPath;
 
         public string particlePlus1ModelPath;
         public string particlePlus2ModelPath;
@@ -42,7 +49,14 @@ namespace WorldWeaver
             string allTheCrapInThisGame = "";
 
             allTheCrapInThisGame += skyboxModelPath + "\n";
-            allTheCrapInThisGame += playerModelPath + "\n";
+            allTheCrapInThisGame += playerNEG1ModelPath + "\n";
+            allTheCrapInThisGame += playerNEG2ModelPath + "\n";
+            allTheCrapInThisGame += playerNEG3ModelPath + "\n";
+            allTheCrapInThisGame += playerNEG4ModelPath + "\n";
+            allTheCrapInThisGame += playerPOS1ModelPath + "\n";
+            allTheCrapInThisGame += playerPOS2ModelPath + "\n";
+            allTheCrapInThisGame += playerPOS3ModelPath + "\n";
+            allTheCrapInThisGame += playerPOS4ModelPath + "\n";
             allTheCrapInThisGame += particlePlus1ModelPath + "\n";
             allTheCrapInThisGame += particlePlus2ModelPath + "\n";
             allTheCrapInThisGame += particlePlus3ModelPath + "\n";

@@ -35,12 +35,13 @@ namespace WorldWeaver
             
 
             MenuEntries.Add(new MenuEntry("Athena"));
-            MenuEntries.Add(new MenuEntry("Ananse"));
             MenuEntries.Add(new MenuEntry("Beira"));
             MenuEntries.Add(new MenuEntry("Papatunaku"));
-            MenuEntries.Add(new MenuEntry("Magatamaryu"));
             MenuEntries.Add(new MenuEntry("Saraswati"));
             MenuEntries.Add(new MenuEntry("Tezcatlipoca"));
+            MenuEntries.Add(new MenuEntry("Magatamaryu"));
+            MenuEntries.Add(new MenuEntry("Ananse"));
+            MenuEntries.Add(new MenuEntry("Na'Ngasohu"));
             MenuEntries.Add(new MenuEntry("Return to Main Menu"));
         }
 
@@ -90,7 +91,7 @@ namespace WorldWeaver
         //            player.MySceneIndex = SceneGraphManager.SceneCount;
         //            SceneGraphManager.AddObject(player);
 
-                    Globals.godcharge = 3;
+                    Globals.godcharge = -2;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
                     titleCue.Stop(AudioStopOptions.AsAuthored); 
@@ -98,7 +99,7 @@ namespace WorldWeaver
 
                 case 2:
 
-                    Globals.godcharge = -2;
+                    Globals.godcharge = -3;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
                     titleCue.Stop(AudioStopOptions.AsAuthored);
@@ -106,7 +107,7 @@ namespace WorldWeaver
 
                 case 3:
 
-                    Globals.godcharge = -3;
+                    Globals.godcharge = -4;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
                     titleCue.Stop(AudioStopOptions.AsAuthored);
@@ -114,7 +115,7 @@ namespace WorldWeaver
 
                 case 4:
 
-                    Globals.godcharge = 2;
+                    Globals.godcharge = 1;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
                     titleCue.Stop(AudioStopOptions.AsAuthored);
@@ -123,7 +124,7 @@ namespace WorldWeaver
                 
                 case 5:
 
-                    Globals.godcharge = -4;
+                    Globals.godcharge = 2;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
                     titleCue.Stop(AudioStopOptions.AsAuthored);
@@ -131,14 +132,21 @@ namespace WorldWeaver
 
                 case 6:
 
-                    Globals.godcharge = 1;
+                    Globals.godcharge = 3;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
                     titleCue.Stop(AudioStopOptions.AsAuthored);
                     break;
 
-
                 case 7:
+
+                    Globals.godcharge = 4;
+                    LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
+                    Globals.gameplayScreenDestroyed = false;
+                    titleCue.Stop(AudioStopOptions.AsAuthored);
+                    break;
+
+                case 8:
 
                     //Go back
                     ExitScreen();
