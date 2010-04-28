@@ -12,7 +12,14 @@ namespace AssetPipeline
     public class AssetSettingsContent
     {
         public string skyboxModelPath = "Models\\purplenebula";
-        public string playerModelPath = "Models\\athena";
+        public string playerNEG1ModelPath = "Models\\athena";
+        public string playerNEG2ModelPath;
+        public string playerNEG3ModelPath;
+        public string playerNEG4ModelPath;
+        public string playerPOS1ModelPath;
+        public string playerPOS2ModelPath;
+        public string playerPOS3ModelPath;
+        public string playerPOS4ModelPath;
 
         public string particlePlus1ModelPath = "Models\\plus1";
         public string particlePlus2ModelPath = "Models\\plus2";
@@ -47,7 +54,7 @@ namespace AssetPipeline
             string allTheCrapInThisGame = "";
 
             allTheCrapInThisGame += skyboxModelPath + "\n";
-            allTheCrapInThisGame += playerModelPath + "\n";
+            allTheCrapInThisGame += playerNEG1ModelPath + "\n";
             allTheCrapInThisGame += particlePlus1ModelPath + "\n";
             allTheCrapInThisGame += particlePlus2ModelPath + "\n";
             allTheCrapInThisGame += particlePlus3ModelPath + "\n";

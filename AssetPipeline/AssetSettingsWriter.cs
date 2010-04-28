@@ -12,7 +12,14 @@ namespace AssetPipeline
         protected override void Write(ContentWriter output, AssetSettingsContent value)
         {
             output.Write(value.skyboxModelPath);
-            output.Write(value.playerModelPath);
+            output.Write(value.playerNEG1ModelPath);
+            output.Write(value.playerNEG2ModelPath);
+            output.Write(value.playerNEG3ModelPath);
+            output.Write(value.playerNEG4ModelPath);
+            output.Write(value.playerPOS1ModelPath);
+            output.Write(value.playerPOS2ModelPath);
+            output.Write(value.playerPOS3ModelPath);
+            output.Write(value.playerPOS4ModelPath);
             output.Write(value.particlePlus1ModelPath);
             output.Write(value.particlePlus2ModelPath);
             output.Write(value.particlePlus3ModelPath);

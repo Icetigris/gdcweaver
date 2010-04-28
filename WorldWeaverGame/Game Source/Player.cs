@@ -118,7 +118,7 @@ namespace WorldWeaver
         //wallace brown 11/14/09
         GraphicsDeviceManager graphics;
         CustomEffects visualEffects = new CustomEffects();
-        Texture2D mTexture;
+        //Texture2D mTexture;
         //end Code[]
 
         // Add a list of location
@@ -601,48 +601,46 @@ namespace WorldWeaver
         public void LoadContent()
         {
             visualEffects = new CustomEffects();
-           // model = content.Load<Model>(Globals.AssetList.playerModelPath); //might need to uncomment soon
-            
-
-            //different model, different player
-            // It works!
-
+           
+            //assign models by charge
             switch(Globals.godcharge)
             {
 
                 case -1:
-
-                    model = content.Load<Model>(Globals.AssetList.playerModelPath);
-                    break;
-
-                case 3:
-                    model = content.Load<Model>("Models//teapot");
+                    model = content.Load<Model>(Globals.AssetList.playerNEG1ModelPath);
                     break;
 
                 case -2:
-                    model = content.Load<Model>("Models//teapot");
+                    model = content.Load<Model>(Globals.AssetList.playerNEG2ModelPath);
                     break;
 
                 case -3:
-                    model = content.Load<Model>("Models//teapot");
+                    model = content.Load<Model>(Globals.AssetList.playerNEG3ModelPath);
                     break;
-                case 2:
-                    model = content.Load<Model>("Models//teapot");
-                    break;
-
-                case -4:
-                    model = content.Load<Model>("Models//teapot");
-                    break;
-
-                case 1:
-                    model = content.Load<Model>("Models//teapot");
-                    break;
-                    
                 
+                case -4:
+                    model = content.Load<Model>(Globals.AssetList.playerNEG4ModelPath);
+                    break;
+                
+                case 1:
+                    model = content.Load<Model>(Globals.AssetList.playerPOS1ModelPath);
+                    break;
+ 
+                case 2:
+                    model = content.Load<Model>(Globals.AssetList.playerPOS2ModelPath);
+                    break;
+                
+                case 3:
+                    model = content.Load<Model>(Globals.AssetList.playerPOS3ModelPath);
+                    break;
+
+                case 4:
+                    model = content.Load<Model>(Globals.AssetList.playerPOS4ModelPath);
+                    break;
             }
 
             visualEffects.Phong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
-            mTexture = content.Load<Texture2D>("Images\\whattrex");
+            //mTexture = content.Load<Texture2D>("Images\\whattrex");
             Effect customPhong = content.Load<Effect>(Globals.AssetList.PhongFXPath);
             CustomEffects.ChangeEffectUsedByModel(model, customPhong);
             ReadyToRender = true;

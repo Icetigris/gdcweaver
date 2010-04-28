@@ -92,7 +92,7 @@ namespace WorldWeaver
             //(int)((Globals.hudManager.HudAreaWidth * 0.2f) / 2 + 50),
             //(int)((Globals.hudManager.HudAreaHeight - Globals.hudManager.HudAreaHeight * 0.1f) / 2));
 
-            model = content.Load<Model>(Globals.AssetList.playerModelPath);
+            model = content.Load<Model>(Globals.AssetList.playerNEG1ModelPath);
             gyro_needle = content.Load<Model>(Globals.AssetList.gyro_needle);
             mTexture = content.Load<Texture2D>("Models\\testTex2");
             visualEffects.Phong = content.Load<Effect>(Globals.AssetList.PhongFXPath);

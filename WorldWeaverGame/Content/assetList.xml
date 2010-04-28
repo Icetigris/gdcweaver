@@ -2,7 +2,14 @@
 <XnaContent>
   <Asset Type="AssetPipeline.AssetSettingsContent">
     <skyboxModelPath>Models\purplenebula</skyboxModelPath>
-    <playerModelPath>Models\athena</playerModelPath>
+    <playerNEG1ModelPath>Models\athena</playerNEG1ModelPath>
+    <playerNEG2ModelPath>Models\teapot</playerNEG2ModelPath>
+    <playerNEG3ModelPath>Models\teapot</playerNEG3ModelPath>
+    <playerNEG4ModelPath>Models\teapot</playerNEG4ModelPath>
+    <playerPOS1ModelPath>Models\teapot</playerPOS1ModelPath>
+    <playerPOS2ModelPath>Models\teapot</playerPOS2ModelPath>
+    <playerPOS3ModelPath>Models\ananse</playerPOS3ModelPath>
+    <playerPOS4ModelPath>Models\nangasohu</playerPOS4ModelPath>
     <particlePlus1ModelPath>Models\plus1</particlePlus1ModelPath>
     <particlePlus2ModelPath>Models\plus2</particlePlus2ModelPath>
     <particlePlus3ModelPath>Models\plus3</particlePlus3ModelPath>
@@ -22,5 +29,7 @@
     <PhongFXPath>Effects\Phong</PhongFXPath>
     <gyro_needle>Models\gyro_hook</gyro_needle>
     <introLogo>Images\UMBCGDClogoscreen</introLogo>
-  </Asset>
+  
+
+</Asset>
 </XnaContent>

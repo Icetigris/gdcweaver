@@ -15,7 +15,14 @@ namespace WorldWeaver
             AssetSettings settings = new AssetSettings();
 
             settings.skyboxModelPath = input.ReadString();
-            settings.playerModelPath = input.ReadString();
+            settings.playerNEG1ModelPath = input.ReadString();
+            settings.playerNEG2ModelPath = input.ReadString();
+            settings.playerNEG3ModelPath = input.ReadString();
+            settings.playerNEG4ModelPath = input.ReadString();
+            settings.playerPOS1ModelPath = input.ReadString();
+            settings.playerPOS2ModelPath = input.ReadString();
+            settings.playerPOS3ModelPath = input.ReadString();
+            settings.playerPOS4ModelPath = input.ReadString();
 
             settings.particlePlus1ModelPath = input.ReadString();
             settings.particlePlus2ModelPath = input.ReadString();
