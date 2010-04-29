@@ -21,7 +21,7 @@ namespace WorldWeaver
         SpriteFont spriteFont;
         //wb
         Cue gameWonMusic = Globals.musicSoundBank.GetCue(Globals.AssetList.gameWonMusicCueName);
-        //Cue gameStartMusic = Globals.musicSoundBank.GetCue(Globals.AssetList.gameStartMusicCueName);
+        Cue gameStartMusic = Globals.musicSoundBank.GetCue(Globals.AssetList.gameStartMusicCueName);
         bool havePlayedCleansedSong;
         ParticleEffect_Emmiter orbit_x, orbit_y, orbit_z;
         //end wb
@@ -48,22 +48,6 @@ namespace WorldWeaver
 
         #endregion
 
-        #region HUD variables
-        /*
-        Rectangle hudRect;
-        Rectangle last10Rect;
-        Rectangle chargeBarRect;
-        Rectangle chargeSliderRect;
-        
-        Texture2D last10InChain = null;
-        Texture2D chargeBar = null;
-        Texture2D chargeSlider = null;
-        Texture2D particleSprite = null;
-
-        Vector2 chargeTextPos;
-        */
-        #endregion
-
         #endregion
 
         #region Initialization
@@ -73,8 +57,7 @@ namespace WorldWeaver
         {
             TransitionOnTime = TimeSpan.FromSeconds(1.0);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
-            //gameStartMusic.Play();
-            gameWonMusic.Play();
+            gameStartMusic.Play();
 
             AddInitialWorldLight();
             
@@ -195,7 +178,7 @@ namespace WorldWeaver
         public void InitializeGraphics()
         {
             spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
-            spriteFont = Content.Load<SpriteFont>("Fonts\\Arial");
+            spriteFont = Content.Load<SpriteFont>(Globals.AssetList.spritefont);
 
             for (int i = 0; i <= 100; i++)
             {
@@ -276,7 +259,7 @@ namespace WorldWeaver
         public override void UnloadContent()
         {
             gameWonMusic.Stop(AudioStopOptions.AsAuthored);
-            //gameStartMusic.Stop(AudioStopOptions.AsAuthored);
+            gameStartMusic.Stop(AudioStopOptions.AsAuthored);
             Globals.gameplayScreenDestroyed = true;
             SceneGraphManager.Root.UnloadContent();
             SceneGraphManager.EmptyGraph();
@@ -371,8 +354,8 @@ namespace WorldWeaver
             if (Globals.cleansedGalaxy && !havePlayedCleansedSong)
             {
                 havePlayedCleansedSong = true;
-                //gameStartMusic.Stop(AudioStopOptions.AsAuthored);
-                //gameWonMusic.Play();
+                gameStartMusic.Stop(AudioStopOptions.AsAuthored);
+                gameWonMusic.Play();
             }
         }
         //end wb

@@ -24,11 +24,12 @@
     <soundBankPath>Content\Sound\mySoundBank.xsb</soundBankPath>
     <titleThemeCueName>SoA-Title</titleThemeCueName>
     <gameWonMusicCueName>WorldWeaverFinalDavidCarls</gameWonMusicCueName>
-    <gameStartMusicCueName>LR_ArcaneMysteries</gameStartMusicCueName>
+    <gameStartMusicCueName>WorldWeaverChuckMiller</gameStartMusicCueName>
     <particleCollectSFXCueName>Sonic Ring</particleCollectSFXCueName>
     <PhongFXPath>Effects\Phong</PhongFXPath>
     <gyro_needle>Models\gyro_hook</gyro_needle>
     <introLogo>Images\UMBCGDClogoscreen</introLogo>
+    <spritefont>Fonts\DingleSW</spritefont>
   
 
 </Asset>

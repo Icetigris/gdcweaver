@@ -48,6 +48,8 @@ namespace AssetPipeline
         public string gyro_needle = "Models\\gyro_hook";
         public string introLogo = "Images\\UMBCGDCLogoscreen";
 
+        public string spritefont = "Fonts\\Arial";
+
         //Prints everything that is in this class
         public override string ToString()
         {
@@ -78,6 +80,7 @@ namespace AssetPipeline
 
             gyro_needle += gyro_needle + "\n";
             introLogo += introLogo + "\n";
+            spritefont += spritefont + "\n";
 
             return allTheCrapInThisGame;
         }

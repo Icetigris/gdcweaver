@@ -41,6 +41,7 @@ namespace AssetPipeline
             //end Code[]
             output.Write(value.gyro_needle);
             output.Write(value.introLogo);
+            output.Write(value.spritefont);
         }
 
         public override string GetRuntimeType(TargetPlatform targetPlatform)

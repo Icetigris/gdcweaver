@@ -19,7 +19,7 @@ namespace WorldWeaver
 
         public override void LoadContent()
         {
-            _titleFont = ScreenManager.Game.Content.Load<SpriteFont>("Fonts/Arial");
+            _titleFont = ScreenManager.Game.Content.Load<SpriteFont>(Globals.AssetList.spritefont);
 
             base.LoadContent();
         }
