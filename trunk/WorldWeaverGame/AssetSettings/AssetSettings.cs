@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace WorldWeaver
@@ -38,6 +37,8 @@ namespace WorldWeaver
         public string particleCollectSFXCueName;
         public string gyro_needle;
         public string introLogo;
+
+        public string spritefont;
 
         //wallace brown 11/01/09
         public string PhongFXPath;
@@ -80,6 +81,7 @@ namespace WorldWeaver
             allTheCrapInThisGame += gyro_needle + "\n";
             allTheCrapInThisGame += introLogo + "\n";
 
+            allTheCrapInThisGame += spritefont + "\n";
             return allTheCrapInThisGame;
         }
     }

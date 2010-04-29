@@ -18,7 +18,7 @@ namespace WorldWeaver
         GraphicsDeviceManager graphics;
         ContentManager Content = null;
         SpriteBatch spriteBatch;// = new SpriteBatch(graphics.GraphicsDevice);
-        SpriteFont spriteFont;// = Content.Load<SpriteFont>("Fonts\\Arial");
+        SpriteFont spriteFont;// = Content.Load<SpriteFont>(Globals.AssetList.spritefont);
         public static string message = "";
         Texture2D gradientTexture;
         int charge;
@@ -75,7 +75,7 @@ namespace WorldWeaver
             Globals.contentManager = Content;
 
             spriteBatch = Globals.hudManager.SpriteBatch;
-            spriteFont = Content.Load<SpriteFont>("Fonts\\Arial");
+            spriteFont = Content.Load<SpriteFont>(Globals.AssetList.spritefont);
 
         }
 

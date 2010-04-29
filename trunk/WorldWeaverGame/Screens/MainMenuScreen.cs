@@ -25,6 +25,7 @@ namespace WorldWeaver
             MenuEntries.Add(new MenuEntry("Play Game"));
             MenuEntries.Add(new MenuEntry("Story"));
             MenuEntries.Add(new MenuEntry("Controls"));
+            MenuEntries.Add(new MenuEntry("Credits"));
             MenuEntries.Add(new MenuEntry("Quit"));
         }
 
@@ -60,6 +61,11 @@ namespace WorldWeaver
                     break;
 
                 case 3:
+                    //Show credits
+                    ScreenManager.AddScreen(new CreditsScreen());
+                    break;
+
+                case 4:
                     // Exit the game.
                     OnCancel();
                     break;

@@ -105,7 +105,7 @@ namespace WorldWeaver
             ContentManager content = Game.Content;
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            font = content.Load<SpriteFont>("Fonts/Arial");
+            font = content.Load<SpriteFont>(Globals.AssetList.spritefont);
             blankTexture = content.Load<Texture2D>("Images/blank");
 
             // Tell each of the screens to load their content.

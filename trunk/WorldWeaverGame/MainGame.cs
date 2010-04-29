@@ -70,12 +70,7 @@ namespace WorldWeaver
             Components.Add(HudManager);
             Components.Add(screenManager);
 
-            
-
             //Add moar managers here!
-
-            
-
         }
 
 
@@ -84,8 +79,13 @@ namespace WorldWeaver
         /// </summary>
         protected override void Initialize()
         {
-            base.Initialize();
+            //load the XML file into the ContentManager
+            settings = Content.Load<AssetSettings>(xmlAssetList);
 
+            //make asset list available to everything (have to do this in init step or it's null for everyone's LoadContent)
+            Globals.AssetList = settings;
+
+            base.Initialize();
         }
 
 
@@ -94,11 +94,7 @@ namespace WorldWeaver
         /// </summary>
         protected override void LoadContent()
         {
-            //load the XML file into the ContentManager
-            settings = Content.Load<AssetSettings>(xmlAssetList);
-
-            //make asset list available to everything
-            Globals.AssetList = settings;
+            
 
             audioEngine = new AudioEngine(settings.audioEnginePath);
             waveBank = new WaveBank(audioEngine, settings.waveBankPath);
@@ -139,7 +135,7 @@ namespace WorldWeaver
         {
             GraphicsDevice device = graphics.GraphicsDevice;
 
-            device.Clear(Color.MediumPurple);
+            device.Clear(Color.Black);
 
             base.Draw(gameTime);
         }

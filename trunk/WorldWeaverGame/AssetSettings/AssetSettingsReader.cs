@@ -52,6 +52,8 @@ namespace WorldWeaver
             settings.gyro_needle = input.ReadString();
             settings.introLogo = input.ReadString();
 
+            settings.spritefont = input.ReadString();
+
             return settings;
         }
     }

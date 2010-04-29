@@ -28,7 +28,7 @@ namespace WorldWeaver
             }
             */
             chargeBar = Globals.hudManager.Game.Content.Load<Texture2D>(TexturePath);
-            spriteFont = Content.Load<SpriteFont>("Fonts\\Arial");
+            spriteFont = Content.Load<SpriteFont>(Globals.AssetList.spritefont);
 
             Position = new Rectangle((int)((Globals.hudManager.HudAreaWidth * 0.2f) - chargeBar.Width / 2),
                                           (int)((Globals.hudManager.HudAreaHeight - Globals.hudManager.HudAreaHeight * 0.1f) - chargeBar.Height / 2),
