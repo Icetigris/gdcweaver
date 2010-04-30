@@ -31,6 +31,7 @@ namespace WorldWeaver
         private ContentManager content;
         private Model model;
         private GameTime gameTime;
+        private Vector3 oldPosition;
 
         public ParticleChain CurrentChain;
 
@@ -56,6 +57,12 @@ namespace WorldWeaver
         public Vector3 Right
         {
             get { return right; }
+        }
+
+        public Vector3 OldPosition
+        {
+            get { return oldPosition; }
+            private set { oldPosition = value; }
         }
 
         private ChaseCamera camera;
@@ -150,9 +157,7 @@ namespace WorldWeaver
 
             //collisionSphere's start centre is Position
             collisionSphere = new BoundingSphere(Position, 300.0f);
-
-            
-
+            OldPosition = Position;
         }
 
         //Chase target player version of the constructor
@@ -289,6 +294,7 @@ namespace WorldWeaver
         public void Update()
         {
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds; //stays
+            oldPosition = new Vector3(Position.X, Position.Y, Position.Z);
 
             //KeyboardState keyboardState = Keyboard.GetState(); //stays
             //GamePadState gamePadState = GamePad.GetState(PlayerIndex.One); //stays
