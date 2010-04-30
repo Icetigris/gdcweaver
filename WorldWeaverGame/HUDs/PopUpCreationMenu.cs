@@ -189,6 +189,8 @@ namespace WorldWeaver
                             Console.WriteLine("Effective Temp: " + s.EffectiveTemp + "\n");
                             Console.WriteLine("Radius: " + s.R);
 
+                            Globals.Player.addObjectLocation(s.Position);
+
                             RemoveCelestialBodyToCreate();
                         }
                         else if (creatingBody == CelestialBodies.Planet)
@@ -202,6 +204,8 @@ namespace WorldWeaver
                             planet.LoadContent();
                             SceneGraphManager.AddObject(planet);
                             Globals.Player.mPool.Particles.Clear();
+
+                            Globals.Player.addObjectLocation(planet.Position);
 
                             // Checks to see what kind of planet we have.
                             Console.WriteLine("Mass: " + planet.Mass + "\n");

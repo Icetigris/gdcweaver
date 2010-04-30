@@ -129,7 +129,10 @@ namespace WorldWeaver
         //end Code[]
 
         // Add a list of location
-        Vector3[] planetList = new Vector3[] {new Vector3(0,0,0)};  // This array must expand with every planet creation.
+        private Vector3[] planetList = new Vector3[] {new Vector3(0,0,0)};  // This array must expand with every planet creation.
+        private int pIndex = 0; // Prevents variable from being reset on each button press.
+        private float planetSearchDelay = 0;    // timer used to delay user inputs for planet searching.
+        private bool hasObject = false; // Used to see if there's anything to lock onto to begin with.
 
         #endregion
 
@@ -214,7 +217,11 @@ namespace WorldWeaver
             }
         }
 
+
+        //============================================
+        // PRIVATE VOID expandPlanetList()
         // Expands the planet array
+        //============================================
         private void expandPlanetList()
         {
             // Create new array that is +1 original array's length
@@ -236,9 +243,21 @@ namespace WorldWeaver
             }
         }
 
+
+        //============================================
+        // PUBLIC VOID addPlanetLocation (Vector3)
         // Adds planet locations to the location array
-        public void addPlanetLocation(Vector3 location)
+        //============================================
+        public void addObjectLocation(Vector3 location)
         {
+            // If we have no objects, set the first object to index 0, do not expand.
+            if (hasObject == false)
+            {
+                planetList[0] = location;
+                hasObject = true;   // Cleared
+            }
+                
+
             // Expand the planetlist
             expandPlanetList();
 
@@ -558,45 +577,58 @@ namespace WorldWeaver
 
 
             // Focus Player, locks onto nearest planet
-            if (keyboardState.IsKeyDown(Keys.Q) || gamePadState.IsButtonDown(Buttons.LeftShoulder))
+            if ( keyboardState.IsKeyDown(Keys.Q) || gamePadState.IsButtonDown(Buttons.LeftShoulder)  )
             {
-                // Now use arrow keys to lock on to a planet in the planetList.
-                // + = i++
-                // - = i--
-                // Create cycle instance variable
-                int i = 0;  // Bottom of planetList
+                // Get timer data
+                planetSearchDelay += gameTime.ElapsedRealTime.Milliseconds;
 
-                if (keyboardState.IsKeyDown(Keys.Add) || gamePadState.IsButtonDown(Buttons.DPadRight))
+                if ((keyboardState.IsKeyDown(Keys.Add) || gamePadState.IsButtonDown(Buttons.DPadRight)) && planetSearchDelay > 250.0f && hasObject == true)
                 {
-                    if (i < planetList.Length - 1)
+                    if (pIndex < planetList.Length - 1)
                     {
-                        i++;
-                        this.Direction = planetList[i++];
+                        pIndex++;
+                        this.Direction = getPlanetDirection(planetList[pIndex]);
                     }
                     else
                     {
-                        i = 0;
-                        this.Direction = planetList[i];
+                        pIndex = 0;
+                        this.Direction = getPlanetDirection(planetList[pIndex]);
                     }
                 }
-                else if (keyboardState.IsKeyDown(Keys.Subtract) || gamePadState.IsButtonDown(Buttons.DPadLeft))
+                else if ((keyboardState.IsKeyDown(Keys.Subtract) || gamePadState.IsButtonDown(Buttons.DPadLeft)) && planetSearchDelay > 250.0f && hasObject == true)
                 {
-                    if (i > 0)
+                    if (pIndex > 0)
                     {
-                        i--;
-                        this.Direction = planetList[i];
+                        pIndex--;
+                        this.Direction = getPlanetDirection(planetList[pIndex]);
                     }
                     else
                     {
-                        i = planetList.Length - 1;
-                        this.Direction = planetList[i];
+                        pIndex = planetList.Length - 1;
+                        this.Direction = getPlanetDirection(planetList[pIndex]);
                     }
-                }
-                Console.WriteLine(i);
 
+                }
+                //Console.WriteLine("Player Position:" + this.Position + "\n" + "Player normalized:" + this.Direction);
+                // Reset timer when above 250
+                if (planetSearchDelay > 250.0f)
+                    planetSearchDelay = 0.0f;
             }
 
+        }
 
+        // Direction calc method
+        public Vector3 getPlanetDirection(Vector3 planet)
+        {
+            Vector3 planetDirection = new Vector3();
+            planetDirection.X = planet.X - Position.X;
+            planetDirection.Y = planet.Y - Position.Y;
+            planetDirection.Z = planet.Z - Position.Z;
+            planetDirection.Normalize();
+
+            Console.WriteLine("Planet P: " + planet + "\n" + "Player P: " + Position + "\n" + "Normalized: " + planetDirection);
+
+            return planetDirection;
         }
 
         #endregion
