@@ -29,7 +29,7 @@
     <PhongFXPath>Effects\Phong</PhongFXPath>
     <gyro_needle>Models\gyro_hook</gyro_needle>
     <introLogo>Images\UMBCGDClogoscreen</introLogo>
-    <spritefont>Fonts\DingleSW</spritefont>
+    <spritefont>Fonts\Arial</spritefont>
   
 
 </Asset>

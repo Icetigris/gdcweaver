@@ -21,6 +21,7 @@ namespace WorldWeaver
         public const float MAX_RADIUS = 1000;
         public const float MIN_DISTANCE = 300;
         public const float NUM_RADIUS_AWAY = 2;
+        public const float ALTER_CAMERA_DISTANCE = 0;
 
         private Texture2D pmenu;
         Player p = Globals.Player;
@@ -143,6 +144,7 @@ namespace WorldWeaver
                         Console.WriteLine(celestialBodyToCreate.Name + "'s index: " + celestialBodyToCreate.MySceneIndex);
                         ((Star)celestialBodyToCreate).LoadContent();
                         SceneGraphManager.AddObject(celestialBodyToCreate);
+                        UpdateChaseCamera();
                     }
 
                 }
@@ -162,6 +164,8 @@ namespace WorldWeaver
                         Console.WriteLine(celestialBodyToCreate.Name + "'s index: " + celestialBodyToCreate.MySceneIndex);
                         ((Planet)celestialBodyToCreate).LoadContent();
                         SceneGraphManager.AddObject(celestialBodyToCreate);
+
+                        UpdateChaseCamera();
                     }
                 }
                 else
@@ -215,6 +219,8 @@ namespace WorldWeaver
                         {
                             radius -= 10;
                             celestialBodyToCreate.R = radius;
+
+                            UpdateChaseCamera();
                         }
                     }
                     else if (gamePadState.IsButtonDown(Buttons.RightThumbstickRight) || keyboardState.IsKeyDown(Keys.Add))
@@ -223,6 +229,8 @@ namespace WorldWeaver
                         {
                             radius += 10;
                             celestialBodyToCreate.R = radius;
+
+                            UpdateChaseCamera();
                         }
                     }
                 }
@@ -252,6 +260,14 @@ namespace WorldWeaver
         //KeyboardState keyboardState = Keyboard.GetState(); //stays
         //GamePadState gamePadState = GamePad.GetState(PlayerIndex.One); //stays
 
+        private void UpdateChaseCamera()
+        {
+            if (radius > ALTER_CAMERA_DISTANCE)
+            {
+                Globals.ChaseCamera.DesiredPositionOffset = new Vector3(0.0f, 50.0f, 1000.0f) + new Vector3(0, 0, (radius - ALTER_CAMERA_DISTANCE) * 4);
+            }
+        }
+
         private void RemoveCelestialBodyToCreate()
         {
             if (creatingBody != CelestialBodies.None)
@@ -260,14 +276,12 @@ namespace WorldWeaver
                 SceneGraphManager.RemoveObject(celestialBodyToCreate.MySceneIndex);
                 celestialBodyToCreate = null;
             }
+
+            Globals.ChaseCamera.DesiredPositionOffset = new Vector3(0.0f, 50.0f, 1000.0f);
         }
 
         public override void Draw(GameTime gameTime)
         {
-
-            //if (gamePadState.IsButtonDown(Buttons.RightShoulder))
-            //{
-
             Globals.hudManager.SpriteBatch.Draw(pmenu, Position, opacity);
             Globals.hudManager.SpriteBatch.Draw(sIcon, top, opacity);
             Globals.hudManager.SpriteBatch.Draw(pIcon, left, opacity);
