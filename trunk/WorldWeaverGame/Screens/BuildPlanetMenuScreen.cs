@@ -61,6 +61,9 @@ namespace WorldWeaver
                         Console.WriteLine("Black hole?: " + s.IsBlackHole() + "\n");
                         Console.WriteLine("Mass: " + s.Mass + "\n");
                         Console.WriteLine("Effective Temp: " + s.EffectiveTemp + "\n");
+
+                        // Add start location
+                        p.addObjectLocation(s.Position);
                     }
                     break;
 
@@ -81,7 +84,10 @@ namespace WorldWeaver
                         Console.WriteLine("Effective Temp: " + s.EffectiveTemp + "\n");
 
                         // Add location to list of planet locations in player
-                        p.addPlanetLocation(s.Position);
+                        
+                        p.addObjectLocation(s.Position);
+
+                        //Console.WriteLine("Planet Direction:" + planetDirection);
 
                     }
                     break;
