@@ -24,6 +24,8 @@ namespace WorldWeaver
         private Vector3 greyMapColorA;
         private Vector3 greyMapColorB;
         private Vector3 greyMapColorC;
+
+        public const float NORMAL_RADIUS = 450;
         //
         #endregion
 
@@ -205,52 +207,9 @@ namespace WorldWeaver
 
         private void CollidePlayer(BoundingSphere boundingSphere, Player player)
         {
-            if (boundingSphere.Intersects(player.CollisionSphere))
+            if (boundingSphere.Intersects(player.CollisionSphere) && !(new BoundingSphere(player.OldPosition, player.CollisionSphere.Radius)).Intersects(boundingSphere) )
             {
-                Vector3 newPlayerPosition = new Vector3();
-
-                float distance = boundingSphere.Radius + player.CollisionSphere.Radius;
-
-                //is this faster than just doing (Math.Abs(Center) - Math.Abs(Position)) * (Center < 0) ? -1:1)
-                //Probably not?, this sorta works though?
-                Vector3 normalizedDifference = Vector3.Normalize(boundingSphere.Center - player.Position); //the normalized distance
-                Vector3 normalizedDifferencePlusOne = normalizedDifference + new Vector3(1); //make it all positive
-                Vector3 normalizedPositiveDifference = normalizedDifferencePlusOne / new Vector3(2); //scale it from 0 to 1
-                Vector3 normalDifference = Vector3.One - normalizedPositiveDifference; //find the distance we need to add to the player
-                Vector3 differenceOneHalfScale = (normalDifference - new Vector3(0.5f)); //scale it from -.5 to .5
-                Vector3 scaled = differenceOneHalfScale * new Vector3(2); //scale it from -1 to 1
-
-                newPlayerPosition.X = boundingSphere.Center.X + (scaled.X * distance);
-                newPlayerPosition.Y = boundingSphere.Center.Y + (scaled.Y * distance);
-                newPlayerPosition.Z = boundingSphere.Center.Z + (scaled.Z * distance);
-
-                Vector3 temp = new Vector3(newPlayerPosition.X, newPlayerPosition.Y, newPlayerPosition.Z);
-                //Vector3 distanceFromBorder;
-
-                //distanceFromBorder.Y = Math.Min(Player.MaximumAltitude - newPlayerPosition.Y, newPlayerPosition.Y - Player.MinimumAltitude);
-                //distanceFromBorder.X = Math.Min(Player.MaximumX - newPlayerPosition.X, newPlayerPosition.X - Player.MinimumX);
-                //distanceFromBorder.Z = Math.Min(Player.MaximumZ - newPlayerPosition.Z, newPlayerPosition.Z - Player.MinimumZ);
-
-                //if (distanceFromBorder.Y < 10)
-                {
-                    // Prevent player from flying under the ground
-                    temp.Y = Math.Max(newPlayerPosition.Y, Player.MinimumAltitude + (float)(R * 0f));
-                    temp.Y = Math.Min(newPlayerPosition.Y, Player.MaximumAltitude - (float)R * 0f);
-                }
-                //if (distanceFromBorder.X < 10)
-                {
-                    // Prevent player from flying out to nowhere in the x direction
-                    temp.X = Math.Max(newPlayerPosition.X, Player.MinimumX + (float)R * 0f);
-                    temp.X = Math.Min(newPlayerPosition.X, Player.MaximumX - (float)R * 0f);
-                }
-                //if (distanceFromBorder.Z < 10)
-                {
-                    // Prevent player from flying out to nowhere in the z direction
-                    temp.Z = Math.Max(newPlayerPosition.Z, Player.MinimumZ + (float)R * 0f);
-                    temp.Z = Math.Min(newPlayerPosition.Z, Player.MaximumZ - (float)R * 0f);
-                }
-
-                player.Position = temp;
+                player.Position = player.OldPosition;
             }
         }
 
@@ -321,7 +280,7 @@ namespace WorldWeaver
         {
             if (!Globals.gameplayScreenDestroyed && isVisible)
             {
-                world = Matrix.Identity * Matrix.CreateScale((float)this.R / 400) * Matrix.CreateTranslation(Position);
+                world = Matrix.Identity * Matrix.CreateScale((float)this.R / NORMAL_RADIUS) * Matrix.CreateTranslation(Position);
 
                 Matrix[] transforms = new Matrix[model.Bones.Count];
                 model.CopyAbsoluteBoneTransformsTo(transforms);

@@ -127,7 +127,7 @@ namespace WorldWeaver
                 canCreate = true;
 
                 if ((canCreate == true) && 
-                    (gamePadState.IsButtonDown(Buttons.DPadUp) || keyboardState.IsKeyDown(Keys.A)))
+                    (gamePadState.IsButtonDown(Buttons.DPadUp) || keyboardState.IsKeyDown(Keys.W)))
                 {
                     //Make Star
 
@@ -135,7 +135,7 @@ namespace WorldWeaver
                     {
                         RemoveCelestialBodyToCreate();
                         float starRadius = 400;
-                        celestialBodyToCreate = new Star("Sun", Vector3.One, Globals.Player.Position + (Globals.Player.Direction * new Vector3((NUM_RADIUS_AWAY * starRadius) + MIN_DISTANCE)), starRadius, Globals.Player.mPool, Globals.sceneGraphManager.GraphicsManager);
+                        celestialBodyToCreate = new Star("Sun", Vector3.One, Globals.Player.Position, starRadius, Globals.Player.mPool, Globals.sceneGraphManager.GraphicsManager);
                         creatingBody = CelestialBodies.Star;
                         radius = starRadius;
 
@@ -154,7 +154,7 @@ namespace WorldWeaver
                         // Spawn planet
                         RemoveCelestialBodyToCreate();
                         float planetRadius = 400;
-                        celestialBodyToCreate = new Planet("Planet", Vector3.One, Globals.Player.Position + (Globals.Player.Direction * new Vector3((NUM_RADIUS_AWAY * planetRadius) + MIN_DISTANCE)), planetRadius, Globals.Player.mPool, Globals.sceneGraphManager.GraphicsManager);
+                        celestialBodyToCreate = new Planet("Planet", Vector3.One, Globals.Player.Position, planetRadius, Globals.Player.mPool, Globals.sceneGraphManager.GraphicsManager);
                         creatingBody = CelestialBodies.Planet;
                         radius = planetRadius;
 
@@ -229,7 +229,7 @@ namespace WorldWeaver
 
                 if (celestialBodyToCreate != null)
                 {
-                    celestialBodyToCreate.Position = Globals.Player.Position + (Globals.Player.Direction * new Vector3((NUM_RADIUS_AWAY * (float)celestialBodyToCreate.R + MIN_DISTANCE)));
+                    celestialBodyToCreate.Position = Globals.Player.Position;
                 }
             }
 
