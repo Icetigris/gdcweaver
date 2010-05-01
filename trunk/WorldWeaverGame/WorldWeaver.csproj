@@ -93,6 +93,7 @@
     <Compile Include="Game Source\Globals.cs" />
     <Compile Include="Game Source\GyroPersp.cs" />
     <Compile Include="Screens\CreditsScreen.cs" />
+    <Compile Include="Screens\IntroAnimationScreen.cs" />
     <Compile Include="Screens\IntroScreen.cs" />
     <Compile Include="Game Source\MoleculePool.cs" />
     <Compile Include="Game Source\Particle.cs" />

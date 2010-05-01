@@ -25,6 +25,7 @@ namespace WorldWeaver
 
         private Texture2D pmenu;
         Player p = Globals.Player;
+        private bool inCreationMode = false;
 
         //loading extra icons, Kevin
         private Texture2D aIcon;

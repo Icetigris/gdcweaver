@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -67,7 +66,7 @@ namespace WorldWeaver
             if (timeInSeconds > INTRO_SCREEN_TIME && !fadingOut)
             {
                 LoadingScreen.Load(ScreenManager, false, new BackgroundScreen(),
-                                   new MainMenuScreen());
+                                   new IntroAnimationScreen());
                 fadingOut = true;
             }
 

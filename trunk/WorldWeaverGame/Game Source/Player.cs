@@ -582,33 +582,17 @@ namespace WorldWeaver
                 // Get timer data
                 planetSearchDelay += gameTime.ElapsedRealTime.Milliseconds;
 
-                if ((keyboardState.IsKeyDown(Keys.Add) || gamePadState.IsButtonDown(Buttons.DPadRight)) && planetSearchDelay > 250.0f && hasObject == true)
+                if (pIndex < planetList.Length - 1)
                 {
-                    if (pIndex < planetList.Length - 1)
-                    {
-                        pIndex++;
-                        this.Direction = getPlanetDirection(planetList[pIndex]);
-                    }
-                    else
-                    {
-                        pIndex = 0;
-                        this.Direction = getPlanetDirection(planetList[pIndex]);
-                    }
+                    pIndex++;
+                    this.Direction = getPlanetDirection(planetList[pIndex]);
                 }
-                else if ((keyboardState.IsKeyDown(Keys.Subtract) || gamePadState.IsButtonDown(Buttons.DPadLeft)) && planetSearchDelay > 250.0f && hasObject == true)
+                else
                 {
-                    if (pIndex > 0)
-                    {
-                        pIndex--;
-                        this.Direction = getPlanetDirection(planetList[pIndex]);
-                    }
-                    else
-                    {
-                        pIndex = planetList.Length - 1;
-                        this.Direction = getPlanetDirection(planetList[pIndex]);
-                    }
-
+                    pIndex = 0;
+                    this.Direction = getPlanetDirection(planetList[pIndex]);
                 }
+            
                 //Console.WriteLine("Player Position:" + this.Position + "\n" + "Player normalized:" + this.Direction);
                 // Reset timer when above 250
                 if (planetSearchDelay > 250.0f)
