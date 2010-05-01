@@ -18,7 +18,7 @@ namespace WorldWeaver
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
             credits1 = "Project Lead\n Elizabeth Baumel\n\n";
             credits1 += "Programming\n Joey Breeden\n Wallace Brown\n Ben Harris\n Kevin Markey\n Abdul Natafgi\n Matt Song\n\n";
-            credits2 = "Art\n Denise Rockwell\n Isaac Sohn\n Kevin Durant\n\n";
+            credits2 = "Art\n Carrington Dennis\n Kevin Durant\n Denise Rockwell\n Isaac Sohn\n\n";
             credits2+= "Sound\n David Carls\n Chuck Miller";
         }
 
