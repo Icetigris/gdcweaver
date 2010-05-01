@@ -39,8 +39,6 @@ namespace WorldWeaver
 
             //ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.Black, 0, 0);
 
-            Color color = new Color(128, 0, 255, TransitionAlpha);
-
             ScreenManager.SpriteBatch.Begin(SpriteBlendMode.AlphaBlend,
                                             SpriteSortMode.Immediate,
                                             SaveStateMode.SaveState);
@@ -49,18 +47,25 @@ namespace WorldWeaver
             Vector2 titleSize = _titleFont.MeasureString("Controls");
             textPosition = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2, 5);
 
-            ScreenManager.SpriteBatch.DrawString(_titleFont, "Controls", textPosition + new Vector2(-50, 200), color);
-
-            color = new Color(255, 255, 255, TransitionAlpha);
+            ScreenManager.SpriteBatch.DrawString(_titleFont, "Controls", textPosition + new Vector2(-50, Globals.titleDown), Color.Gold);
 
             //draw header
             textPosition = new Vector2(50, 100);
-            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, "Thrust: R trigger OR Spacebar", textPosition + new Vector2(0, 250), color);
-            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, "Directions: Left analog stick OR arrow buttons", textPosition + new Vector2(0, 300), color);
-            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, "Confirm: A OR Enter", textPosition + new Vector2(0, 350), color);
-            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, "Cancel: B OR Esc key", textPosition + new Vector2(0, 400), color);
-            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, "Pause: Start OR Esc Key", textPosition + new Vector2(0, 450), color);
-            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, "Toggle Camera Spring: Back button OR A key", textPosition + new Vector2(0, 500), color);
+
+            Color color = Color.White;
+            int lineNumber = 1;
+            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, "Thrust: R trigger OR Spacebar", textPosition + new Vector2(0, Globals.bodyTextDown + 50 * lineNumber), color);
+            lineNumber++;
+            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, "Directions: Left analog stick OR arrow buttons", textPosition + new Vector2(0, Globals.bodyTextDown + 50*lineNumber), color);
+            lineNumber++;
+            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, "Confirm: A OR Enter", textPosition + new Vector2(0, Globals.bodyTextDown + 50 * lineNumber), color);
+            lineNumber++;
+            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, "Cancel: B OR Esc key", textPosition + new Vector2(0, Globals.bodyTextDown + 50 * lineNumber), color);
+            lineNumber++;
+            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, "Pause: Start OR Esc Key", textPosition + new Vector2(0, Globals.bodyTextDown + 50 * lineNumber), color);
+            lineNumber++;
+            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, "Toggle Camera Spring: Back button OR A key", textPosition + new Vector2(0, Globals.bodyTextDown + 50 * lineNumber), color);
+            lineNumber++;
 
             
             ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, "Hit the B button or Esc key to go back", new Vector2(600, 700), Color.White);
