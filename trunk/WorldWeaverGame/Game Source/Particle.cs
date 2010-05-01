@@ -404,7 +404,7 @@ namespace WorldWeaver
         //Gives this particle a random charge upon creation
         private int generateRandomCharge()
         {
-            int randomIndex = randomNumberGenerator.Next(0, 7);//randCharge.Next(0, 7);
+            int randomIndex = randomNumberGenerator.Next(0, 8);//randCharge.Next(0, 7);
             int aCharge = 0;
 
             switch (randomIndex)
