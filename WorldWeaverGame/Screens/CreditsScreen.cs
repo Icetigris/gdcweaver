@@ -42,25 +42,27 @@ namespace WorldWeaver
         {
             Vector2 textPosition;
 
-            Color color = new Color(128, 0, 255, TransitionAlpha);
+            Color blindingPurple = new Color(128, 0, 255, TransitionAlpha);
+            Color gold = new Color(197, 186, 77, TransitionAlpha);
 
             ScreenManager.SpriteBatch.Begin(SpriteBlendMode.AlphaBlend,
                                             SpriteSortMode.Immediate,
                                             SaveStateMode.SaveState);
 
             //draw title
+
             Vector2 titleSize = _titleFont.MeasureString("Credits");
             textPosition = new Vector2(ScreenManager.GraphicsDevice.Viewport.Width / 2 - titleSize.X / 2, 5);
 
-            ScreenManager.SpriteBatch.DrawString(_titleFont, "Credits", textPosition + new Vector2(-50, 200), color);
+            ScreenManager.SpriteBatch.DrawString(_titleFont, "Credits", textPosition + new Vector2(-50, Globals.titleDown), Color.Gold);
 
-            color = new Color(255, 255, 255, TransitionAlpha);
+            Color white = new Color(255, 255, 255, TransitionAlpha);
 
             //draw header
-            textPosition = new Vector2(50, 100);
+            textPosition = new Vector2(50, Globals.bodyTextDown);
             
-            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, credits1, textPosition + new Vector2(0, 150), color);
-            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, credits2, textPosition + new Vector2(300, 150), color);
+            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, credits1, textPosition + new Vector2(0, 150), Color.White);
+            ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, credits2, textPosition + new Vector2(300, 150), Color.White);
 
 
             ScreenManager.SpriteBatch.DrawString(ScreenManager.Font, "Hit the B button or Esc key to go back", new Vector2(600, 700), Color.White);

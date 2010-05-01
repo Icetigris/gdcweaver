@@ -150,7 +150,7 @@ namespace WorldWeaver
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
             SpriteFont font = ScreenManager.Font;
 
-            Vector2 position = new Vector2(150, 250);
+            Vector2 position = new Vector2(150, 300);
 
             // Make the menu slide into place during transitions, using a
             // power curve to make things look more interesting (this makes

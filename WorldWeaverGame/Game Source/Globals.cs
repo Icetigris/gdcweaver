@@ -27,6 +27,8 @@ namespace WorldWeaver
         public static SolarSystem solarSystem;
         public static Last10ParticlesHUD last10ParticlesHUD;
         public static GameTime gameTime;
+        public static float titleDown = 260;
+        public static float bodyTextDown = 150;
 
         //wb
         public static Dictionary<Model, Model> convertedModels = new Dictionary<Model, Model>();
