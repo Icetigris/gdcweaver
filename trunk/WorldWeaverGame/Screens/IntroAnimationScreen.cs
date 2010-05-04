@@ -4,31 +4,21 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace WorldWeaver
 {
     class IntroAnimationScreen : MenuScreen
     {
-        public const double INTRO_SCREEN_TIME = 3.3;
-        public const double ONE_OVER_20 = 0.05;
-        public const int FRAMECOUNT = 160;
-
-        private const int SIZE = 20;
-
-        private double leftoverTime = 0.0;
-        private int frameCounter = 0;
-        private int frameIndex = 0;
-        private double elapsedTime = 0.0;
-        private int firstRun = 0;
+        private Video introVid;
+        private VideoPlayer player;
 
         ContentManager content;
-        Texture2D[] frames = new Texture2D[SIZE]; //300 frame animation, only hold 1 sec at a time
-        Texture2D[] backBuffer = new Texture2D[SIZE];
-        Texture2D[] activeFrameBuffer;
-        Texture2D[] activeBackBuffer;
+        
         double timeInSeconds;
         bool fadingOut;
+        bool doOnce = true;
 
         public IntroAnimationScreen()
             : base("IntroAnimation")
@@ -38,9 +28,7 @@ namespace WorldWeaver
             timeInSeconds = 0;
             fadingOut = false;
 
-            //BDH
-            activeFrameBuffer = frames;
-            activeBackBuffer = backBuffer;
+            player = new VideoPlayer();
         }
 
         public override void LoadContent()
@@ -50,8 +38,8 @@ namespace WorldWeaver
                 content = new ContentManager(ScreenManager.Game.Services, "Content");
             }
 
-            //load first frames
-            LoadFirstFrames();
+            introVid = content.Load<Video>("Video\\WWtest");
+            
 
         }
 
@@ -65,94 +53,11 @@ namespace WorldWeaver
 
         protected override void OnCancel()
         {
-            timeInSeconds = INTRO_SCREEN_TIME;
+            timeInSeconds = introVid.Duration.TotalSeconds;
         }
 
         protected override void OnSelectEntry(int entryIndex)
         {
-        }
-
-        private void LoadFirstFrames()
-        {
-            String filenumber = "";
-            for (int i = 0; i < frames.Length; i++)
-            {
-                filenumber = "Video\\bigbang0";
-
-                if (frameIndex > FRAMECOUNT)
-                {
-                    frameIndex = FRAMECOUNT;
-                }
-
-                //account for bigbang0000.jpg naming scheme
-                if (frameIndex < 10)
-                {
-                    filenumber += "00";
-                    filenumber += frameIndex;
-                }
-                else if (frameIndex < 100)
-                {
-                    filenumber += "0";
-                    filenumber += frameIndex;
-                }
-                else
-                {
-                    filenumber += frameIndex;
-                }
-
-                activeFrameBuffer[i] = content.Load<Texture2D>(filenumber);
-                activeFrameBuffer[i].Name = filenumber;
-                filenumber = "";
-                frameIndex++;
-            }
-        }
-
-        private void swapBuffers()
-        {
-            //temp = old
-            //old = new
-            //new = temp
-            if (activeFrameBuffer == frames)
-            {
-                activeFrameBuffer = backBuffer;
-                activeBackBuffer = frames;
-            }
-            else
-            {
-                activeFrameBuffer = frames;
-                activeBackBuffer = backBuffer;
-            }
-        }
-
-        private void LoadNextFrame()
-        {
-            string filenumber = "Video\\bigbang0";
-
-            if (frameIndex > FRAMECOUNT)
-            {
-                frameIndex = FRAMECOUNT;
-            }
-
-            //account for bigbang0000.jpg naming scheme
-            if (frameIndex < 10)
-            {
-                filenumber += "00";
-                filenumber += frameIndex;
-            }
-            else if (frameIndex < 100)
-            {
-                filenumber += "0";
-                filenumber += frameIndex;
-            }
-            else
-            {
-                filenumber += frameIndex;
-            }
-
-            activeBackBuffer[frameCounter] = content.Load<Texture2D>(filenumber);
-            activeBackBuffer[frameCounter].Name = filenumber;
-            frameIndex++;
-            filenumber = "";
         }
 
         /// <summary>
@@ -170,14 +75,14 @@ namespace WorldWeaver
 
             timeInSeconds += gameTime.ElapsedRealTime.TotalSeconds;
 
-            if ((timeInSeconds > INTRO_SCREEN_TIME && !fadingOut) || gamePadState.IsButtonDown(Buttons.Start)
+            if ((timeInSeconds > introVid.Duration.TotalSeconds && !fadingOut) || gamePadState.IsButtonDown(Buttons.Start)
                                                                   || keyboardState.IsKeyDown(Keys.Enter))
             {
                 LoadingScreen.Load(ScreenManager, false, new BackgroundScreen(),
                                    new MainMenuScreen());
                 fadingOut = true;
+                player.Stop();
             }
-
             base.Update(gameTime, otherScreenHasFocus, false);
         }
 
@@ -192,38 +97,13 @@ namespace WorldWeaver
             Rectangle fullscreen = new Rectangle(0, 0, viewport.Width, viewport.Height);
             byte fade = TransitionAlpha;
 
-            spriteBatch.Begin(SpriteBlendMode.None, SpriteSortMode.BackToFront, SaveStateMode.SaveState);
-
-            //update current frame
-            elapsedTime = gameTime.ElapsedRealTime.TotalSeconds;
-            elapsedTime += leftoverTime;
-            if (firstRun == 0)
+            //spriteBatch.Begin(SpriteBlendMode.None, SpriteSortMode.BackToFront, SaveStateMode.SaveState);
+            if (doOnce)
             {
-                firstRun = 1;
+                player.Play(introVid);
+                doOnce = false;
             }
-            else if (firstRun == 1)
-            {
-                firstRun = 2;
-            }
-            else if (elapsedTime > ONE_OVER_20)
-            {
-                //advance current frame
-                frameCounter++;
-                if (frameCounter >= frames.Length)
-                {
-                    frameCounter = 0;
-                    swapBuffers();
-                }
-            }
-            leftoverTime = elapsedTime;
-
-            spriteBatch.Draw(activeFrameBuffer[frameCounter], fullscreen,
-                             new Color(fade, fade, fade));
-            LoadNextFrame();
-            Console.WriteLine(activeFrameBuffer[frameCounter].Name);
-
-
-            spriteBatch.End();
+            //spriteBatch.End();
         }
     }
 }
