@@ -19,6 +19,7 @@ namespace WorldWeaver
         double timeInSeconds;
         bool fadingOut;
         bool doOnce = true;
+        bool doThisOnce = true;
 
         public IntroAnimationScreen()
             : base("IntroAnimation")
@@ -76,12 +77,14 @@ namespace WorldWeaver
             timeInSeconds += gameTime.ElapsedRealTime.TotalSeconds;
 
             if ((timeInSeconds > introVid.Duration.TotalSeconds && !fadingOut) || gamePadState.IsButtonDown(Buttons.Start)
-                                                                  || keyboardState.IsKeyDown(Keys.Enter))
+                                                                  || keyboardState.IsKeyDown(Keys.Enter) && doThisOnce)
             {
+                player.Stop();
+                timeInSeconds = introVid.Duration.TotalSeconds;
                 LoadingScreen.Load(ScreenManager, false, new BackgroundScreen(),
                                    new MainMenuScreen());
                 fadingOut = true;
-                player.Stop();
+                doThisOnce = false;
             }
             base.Update(gameTime, otherScreenHasFocus, false);
         }

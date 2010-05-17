@@ -16,11 +16,17 @@ namespace WorldWeaver
         /// </summary>
         /// 
         private Cue titleCue;
+        public Cue TitleCue
+        {
+            get { return titleCue; }
+            set { titleCue = value; }
+        }
 
         public MainMenuScreen()
             : base("")
         {
             titleCue = Globals.musicSoundBank.GetCue(Globals.AssetList.titleThemeCueName);
+            
             titleCue.Play();
             MenuEntries.Add(new MenuEntry("Play Game"));
             MenuEntries.Add(new MenuEntry("Story"));
@@ -48,7 +54,7 @@ namespace WorldWeaver
                     //Globals.gameplayScreenDestroyed = false;
                     //titleCue.Stop(AudioStopOptions.AsAuthored);
 
-                    ScreenManager.AddScreen(new SelectCharacterScreen(titleCue));
+                    ScreenManager.AddScreen(new SelectCharacterScreen(this));
                     break;
                 case 1:
                     //Show story screen
