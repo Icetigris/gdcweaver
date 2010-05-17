@@ -16,22 +16,13 @@ namespace WorldWeaver
 
         private Cue titleCue;
 
-        //all this may not be necessary....
-
-        Player player;
-        GraphicsDeviceManager graphics;
-        ChaseCamera camera;
-        bool cameraSpringEnabled = true;
-        Skybox skybox;
-        ContentManager Content = null;
-        //
-        
+        private MainMenuScreen parent;       
         
 
-        public SelectCharacterScreen(Cue TitleCue)
+        public SelectCharacterScreen(MainMenuScreen mainScreen)
             : base("")
         {
-            this.titleCue = TitleCue;
+            parent = mainScreen;
             
 
             MenuEntries.Add(new MenuEntry("Athena"));
@@ -65,32 +56,12 @@ namespace WorldWeaver
                     Globals.godcharge = -1;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
-                    titleCue.Stop(AudioStopOptions.AsAuthored); 
+                    parent.TitleCue.Stop(AudioStopOptions.AsAuthored); 
 
                     
                     break;
 
                 case 1:
-
-                    //gonna try to change some specs here...
-        //            if (Content == null)
-        //            {
-        //                Content = new ContentManager(ScreenManager.Game.Services, "Content");
-        //                Globals.contentManager = Content;
-        //            }
-        //            graphics = ScreenManager.GraphicsManager;
-
-                    //Create chase camera
-        //            camera = new ChaseCamera(graphics);
-        //            Globals.ChaseCamera = camera;
-
-        //            Globals.hudCamera = new HudCamera(new Vector3(0, 0, 0), Matrix.CreateLookAt(new Vector3(0, 0, 0), new Vector3(0, 0, -1), new Vector3(0, 1, 0))/*camera.View*/, Globals.ChaseCamera.Projection);
-        //            player = player = new Player(-3, camera, Content, graphics);
-        //            Globals.Player = player;
-
-        //            player.MySceneIndex = SceneGraphManager.SceneCount;
-        //            SceneGraphManager.AddObject(player);
-
                     Globals.godcharge = -2;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
