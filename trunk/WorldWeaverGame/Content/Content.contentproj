@@ -343,6 +343,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fonts\DingleSW.spritefont">
+      <Name>DingleSW</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
     <Compile Include="Images\UMBCGDClogoscreen.jpg">
       <Name>UMBCGDClogoscreen</Name>
       <Importer>TextureImporter</Importer>
