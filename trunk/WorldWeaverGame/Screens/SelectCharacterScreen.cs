@@ -65,7 +65,7 @@ namespace WorldWeaver
                     Globals.godcharge = -2;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
-                    titleCue.Stop(AudioStopOptions.AsAuthored); 
+                    parent.TitleCue.Stop(AudioStopOptions.AsAuthored); 
                     break;
 
                 case 2:
@@ -73,7 +73,7 @@ namespace WorldWeaver
                     Globals.godcharge = -3;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
-                    titleCue.Stop(AudioStopOptions.AsAuthored);
+                    parent.TitleCue.Stop(AudioStopOptions.AsAuthored);
                     break;
 
                 case 3:
@@ -81,7 +81,7 @@ namespace WorldWeaver
                     Globals.godcharge = -4;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
-                    titleCue.Stop(AudioStopOptions.AsAuthored);
+                    parent.TitleCue.Stop(AudioStopOptions.AsAuthored);
                     break;
 
                 case 4:
@@ -89,7 +89,7 @@ namespace WorldWeaver
                     Globals.godcharge = 1;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
-                    titleCue.Stop(AudioStopOptions.AsAuthored);
+                    parent.TitleCue.Stop(AudioStopOptions.AsAuthored);
                     break;
 
                 
@@ -98,7 +98,7 @@ namespace WorldWeaver
                     Globals.godcharge = 2;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
-                    titleCue.Stop(AudioStopOptions.AsAuthored);
+                    parent.TitleCue.Stop(AudioStopOptions.AsAuthored);
                     break;
 
                 case 6:
@@ -106,7 +106,7 @@ namespace WorldWeaver
                     Globals.godcharge = 3;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
-                    titleCue.Stop(AudioStopOptions.AsAuthored);
+                    parent.TitleCue.Stop(AudioStopOptions.AsAuthored);
                     break;
 
                 case 7:
@@ -114,7 +114,7 @@ namespace WorldWeaver
                     Globals.godcharge = 4;
                     LoadingScreen.Load(ScreenManager, true, new GameplayScreen());
                     Globals.gameplayScreenDestroyed = false;
-                    titleCue.Stop(AudioStopOptions.AsAuthored);
+                    parent.TitleCue.Stop(AudioStopOptions.AsAuthored);
                     break;
 
                 case 8:
